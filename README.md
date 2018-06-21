@@ -1,8 +1,19 @@
-Install `npm install -g nodemon`
+# Run prototype
 
-Install packages: `npm install`
+- Install `npm install -g nodemon`
+- Install packages: `npm install`
+- Run: `nodemon server_small.js`
 
-Run: `nodemon server_small.js`
+# Run cli tool
+
+- `npm install -g graphql-cli`
+- `cd` into a new dir
+- `graphql init` (schema for this prototype = `http://localhost:8081/graphql`)
+
+Get the schema:
+- graphql get-schema
+
+Result will be in: `./schema.graphql`
 
 # Naming definitions
 
