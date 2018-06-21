@@ -66,25 +66,25 @@ var propsForArgs = {} //global
 function createArgs(item, withKeywords){
 
   // check if argument name is defined, if not, create it
-  if(propsForArgs[item.name] == undefined){
+  if(propsForArgs[item.class] == undefined){
 
     // empty argument
-    propsForArgs[item.name] = {}
+    propsForArgs[item.class] = {}
 
     // always certainty
-    propsForArgs[item.name]["_certainty"] = {
+    propsForArgs[item.class]["_certainty"] = {
       type: GraphQLFloat,
       description: "How certain about these values?"
     }
     // always return limit
-    propsForArgs[item.name]["_limit"] = {
+    propsForArgs[item.class]["_limit"] = {
       type: GraphQLInt,
       description: "define the max returned values."
     }
 
     if(withKeywords === true){
       // always certainty
-      propsForArgs[item.name]["_keywords"] = {
+      propsForArgs[item.class]["_keywords"] = {
         type: new GraphQLList(argsKeywords),
         description: "Add a keyword?"
       }
@@ -94,7 +94,7 @@ function createArgs(item, withKeywords){
     if(item.properties != undefined){
       item.properties.forEach(prop => {
         if(prop["@dataType"][0][0] !== prop["@dataType"][0][0].toUpperCase()){ // is the first letter uppercase?
-          propsForArgs[item.name][prop.name] = {
+          propsForArgs[item.class][prop.name] = {
             type: GraphQLString, // for now, always return a string
             description: prop.description
           }
@@ -104,7 +104,7 @@ function createArgs(item, withKeywords){
 
   }
   
-  return propsForArgs[item.name] // return the prop with the argument
+  return propsForArgs[item.class] // return the prop with the argument
 
 }
 
@@ -155,8 +155,25 @@ function createSubClasses(ontologyThings){
               description: singleClassProperty.description,
               type: GraphQLString
             }
+          } else if(singleClassProperty["@dataType"][0] === "int") {
+            // always return string (should be int, float, bool etc later)
+            returnProps[singleClassProperty.name] = {
+              description: singleClassProperty.description,
+              type: GraphQLInt
+            }
+          } else if(singleClassProperty["@dataType"][0] === "number") {
+            // always return string (should be int, float, bool etc later)
+            returnProps[singleClassProperty.name] = {
+              description: singleClassProperty.description,
+              type: GraphQLFloat
+            }
           } else {
-            console.error("I DONT KNOW THIS VALUE!")
+            console.error("I DONT KNOW THIS VALUE! " + singleClassProperty["@dataType"][0])
+            // always return string (should be int, float, bool etc later)
+            returnProps[singleClassProperty.name] = {
+              description: singleClassProperty.description,
+              type: GraphQLString
+            }
           }
         });
         return returnProps
@@ -189,8 +206,9 @@ function createRootClasses(ontologyThings, subClasses){
       type: new GraphQLList(subClasses[singleClass.class]),
       description: singleClass.description,
       args: createArgs(singleClass, false),
-      resolve() {
+      resolve(headers, params, ...aap) {
         console.log("resolve ROOT CLASS" + singleClass.class)
+        console.log(params)
         return [{}] // resolve with empty array
       }
     }
@@ -324,9 +342,9 @@ function createNounFields(nouns, depth){
 /**
  * START CONSTRUCTING THE SERVICE
  */
-fs.readFile('things_schema_org.min.json', 'utf8', function(err, ontologyThings) { // read things ontology
-  fs.readFile('actions_schema_org.min.json', 'utf8', function(err, ontologyActions) { // read actions ontology
-    fs.readFile('nounlist.txt', 'utf8', function(err, nouns) { // read the nounlist
+fs.readFile('schemas_small/ing_things.json', 'utf8', function(err, ontologyThings) { // read things ontology
+  fs.readFile('schemas_small/ing_actions.json', 'utf8', function(err, ontologyActions) { // read actions ontology
+    fs.readFile('schemas_small/nounlist.txt', 'utf8', function(err, nouns) { // read the nounlist
 
       // merge
       classes = mergeOntologies(JSON.parse(ontologyThings), JSON.parse(ontologyActions))

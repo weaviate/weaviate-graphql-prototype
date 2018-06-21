@@ -1,0 +1,40 @@
+{
+	"@context": "",
+	"version": "0.0.1",
+	"type": "action",
+	"name": "weaviate ING schema",
+	"maintainer": "yourfriends@weaviate.com",
+	"classes": [{
+		"class": "BuyAction",
+		"description": "Transaction of money from backaccount to another.",
+		"properties": [{
+			"name": "amountRange",
+			"@dataType": ["AmountRange"],
+			"description": "Range of amount of money of the transaction."
+			}, {
+			"name": "date",
+			"@dataType": ["Date"],
+			"description": "Date of the transaction."
+			}, {
+			"name": "buyer",
+			"@dataType": ["Person", "Company"],
+			"description": "Owner of the bankaccount where the money is transacted from."
+			}, {
+			"name": "seller",
+			"@dataType": ["Person", "Company"],
+			"description": "Owner of the bankaccount where the money is transacted to."
+			}, {
+			"name": "location",
+			"@dataType": ["City"],
+			"description": "City where the money transaction originates."
+			}, {
+			"name": "description",
+			"@dataType": ["string"],
+			"description": "Short description of the transaction."
+			}, {
+			"name": "thing",
+			"@dataType": ["Thing"],
+			"description": "Bought thing, product or item."
+			}]
+	}]
+}

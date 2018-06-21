@@ -1,0 +1,189 @@
+{
+	"@context": "",
+	"version": "0.0.1",
+	"type": "thing",
+	"name": "weaviate ING schema",
+	"maintainer": "yourfriends@weaviate.com",
+	"classes": [{
+		"class": "AgeGroup",
+		"description": "Age group",
+		"properties": [{
+			"name": "group",
+			"@dataType": ["string"],
+			"description": "Age group."
+			}]
+		}, {
+		"class": "City",
+		"description": "City",
+		"properties": [{
+			"name": "name",
+			"@dataType": ["string"],
+			"description": "Official name of the city."
+			}, {
+			"name": "geolocation",
+			"@dataType": ["Coordinate"],
+			"description": "The city's geographical coordinates"
+			}, {
+			"name": "country",
+			"@dataType": ["Country"],
+			"description": "The country the city lies in"
+			}, {
+			"name": "population",
+			"@dataType": ["int"],
+			"description": "Number of inhabitants of the city"
+			}]
+		}, {
+		"class": "Gender",
+		"description": "Gender of a person",
+		"properties": [{
+			"name": "gender",
+			"@dataType": ["string"],
+			"description": "Gender, e.g. male, female, other"
+			}]
+		}, {
+		"class": "Date",
+		"description": "Date",
+		"properties": [{
+			"name": "day",
+			"@dataType": ["Day"],
+			"description": "Number of the day in a month"
+			}, {
+			"name": "month",
+			"@dataType": ["Month"],
+			"description": "Number of month in a year"
+			}, {
+			"name": "year",
+			"@dataType": ["Year"],
+			"description": "Year"
+			}, {
+			"name": "weekday",
+			"@dataType": ["Weekday"],
+			"description": "Day of the week, e.g. monday"
+			}]
+		}, {
+		"class": "AmountRange",
+		"description": "Amount of money in a range",
+		"properties": [{
+			"name": "range",
+			"@dataType": ["string"],
+			"description": "Formatted amount range."
+			}]
+		}, {
+		"class": "Person",
+		"description": "Person",
+		"properties": [{
+			"name": "ageGroup",
+			"@dataType": ["AgeGroup"],
+			"description": "The agegroup the person falls in."
+			}, {
+			"name": "livesIn",
+			"@dataType": ["City"],
+			"description": "The city the person lives in."
+			}, {
+			"name": "gender",
+			"@dataType": ["Gender"],
+			"description": "The gender of the person."
+			}]
+		}, {
+		"class": "Company",
+		"description": "Formal company, organisation, institution or corporation",
+		"properties": [{
+			"name": "name",
+			"@dataType": ["string"],
+			"description": "The official name of the company."
+			}, {
+			"name": "name2",
+			"@dataType": ["string"],
+			"description": "The official name of the company."
+			}, {
+			"name": "location",
+			"@dataType": ["City"],
+			"description": "The city the company is located or registered."
+			}, {
+			"name": "economicSector",
+			"@dataType": ["EconomicSector"],
+			"description": "The economic sector the company belongs to"
+			}]
+		}, {
+		"class": "EconomicSector",
+		"description": "The economic sector which best describes the behaviour and purpose of the company.",
+		"properties": [{
+			"name": "sector",
+			"@dataType": ["string"],
+			"description": "the economic sector"
+			}]
+		}, {
+		"class": "Weekday",
+		"description": "Day of the week in words",
+		"properties": [{
+			"name": "weekday",
+			"@dataType": ["string"],
+			"description": "day of the week in words"
+			}]
+		}, {
+		"class": "Day",
+		"description": "Daynumber of the month",
+		"properties": [{
+			"name": "day",
+			"@dataType": ["int"],
+			"description": "day number, range is 1-31"
+			}]
+		}, {
+		"class": "Month",
+		"description": "Month",
+		"properties": [{
+			"name": "month",
+			"@dataType": ["int"],
+			"description": "Number of month, can be 1-12"
+			}, {
+			"name": "name",
+			"@dataType": ["string"],
+			"description": "Name of the month"
+			}]
+		}, {
+		"class": "Year",
+		"description": "Year number",
+		"properties": [{
+			"name": "year",
+			"@dataType": ["int"],
+			"description": "Number of year"
+			}]
+		}, {
+		"class": "Coordinate",
+		"description": "Geolocation described in coordinate format of longitude and latitude",
+		"properties": [{
+			"name": "longitude",
+			"@dataType": ["number"],
+			"description": "longitude of the geolocation or coordinate"
+			}, {
+			"name": "latitude",
+			"@dataType": ["number"],
+			"description": "latitude of the geolocation or coordinate"
+			}]
+		}, {
+		"class": "Country",
+		"description": "Country",
+		"properties": [{
+			"name": "name",
+			"@dataType": ["string"],
+			"description": "Name of the country"
+			}]
+		}, {
+		"class": "Thing",
+		"description": "Physical thing, for example a product",
+		"properties": [{
+			"name": "name",
+			"@dataType": ["string"],
+			"description": "Name of the thing"
+			}, {
+			"name": "seller",
+			"@dataType": ["Company", "Person"],
+			"description": "Seller of the thing"
+			}, {
+			"name": "location",
+			"@dataType": ["City"],
+			"description": "City where the thing is or has been"
+			}]
+		}
+	]
+}
