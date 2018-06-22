@@ -52,7 +52,7 @@ var argsKeywords = new GraphQLInputObjectType({
   fields: {
     keyword: {
       name: "WeaviateNetworkKeywordsKeyword",
-      description: "The keywords",
+      description: "The keyword",
       type: GraphQLString
     },
     weight: {
@@ -170,6 +170,12 @@ function createSubClasses(ontologyThings){
             returnProps[singleClassProperty.name] = {
               description: singleClassProperty.description,
               type: GraphQLFloat
+            }
+          } else if(singleClassProperty["@dataType"][0] === "boolean") {
+            // always return string (should be int, float, bool etc later)
+            returnProps[singleClassProperty.name] = {
+              description: singleClassProperty.description,
+              type: GraphQLBoolean
             }
           } else {
             console.error("I DONT KNOW THIS VALUE! " + singleClassProperty["@dataType"][0])
@@ -307,7 +313,7 @@ function createNounFields(nouns, depth){
     splitNouns[no] = splitNouns[no].replace(/\W/g, '');
     subReturner[splitNouns[no]] = {
       name: "WeaviateNetworkSubfield" + splitNouns[no],
-      description: "BLAH",
+      description: "No description available",
       args: createArgs("_", true),
       resolve() {
         console.log("resolve WeaviateNetworkSubfield" + splitNouns[no])
@@ -330,7 +336,7 @@ function createNounFields(nouns, depth){
     let nounAsClass = splitNouns[no][0].toUpperCase() + splitNouns[no].substring(1);
     returner[nounAsClass] = {
       name: "WeaviateNetworkSubfield" + nounAsClass,
-      description: "BLAH",
+      description: "No description available",
       args: createArgs("_", true),
       resolve() {
         console.log("resolve WeaviateNetworkSubfield" + nounAsClass)
@@ -441,7 +447,7 @@ fs.readFile('schemas_small/ing_things.json', 'utf8', function(err, ontologyThing
                 },
                 MetaFetch: {
                   name: "WeaviateLocalMetaFetch",
-                  description: "Do a helpers fetch to search Things or Actions on the local weaviate",
+                  description: "Fetch meta infromation about Things or Actions on the local weaviate",
                   type: new GraphQLObjectType({
                     name: "WeaviateLocalMetaFetch",
                     description: "Fetch things or actions on the internal Weaviate",

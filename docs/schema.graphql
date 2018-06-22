@@ -1,0 +1,739 @@
+# source: http://localhost:8081/graphql
+# timestamp: Fri Jun 22 2018 17:33:27 GMT+0200 (W. Europe Summer Time)
+
+schema {
+  query: Weaviate
+}
+
+"""Age group"""
+type AgeGroup {
+  """Age group."""
+  group: String
+}
+
+"""Amount of money in a range"""
+type AmountRange {
+  """Formatted amount range."""
+  range: String
+}
+
+"""list of keywords and weights"""
+input argsKeywords {
+  """The keyword"""
+  keyword: String
+
+  """The weight"""
+  weight: Float
+}
+
+"""Transaction of money from backaccount to another."""
+type BuyAction {
+  """Range of amount of money of the transaction."""
+  AmountRange(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Short description of the transaction."""
+    description: String
+  ): [AmountRange]
+
+  """Date of the transaction."""
+  Date(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Short description of the transaction."""
+    description: String
+  ): [Date]
+
+  """Owner of the bankaccount where the money is transacted from."""
+  Buyer(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Short description of the transaction."""
+    description: String
+  ): [Person]
+
+  """Owner of the bankaccount where the money is transacted to."""
+  Seller(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Short description of the transaction."""
+    description: String
+  ): [Person]
+
+  """City where the money transaction originates."""
+  Location(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Short description of the transaction."""
+    description: String
+  ): [City]
+
+  """Short description of the transaction."""
+  description: String
+
+  """Bought thing, product or item."""
+  Thing(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Short description of the transaction."""
+    description: String
+  ): [Thing]
+}
+
+"""City"""
+type City {
+  """Official name of the city."""
+  name: String
+
+  """The city's geographical coordinates"""
+  Geolocation(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Official name of the city."""
+    name: String
+
+    """Number of inhabitants of the city"""
+    population: String
+  ): [Coordinate]
+
+  """The country the city lies in"""
+  Country(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Official name of the city."""
+    name: String
+
+    """Number of inhabitants of the city"""
+    population: String
+  ): [Country]
+
+  """Number of inhabitants of the city"""
+  population: Int
+}
+
+"""Formal company, organisation, institution or corporation"""
+type Company {
+  """The official name of the company."""
+  name: String
+
+  """The city the company is located or registered."""
+  Location(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """The official name of the company."""
+    name: String
+  ): [City]
+
+  """The economic sector the company belongs to"""
+  EconomicSector(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """The official name of the company."""
+    name: String
+  ): [EconomicSector]
+}
+
+"""Geolocation described in coordinate format of longitude and latitude"""
+type Coordinate {
+  """longitude of the geolocation or coordinate"""
+  longitude: Float
+
+  """latitude of the geolocation or coordinate"""
+  latitude: Float
+}
+
+"""Country"""
+type Country {
+  """Name of the country"""
+  name: String
+}
+
+"""Date"""
+type Date {
+  """Number of the day in a month"""
+  Day(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+  ): [Day]
+
+  """Number of month in a year"""
+  Month(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+  ): [Month]
+
+  """Year"""
+  Year(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+  ): [Year]
+
+  """Day of the week, e.g. monday"""
+  Weekday(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+  ): [Weekday]
+}
+
+"""Daynumber of the month"""
+type Day {
+  """day number, range is 1-31"""
+  day: Int
+}
+
+"""
+The economic sector which best describes the behaviour and purpose of the company.
+"""
+type EconomicSector {
+  """the economic sector"""
+  sector: String
+}
+
+"""Gender of a person"""
+type Gender {
+  """Gender, e.g. male, female, other"""
+  gender: String
+}
+
+"""Month"""
+type Month {
+  """Number of month, can be 1-12"""
+  month: Int
+
+  """Name of the month"""
+  name: String
+}
+
+"""Person"""
+type Person {
+  """The agegroup the person falls in."""
+  AgeGroup(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+  ): [AgeGroup]
+
+  """The city the person lives in."""
+  LivesIn(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+  ): [City]
+
+  """The gender of the person."""
+  Gender(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+  ): [Gender]
+}
+
+type superSubreturner {
+  """No description available"""
+  aardvark(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Add a keyword?"""
+    _keywords: [argsKeywords]
+  ): String
+
+  """No description available"""
+  abacus(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Add a keyword?"""
+    _keywords: [argsKeywords]
+  ): String
+}
+
+"""Physical thing, for example a product"""
+type Thing {
+  """Name of the thing"""
+  name: String
+
+  """Seller of the thing"""
+  Seller(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Name of the thing"""
+    name: String
+  ): [Company]
+
+  """City where the thing is or has been"""
+  Location(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Name of the thing"""
+    name: String
+  ): [City]
+}
+
+"""Location of the root query"""
+type Weaviate {
+  """Locate on the local Weaviate"""
+  Local: WeaviateLocalFetchType
+
+  """Locate on the Weaviate network"""
+  Network: WeaviateNetworkFetchType
+}
+
+"""Type of fetch on the internal Weaviate"""
+type WeaviateLocalFetchType {
+  """Do a targeted fetch to search Things or Actions on the local weaviate"""
+  TargetedFetch: WeaviateLocalTargetedFetch
+
+  """Do a helpers fetch to search Things or Actions on the local weaviate"""
+  HelpersFetch: WeaviateLocalHelpersFetch
+
+  """Do a helpers fetch to search Things or Actions on the local weaviate"""
+  MetaFetch: WeaviateLocalMetaFetch
+}
+
+"""Fetch things or actions on the internal Weaviate"""
+type WeaviateLocalHelpersFetch {
+  """No description available"""
+  Aardvark(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Add a keyword?"""
+    _keywords: [argsKeywords]
+  ): superSubreturner
+
+  """No description available"""
+  Abacus(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Add a keyword?"""
+    _keywords: [argsKeywords]
+  ): superSubreturner
+}
+
+"""Fetch things or actions on the internal Weaviate"""
+type WeaviateLocalMetaFetch {
+  """No description available"""
+  Aardvark(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Add a keyword?"""
+    _keywords: [argsKeywords]
+  ): superSubreturner
+
+  """No description available"""
+  Abacus(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Add a keyword?"""
+    _keywords: [argsKeywords]
+  ): superSubreturner
+}
+
+"""Fetch things or actions on the internal Weaviate"""
+type WeaviateLocalTargetedFetch {
+  """Locate Things on the local Weaviate"""
+  Things: WeaviateLocalTargetedFetchThings
+
+  """Locate Actions on the local Weaviate"""
+  Actions: WeaviateLocalTargetedFetchActions
+}
+
+"""Fetch Actions on the internal Weaviate"""
+type WeaviateLocalTargetedFetchActions {
+  """Transaction of money from backaccount to another."""
+  BuyAction(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Short description of the transaction."""
+    description: String
+  ): [BuyAction]
+}
+
+"""Fetch things on the internal Weaviate"""
+type WeaviateLocalTargetedFetchThings {
+  """Age group"""
+  AgeGroup(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Age group."""
+    group: String
+  ): [AgeGroup]
+
+  """City"""
+  City(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Official name of the city."""
+    name: String
+
+    """Number of inhabitants of the city"""
+    population: String
+  ): [City]
+
+  """Gender of a person"""
+  Gender(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Gender, e.g. male, female, other"""
+    gender: String
+  ): [Gender]
+
+  """Date"""
+  Date(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+  ): [Date]
+
+  """Amount of money in a range"""
+  AmountRange(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Formatted amount range."""
+    range: String
+  ): [AmountRange]
+
+  """Person"""
+  Person(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+  ): [Person]
+
+  """Formal company, organisation, institution or corporation"""
+  Company(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """The official name of the company."""
+    name: String
+  ): [Company]
+
+  """
+  The economic sector which best describes the behaviour and purpose of the company.
+  """
+  EconomicSector(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """the economic sector"""
+    sector: String
+  ): [EconomicSector]
+
+  """Day of the week in words"""
+  Weekday(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """day of the week in words"""
+    weekday: String
+  ): [Weekday]
+
+  """Daynumber of the month"""
+  Day(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """day number, range is 1-31"""
+    day: String
+  ): [Day]
+
+  """Month"""
+  Month(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Number of month, can be 1-12"""
+    month: String
+
+    """Name of the month"""
+    name: String
+  ): [Month]
+
+  """Year number"""
+  Year(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Number of year"""
+    year: String
+  ): [Year]
+
+  """Geolocation described in coordinate format of longitude and latitude"""
+  Coordinate(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """longitude of the geolocation or coordinate"""
+    longitude: String
+
+    """latitude of the geolocation or coordinate"""
+    latitude: String
+  ): [Coordinate]
+
+  """Country"""
+  Country(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Name of the country"""
+    name: String
+  ): [Country]
+
+  """Physical thing, for example a product"""
+  Thing(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Name of the thing"""
+    name: String
+  ): [Thing]
+}
+
+"""Type of fetch on the Weaviate network"""
+type WeaviateNetworkFetchType {
+  """
+  Do a fuzzy search fetch to search Things or Actions on the network weaviate
+  """
+  FuzzyFetch: WeaviateNetworkFuzzyFetch
+
+  """
+  Do a fetch with help to search Things or Actions on the network weaviate
+  """
+  HelpersFetch: WeaviateNetworkHelpersFetch
+
+  """To fetch meta information Things or Actions on the network weaviate"""
+  MetaFetch: WeaviateNetworkMetaFetch
+}
+
+"""Fetch things or actions on the internal and external Weaviates"""
+type WeaviateNetworkFuzzyFetch {
+  """No description available"""
+  Aardvark(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Add a keyword?"""
+    _keywords: [argsKeywords]
+  ): superSubreturner
+
+  """No description available"""
+  Abacus(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Add a keyword?"""
+    _keywords: [argsKeywords]
+  ): superSubreturner
+}
+
+"""Fetch things or actions on the internal and external Weaviates"""
+type WeaviateNetworkHelpersFetch {
+  """No description available"""
+  Aardvark(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Add a keyword?"""
+    _keywords: [argsKeywords]
+  ): superSubreturner
+
+  """No description available"""
+  Abacus(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Add a keyword?"""
+    _keywords: [argsKeywords]
+  ): superSubreturner
+}
+
+"""Fetch things or actions on the internal and external Weaviates"""
+type WeaviateNetworkMetaFetch {
+  """No description available"""
+  Aardvark(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Add a keyword?"""
+    _keywords: [argsKeywords]
+  ): superSubreturner
+
+  """No description available"""
+  Abacus(
+    """How certain about these values?"""
+    _certainty: Float
+
+    """define the max returned values."""
+    _limit: Int
+
+    """Add a keyword?"""
+    _keywords: [argsKeywords]
+  ): superSubreturner
+}
+
+"""Day of the week in words"""
+type Weekday {
+  """day of the week in words"""
+  weekday: String
+}
+
+"""Year number"""
+type Year {
+  """Number of year"""
+  year: Int
+}

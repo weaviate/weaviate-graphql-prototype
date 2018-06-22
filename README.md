@@ -17,7 +17,7 @@ Result will be in: `./schema.graphql`
 
 # Naming definitions
 
-Todo: https://github.com/bobvanluijt/weaviate-graphql-prototype/issues/2
+View the naming definitions [here]](http://htmlpreview.github.com/?https://github.com/bobvanluijt/weaviate-graphql-prototype/blob/master/docs/documentation.html).
 
 # Schema definitions
 
