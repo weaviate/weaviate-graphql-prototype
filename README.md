@@ -21,7 +21,7 @@ Get documentation:
 
 # Naming definitions
 
-View the naming definitions [here]](http://htmlpreview.github.com/?https://github.com/bobvanluijt/weaviate-graphql-prototype/blob/master/docs/documentation.html).
+View the naming definitions: https://github.com/bobvanluijt/weaviate-graphql-prototype/blob/master/docs/documentation.html.
 
 # Schema definitions
 
