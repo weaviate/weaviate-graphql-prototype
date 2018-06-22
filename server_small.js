@@ -16,6 +16,9 @@ Note: you can follow the construction of the Graphql schema by starting undernea
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
 
+// For making calls to http data server
+// const request = require('request');
+
 // file system for reading files
 const fs = require('fs');
 
@@ -34,6 +37,7 @@ const {
   GraphQLID,
   GraphQLList,
 } = require('graphql');
+
 
 /**
  * START - ALL RELATED TO INTERNAL FUNCTION
@@ -206,9 +210,15 @@ function createRootClasses(ontologyThings, subClasses){
       type: new GraphQLList(subClasses[singleClass.class]),
       description: singleClass.description,
       args: createArgs(singleClass, false),
-      resolve(headers, params, ...aap) {
-        console.log("resolve ROOT CLASS" + singleClass.class)
-        console.log(params)
+      resolve() {
+        console.log("resolve ROOT CLASS " + singleClass.class)
+        /* result = request("http://localhost:3000/things?class=" + singleClass.class, { json: true }, (err, res, body) => {
+          if (err) { return console.log(err); }
+          console.log(body);
+          console.log(body.explanation);
+          return body
+        });
+        return result */
         return [{}] // resolve with empty array
       }
     }
@@ -222,10 +232,10 @@ function createRootClasses(ontologyThings, subClasses){
 }
 
 /**
- * Merge ontologies because both actions and things can reffer to eachother
+ * Merge ontologies because both actions and things can refer to eachother
  */
 function mergeOntologies(a, b){
-
+  /*
   var contains = function(needle) {
       // Per spec, the way to identify NaN is that it is not equal to itself
       var findNaN = needle !== needle;
@@ -252,7 +262,7 @@ function mergeOntologies(a, b){
 
       return indexOf.call(this, needle) > -1;
   };
- 
+  */
   var classCounter = [];
  
   var classes = {}
@@ -359,58 +369,139 @@ fs.readFile('schemas_small/ing_things.json', 'utf8', function(err, ontologyThing
       // This is the root 
       var Weaviate = new GraphQLObjectType({
         name: 'Weaviate',
+        description: "Location of the root query",
         fields: {
           Local: {
             name: "WeaviateLocal",
             description: "Locate on the local Weaviate",
             resolve() {
-              console.log("resolve WeaviateLocal")
+              console.log("resolve WeaviateLocalTraverse")
               return [{}] // resolve with empty array
             },
             type: new GraphQLObjectType({
-              name: "WeaviateLocalFetch",
-              description: "Fetch on the internal Weaviate",
+              name: "WeaviateLocalFetchType",
+              description: "Type of fetch on the internal Weaviate",
               resolve() {
                 console.log("resolve WeaviateLocalFetch")
                 return [{}] // resolve with empty array
               },
               fields: {
-                Things: {
-                  name: "WeaviateLocalFetchThings",
-                  description: "Locate Things on the local Weaviate",
+                TargetedFetch: {
+                  name: "WeaviateLocalTargetedFetch",
+                  description: "Do a targeted fetch to search Things or Actions on the local weaviate",
                   type: new GraphQLObjectType({
-                    name: "WeaviateLocalThingsFetch",
-                    description: "Fetch things on the internal Weaviate",
-                    fields: rootClassesThingsFields
+                    name: "WeaviateLocalTargetedFetch",
+                    description: "Fetch things or actions on the internal Weaviate",
+                    fields: {
+                      Things: {
+                        name: "WeaviateLocalTargetedFetchThings",
+                        description: "Locate Things on the local Weaviate",
+                        type: new GraphQLObjectType({
+                          name: "WeaviateLocalTargetedFetchThings",
+                          description: "Fetch things on the internal Weaviate",
+                          fields: rootClassesThingsFields
+                        }),
+                        resolve() {
+                          console.log("resolve WeaviateLocalTargetedFetchThings")
+                          return [{}] // resolve with empty array
+                        },
+                      },
+                      Actions: {
+                        name: "WeaviateLocalTargetedFetchActions",
+                        description: "Locate Actions on the local Weaviate",
+                        type: new GraphQLObjectType({
+                          name: "WeaviateLocalTargetedFetchActions",
+                          description: "Fetch Actions on the internal Weaviate",
+                          fields: rootClassesActionsFields
+                        }),
+                        resolve() {
+                          console.log("resolve WeaviateLocalTargetedFetchActions")
+                          return [{}] // resolve with empty array
+                        }
+                      }
+                    }
                   }),
                   resolve() {
-                    console.log("resolve WeaviateLocalFetchThings")
+                    console.log("resolve WeaviateLocalFetchTargeted")
                     return [{}] // resolve with empty array
                   },
                 },
-                Actions: {
-                  name: "WeaviateLocalFetchActions",
-                  description: "Locate Actions on the local Weaviate",
+                HelpersFetch: {
+                  name: "WeaviateLocalHelpersFetch",
+                  description: "Do a helpers fetch to search Things or Actions on the local weaviate",
                   type: new GraphQLObjectType({
-                    name: "WeaviateLocalActionsFetch",
-                    description: "Fetch Actions on the internal Weaviate",
-                    fields: rootClassesActionsFields
+                    name: "WeaviateLocalHelpersFetch",
+                    description: "Fetch things or actions on the internal Weaviate",
+                    fields: NounFields
                   }),
                   resolve() {
-                    console.log("resolve WeaviateLocalFetchActions")
+                    console.log("resolve WeaviateLocalHelpersFetch")
                     return [{}] // resolve with empty array
-                  }
-                }
+                  },
+                },
+                MetaFetch: {
+                  name: "WeaviateLocalMetaFetch",
+                  description: "Do a helpers fetch to search Things or Actions on the local weaviate",
+                  type: new GraphQLObjectType({
+                    name: "WeaviateLocalMetaFetch",
+                    description: "Fetch things or actions on the internal Weaviate",
+                    fields: NounFields
+                  }),
+                  resolve() {
+                    console.log("resolve WeaviateLocalMetaFetch")
+                    return [{}] // resolve with empty array
+                  },
+                },
               }
-            }) 
+            })
           },
           Network: {
             name: "WeaviateNetwork",
             description: "Locate on the Weaviate network",
             type: new GraphQLObjectType({
-              name: "WeaviateNetworkFetch",
-              description: "Fetch on the Weaviate network",
-              fields: NounFields
+              name: "WeaviateNetworkFetchType",
+              description: "Type of fetch on the Weaviate network",
+              fields: {
+                FuzzyFetch: {
+                  name: "WeaviateNetworkFuzzyFetch",
+                  description: "Do a fuzzy search fetch to search Things or Actions on the network weaviate",
+                  type: new GraphQLObjectType({
+                    name: "WeaviateNetworkFuzzyFetch",
+                    description: "Fetch things or actions on the internal and external Weaviates",
+                    fields: NounFields
+                  }),
+                  resolve() {
+                    console.log("resolve WeaviateNetworkFuzzyFetch")
+                    return [{}] // resolve with empty array
+                  },
+                },
+                HelpersFetch: {
+                  name: "WeaviateNetworkHelpersFetch",
+                  description: "Do a fetch with help to search Things or Actions on the network weaviate",
+                  type: new GraphQLObjectType({
+                    name: "WeaviateNetworkHelpersFetch",
+                    description: "Fetch things or actions on the internal and external Weaviates",
+                    fields: NounFields
+                  }),
+                  resolve() {
+                    console.log("resolve WeaviateNetworkHelpersFetch")
+                    return [{}] // resolve with empty array
+                  },
+                },
+                MetaFetch: {
+                  name: "WeaviateNetworkMetaFetch",
+                  description: "To fetch meta information Things or Actions on the network weaviate",
+                  type: new GraphQLObjectType({
+                    name: "WeaviateNetworkMetaFetch",
+                    description: "Fetch things or actions on the internal and external Weaviates",
+                    fields: NounFields
+                  }),
+                  resolve() {
+                    console.log("resolve WeaviateNetworkMetaFetch")
+                    return [{}] // resolve with empty array
+                  },
+                },
+              }
             }) 
           }
         }
