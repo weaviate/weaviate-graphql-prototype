@@ -11,9 +11,13 @@
 - `graphql init` (schema for this prototype = `http://localhost:8081/graphql`)
 
 Get the schema:
-- graphql get-schema
+- `graphql get-schema`
 
 Result will be in: `./schema.graphql`
+
+Get documentation:
+- Install: `npm install -g graphql-docs`
+- Run: `graphql-docs-gen https://localhost:8081/graphql docs/documentation.html`
 
 # Naming definitions
 

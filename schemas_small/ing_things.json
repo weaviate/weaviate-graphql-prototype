@@ -92,10 +92,6 @@
 			"@dataType": ["string"],
 			"description": "The official name of the company."
 			}, {
-			"name": "name2",
-			"@dataType": ["string"],
-			"description": "The official name of the company."
-			}, {
 			"name": "location",
 			"@dataType": ["City"],
 			"description": "The city the company is located or registered."
