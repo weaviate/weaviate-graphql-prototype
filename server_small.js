@@ -15,6 +15,7 @@ Note: you can follow the construction of the Graphql schema by starting undernea
 // Express for the webserver & graphql
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
+// const laurasResolver = require('./laurasResolver.js');
 
 // For making calls to http data server
 // const request = require('request');
@@ -133,7 +134,7 @@ function createSubClasses(ontologyThings){
       fields: function(){
         // declare props that should be returned
         var returnProps = {}
-
+        
         // loop over properties
         singleClass.properties.forEach(singleClassProperty => {
 
@@ -381,14 +382,14 @@ fs.readFile('schemas_small/ing_things.json', 'utf8', function(err, ontologyThing
             name: "WeaviateLocal",
             description: "Locate on the local Weaviate",
             resolve() {
-              console.log("resolve WeaviateLocalTraverse")
+              console.log("resolve WeaviateLocal")
               return [{}] // resolve with empty array
             },
             type: new GraphQLObjectType({
-              name: "WeaviateLocalFetchType",
+              name: "WeaviateLocalObj",
               description: "Type of fetch on the internal Weaviate",
               resolve() {
-                console.log("resolve WeaviateLocalFetch")
+                console.log("resolve WeaviateLocalObj")
                 return [{}] // resolve with empty array
               },
               fields: {
@@ -396,14 +397,14 @@ fs.readFile('schemas_small/ing_things.json', 'utf8', function(err, ontologyThing
                   name: "WeaviateLocalTargetedFetch",
                   description: "Do a targeted fetch to search Things or Actions on the local weaviate",
                   type: new GraphQLObjectType({
-                    name: "WeaviateLocalTargetedFetch",
+                    name: "WeaviateLocalTargetedFetchObj",
                     description: "Fetch things or actions on the internal Weaviate",
                     fields: {
                       Things: {
                         name: "WeaviateLocalTargetedFetchThings",
                         description: "Locate Things on the local Weaviate",
                         type: new GraphQLObjectType({
-                          name: "WeaviateLocalTargetedFetchThings",
+                          name: "WeaviateLocalTargetedFetchThingsObj",
                           description: "Fetch things on the internal Weaviate",
                           fields: rootClassesThingsFields
                         }),
@@ -416,7 +417,7 @@ fs.readFile('schemas_small/ing_things.json', 'utf8', function(err, ontologyThing
                         name: "WeaviateLocalTargetedFetchActions",
                         description: "Locate Actions on the local Weaviate",
                         type: new GraphQLObjectType({
-                          name: "WeaviateLocalTargetedFetchActions",
+                          name: "WeaviateLocalTargetedFetchActionsObj",
                           description: "Fetch Actions on the internal Weaviate",
                           fields: rootClassesActionsFields
                         }),
@@ -428,18 +429,14 @@ fs.readFile('schemas_small/ing_things.json', 'utf8', function(err, ontologyThing
                     }
                   }),
                   resolve() {
-                    console.log("resolve WeaviateLocalFetchTargeted")
+                    console.log("resolve WeaviateLocalTargetedFetch")
                     return [{}] // resolve with empty array
                   },
                 },
                 HelpersFetch: {
                   name: "WeaviateLocalHelpersFetch",
                   description: "Do a helpers fetch to search Things or Actions on the local weaviate",
-                  type: new GraphQLObjectType({
-                    name: "WeaviateLocalHelpersFetch",
-                    description: "Fetch things or actions on the internal Weaviate",
-                    fields: NounFields
-                  }),
+                  type: new GraphQLList(GraphQLString), // no input required yet
                   resolve() {
                     console.log("resolve WeaviateLocalHelpersFetch")
                     return [{}] // resolve with empty array
@@ -448,11 +445,7 @@ fs.readFile('schemas_small/ing_things.json', 'utf8', function(err, ontologyThing
                 MetaFetch: {
                   name: "WeaviateLocalMetaFetch",
                   description: "Fetch meta infromation about Things or Actions on the local weaviate",
-                  type: new GraphQLObjectType({
-                    name: "WeaviateLocalMetaFetch",
-                    description: "Fetch things or actions on the internal Weaviate",
-                    fields: NounFields
-                  }),
+                  type: new GraphQLList(GraphQLString), // no input required yet
                   resolve() {
                     console.log("resolve WeaviateLocalMetaFetch")
                     return [{}] // resolve with empty array
@@ -465,17 +458,13 @@ fs.readFile('schemas_small/ing_things.json', 'utf8', function(err, ontologyThing
             name: "WeaviateNetwork",
             description: "Locate on the Weaviate network",
             type: new GraphQLObjectType({
-              name: "WeaviateNetworkFetchType",
+              name: "WeaviateNetworkObj",
               description: "Type of fetch on the Weaviate network",
               fields: {
                 FuzzyFetch: {
                   name: "WeaviateNetworkFuzzyFetch",
                   description: "Do a fuzzy search fetch to search Things or Actions on the network weaviate",
-                  type: new GraphQLObjectType({
-                    name: "WeaviateNetworkFuzzyFetch",
-                    description: "Fetch things or actions on the internal and external Weaviates",
-                    fields: NounFields
-                  }),
+                  type: new GraphQLList(GraphQLString), // no input required yet
                   resolve() {
                     console.log("resolve WeaviateNetworkFuzzyFetch")
                     return [{}] // resolve with empty array
@@ -484,11 +473,7 @@ fs.readFile('schemas_small/ing_things.json', 'utf8', function(err, ontologyThing
                 HelpersFetch: {
                   name: "WeaviateNetworkHelpersFetch",
                   description: "Do a fetch with help to search Things or Actions on the network weaviate",
-                  type: new GraphQLObjectType({
-                    name: "WeaviateNetworkHelpersFetch",
-                    description: "Fetch things or actions on the internal and external Weaviates",
-                    fields: NounFields
-                  }),
+                  type: new GraphQLList(GraphQLString), // no input required yet
                   resolve() {
                     console.log("resolve WeaviateNetworkHelpersFetch")
                     return [{}] // resolve with empty array
@@ -497,11 +482,7 @@ fs.readFile('schemas_small/ing_things.json', 'utf8', function(err, ontologyThing
                 MetaFetch: {
                   name: "WeaviateNetworkMetaFetch",
                   description: "To fetch meta information Things or Actions on the network weaviate",
-                  type: new GraphQLObjectType({
-                    name: "WeaviateNetworkMetaFetch",
-                    description: "Fetch things or actions on the internal and external Weaviates",
-                    fields: NounFields
-                  }),
+                  type: new GraphQLList(GraphQLString), // no input required yet
                   resolve() {
                     console.log("resolve WeaviateNetworkMetaFetch")
                     return [{}] // resolve with empty array
