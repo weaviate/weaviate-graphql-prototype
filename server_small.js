@@ -375,7 +375,7 @@ fs.readFile('schemas_small/ing_things.json', 'utf8', function(err, ontologyThing
 
       // This is the root 
       var Weaviate = new GraphQLObjectType({
-        name: 'Weaviate',
+        name: 'WeaviateObj',
         description: "Location of the root query",
         fields: {
           Local: {
