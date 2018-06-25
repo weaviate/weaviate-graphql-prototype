@@ -359,8 +359,8 @@ function createNounFields(nouns, depth){
 /**
  * START CONSTRUCTING THE SERVICE
  */
-fs.readFile('schemas_small/ing_things.json', 'utf8', function(err, ontologyThings) { // read things ontology
-  fs.readFile('schemas_small/ing_actions.json', 'utf8', function(err, ontologyActions) { // read actions ontology
+fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyThings) { // read things ontology
+  fs.readFile('schemas_small/actions_schema.json', 'utf8', function(err, ontologyActions) { // read actions ontology
     fs.readFile('schemas_small/nounlist.txt', 'utf8', function(err, nouns) { // read the nounlist
 
       // merge
