@@ -17,7 +17,7 @@ Result will be in: `./schema.graphql`
 
 Get documentation:
 - Install: `npm install -g graphql-docs`
-- Run: `graphql-docs-gen https://localhost:8081/graphql docs/documentation.html`
+- Run: `graphql-docs-gen http://localhost:8081/graphql docs/documentation.html`
 
 # Naming conventions
 

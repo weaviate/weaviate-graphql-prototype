@@ -121,7 +121,6 @@ function createSubClasses(ontologyThings){
   console.log("------START SUBCLASSES--------")
 
   var subClasses = {};
-
   // loop through classes
   ontologyThings.classes.forEach(singleClass => {
 
@@ -138,60 +137,62 @@ function createSubClasses(ontologyThings){
         // loop over properties
         singleClass.properties.forEach(singleClassProperty => {
 
-          /***
-           * THERE IS A BUG HERE, ONLY THE FIRST VALUE IS USED NOW!
-           */
+          singleClassProperty["@dataType"].forEach(singleClassPropertyDatatype => {
+            // if class (start with capital, return Class)
+            if(singleClassPropertyDatatype[0] === singleClassPropertyDatatype[0].toUpperCase()){
+              // return class as list, set the first to upper to show it is a class
 
-          // if class (start with capital, return Class)
-          if(singleClassProperty["@dataType"][0][0] === singleClassProperty["@dataType"][0][0].toUpperCase()){
-            // return class as list, set the first to upper to show it is a class
-            returnProps[singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1)] = {
-              description: singleClassProperty.description,
-              type: new GraphQLList(subClasses[singleClassProperty["@dataType"][0]]),
-              args: createArgs(singleClass, false),
-              resolve() {
-                console.log("resolve ROOT CLASS" + singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1))
-                return [{}] // resolve with empty array
+              ontologyThings.classes.forEach(thing => {
+                if(thing.class === singleClassPropertyDatatype){
+                  returnProps[singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1)] = {
+                    description: singleClassProperty.description,
+                    type: new GraphQLList(subClasses[singleClassPropertyDatatype]),
+                    args: createArgs(thing, false),
+                    resolve() {
+                      console.log("resolve ROOT CLASS " + singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1))
+                      return [{}] // resolve with empty array
+                    }
+                  }
+                }
+              })
+            } else if(singleClassPropertyDatatype === "string") {
+              // always return string (should be int, float, bool etc later)
+              returnProps[singleClassProperty.name] = {
+                description: singleClassProperty.description,
+                type: GraphQLString
+              }
+            } else if(singleClassPropertyDatatype === "int") {
+              // always return string (should be int, float, bool etc later)
+              returnProps[singleClassProperty.name] = {
+                description: singleClassProperty.description,
+                type: GraphQLInt
+              }
+            } else if(singleClassPropertyDatatype === "number") {
+              // always return string (should be int, float, bool etc later)
+              returnProps[singleClassProperty.name] = {
+                description: singleClassProperty.description,
+                type: GraphQLFloat
+              }
+            } else if(singleClassPropertyDatatype === "boolean") {
+              // always return string (should be int, float, bool etc later)
+              returnProps[singleClassProperty.name] = {
+                description: singleClassProperty.description,
+                type: GraphQLBoolean
+              }
+            } else {
+              console.error("I DONT KNOW THIS VALUE! " + singleClassProperty["@dataType"][0])
+              // always return string (should be int, float, bool etc later)
+              returnProps[singleClassProperty.name] = {
+                description: singleClassProperty.description,
+                type: GraphQLString
               }
             }
-          } else if(singleClassProperty["@dataType"][0] === "string") {
-            // always return string (should be int, float, bool etc later)
-            returnProps[singleClassProperty.name] = {
-              description: singleClassProperty.description,
-              type: GraphQLString
-            }
-          } else if(singleClassProperty["@dataType"][0] === "int") {
-            // always return string (should be int, float, bool etc later)
-            returnProps[singleClassProperty.name] = {
-              description: singleClassProperty.description,
-              type: GraphQLInt
-            }
-          } else if(singleClassProperty["@dataType"][0] === "number") {
-            // always return string (should be int, float, bool etc later)
-            returnProps[singleClassProperty.name] = {
-              description: singleClassProperty.description,
-              type: GraphQLFloat
-            }
-          } else if(singleClassProperty["@dataType"][0] === "boolean") {
-            // always return string (should be int, float, bool etc later)
-            returnProps[singleClassProperty.name] = {
-              description: singleClassProperty.description,
-              type: GraphQLBoolean
-            }
-          } else {
-            console.error("I DONT KNOW THIS VALUE! " + singleClassProperty["@dataType"][0])
-            // always return string (should be int, float, bool etc later)
-            returnProps[singleClassProperty.name] = {
-              description: singleClassProperty.description,
-              type: GraphQLString
-            }
-          }
+          })
         });
+        // console.log(returnProps)
         return returnProps
       }
     });
-
-    
 
   });
 
@@ -211,7 +212,6 @@ function createRootClasses(ontologyThings, subClasses){
 
   // loop through classes
   ontologyThings.classes.forEach(singleClass => {
-
     // create root sub classes
     rootClassesFields[singleClass.class] = {
       type: new GraphQLList(subClasses[singleClass.class]),
@@ -219,13 +219,6 @@ function createRootClasses(ontologyThings, subClasses){
       args: createArgs(singleClass, false),
       resolve() {
         console.log("resolve ROOT CLASS " + singleClass.class)
-        /* result = request("http://localhost:3000/things?class=" + singleClass.class, { json: true }, (err, res, body) => {
-          if (err) { return console.log(err); }
-          console.log(body);
-          console.log(body.explanation);
-          return body
-        });
-        return result */
         return [{}] // resolve with empty array
       }
     }
@@ -280,13 +273,11 @@ function mergeOntologies(a, b){
     classes["classes"].push(singleClassA)
   })
 
-
   b.classes.forEach(singleClassB => {
     classes["classes"].push(singleClassB)
   })
 
   console.log("------DONE--------")
-
   return classes
 }
 
@@ -436,7 +427,45 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                 HelpersFetch: {
                   name: "WeaviateLocalHelpersFetch",
                   description: "Do a helpers fetch to search Things or Actions on the local weaviate",
-                  type: new GraphQLList(GraphQLString), // no input required yet
+                  type: new GraphQLObjectType({
+                    name: "WeaviateLocalHelpersFetchObj",
+                    description: "Fetch things or actions on the internal Weaviate",
+                    fields: {
+                      PinPoint: {
+                        name: "WeaviateLocalHelpersFetchPinPoint",
+                        description: "Find a set of exact ID's of Things or Actions on the local Weaviate",
+                        args: {
+                          _stack: {
+                            type: new GraphQLEnumType({
+                              name: "WeaviateLocalHelpersFetchPinPointStackEnum",
+                              values: {
+                                Things: {
+                                  value: rootClassesThingsFields,
+                                },
+                                Actions: {
+                                  value: rootClassesActionsFields,
+                                }
+                              }
+                            })
+                          }, //Things or Actions ENUM
+                          _classes: {type: GraphQLString}, //an array of potential classes (they should be in the ontology!)
+                          _properties: {type: GraphQLString}, //an array of potential classes (they should be in the ontology, ideally related to the class!)
+                          _needle: {type: GraphQLString}, //the actual field that will be used in the search. (for example: __needle: "Netflix"
+                          _searchType: {type: GraphQLString}, //should be an ENUM but for now only 1 value: "standard"
+                          _limit: {type: GraphQLInt}
+                        },
+                        type: new GraphQLObjectType({
+                          name: "WeaviateLocalHelpersFetchPinPointObj",
+                          description: "Fetch uuid of Things or Actions on the internal Weaviate",
+                          fields: rootClassesActionsFields
+                        }),
+                        resolve() {
+                          console.log("resolve WeaviateLocalHelpersFetchPinPoint")
+                          return [{}] // resolve with empty array
+                        },
+                      }
+                    }
+                  }),
                   resolve() {
                     console.log("resolve WeaviateLocalHelpersFetch")
                     return [{}] // resolve with empty array
