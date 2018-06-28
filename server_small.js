@@ -15,7 +15,7 @@ Note: you can follow the construction of the Graphql schema by starting undernea
 // Express for the webserver & graphql
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
-// const laurasResolver = require('./laurasResolver.js');
+const demoResolver = require('./demo_resolver.js');
 
 // For making calls to http data server
 // const request = require('request');
@@ -44,6 +44,20 @@ const {
  * START - ALL RELATED TO INTERNAL FUNCTION
  */
 
+/**
+ *  Create filter for ConvertedFetch
+ */
+
+var ConvertedFetchFilter = new GraphQLInputObjectType({
+  name: 'ConvertedFetchFilter',
+  fields: {
+    EQ: { type: new GraphQLList(GraphQLString) },
+    NEQ: { type: new GraphQLList(GraphQLString)  },
+    IE: { type: new GraphQLList(GraphQLString)  },
+  }
+})
+
+ 
 /**
  * Create arguments for the network function
  */
@@ -179,7 +193,12 @@ function createSubClasses(ontologyThings){
                 description: singleClassProperty.description,
                 type: GraphQLBoolean
               }
-            } else {
+            } else if(singleClassPropertyDatatype === "date") {
+              // always return string (should be int, float, bool etc later)
+              returnProps[singleClassProperty.name] = {
+                description: singleClassProperty.description,
+                type: GraphQLString
+              }} else {
               console.error("I DONT KNOW THIS VALUE! " + singleClassProperty["@dataType"][0])
               // always return string (should be int, float, bool etc later)
               returnProps[singleClassProperty.name] = {
@@ -384,43 +403,46 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                 return [{}] // resolve with empty array
               },
               fields: {
-                TargetedFetch: {
-                  name: "WeaviateLocalTargetedFetch",
-                  description: "Do a targeted fetch to search Things or Actions on the local weaviate",
+                ConvertedFetch: {
+                  name: "WeaviateLocalConvertedFetch",
+                  description: "Do a converted fetch to search Things or Actions on the local weaviate",
+                  args: {
+                    _filter: { type: ConvertedFetchFilter }
+                  },
                   type: new GraphQLObjectType({
-                    name: "WeaviateLocalTargetedFetchObj",
+                    name: "WeaviateLocalConvertedFetchObj",
                     description: "Fetch things or actions on the internal Weaviate",
                     fields: {
                       Things: {
-                        name: "WeaviateLocalTargetedFetchThings",
+                        name: "WeaviateLocalConvertedFetchThings",
                         description: "Locate Things on the local Weaviate",
                         type: new GraphQLObjectType({
-                          name: "WeaviateLocalTargetedFetchThingsObj",
+                          name: "WeaviateLocalConvertedFetchThingsObj",
                           description: "Fetch things on the internal Weaviate",
                           fields: rootClassesThingsFields
                         }),
                         resolve() {
-                          console.log("resolve WeaviateLocalTargetedFetchThings")
+                          console.log("resolve WeaviateLocalConvertedFetchThings")
                           return [{}] // resolve with empty array
                         },
                       },
                       Actions: {
-                        name: "WeaviateLocalTargetedFetchActions",
+                        name: "WeaviateLocalConvertedFetchActions",
                         description: "Locate Actions on the local Weaviate",
                         type: new GraphQLObjectType({
-                          name: "WeaviateLocalTargetedFetchActionsObj",
+                          name: "WeaviateLocalConvertedFetchActionsObj",
                           description: "Fetch Actions on the internal Weaviate",
                           fields: rootClassesActionsFields
                         }),
                         resolve() {
-                          console.log("resolve WeaviateLocalTargetedFetchActions")
+                          console.log("resolve WeaviateLocalConvertedFetchActions")
                           return [{}] // resolve with empty array
                         }
                       }
                     }
                   }),
                   resolve() {
-                    console.log("resolve WeaviateLocalTargetedFetch")
+                    console.log("resolve WeaviateLocalConvertedFetch")
                     return [{}] // resolve with empty array
                   },
                 },
