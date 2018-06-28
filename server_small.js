@@ -48,14 +48,33 @@ const {
  *  Create filter for ConvertedFetch
  */
 
-var ConvertedFetchFilter = new GraphQLInputObjectType({
+var ConvertedFetchFilter = {
   name: 'ConvertedFetchFilter',
   fields: {
-    EQ: { type: new GraphQLList(GraphQLString) },
-    NEQ: { type: new GraphQLList(GraphQLString)  },
-    IE: { type: new GraphQLList(GraphQLString)  },
+    EQ: { type: new GraphQLList(new GraphQLInputObjectType({ // is path equal to
+      name: 'ConvertedFetchFilterEQ',
+      fields: {
+        path: { type: new GraphQLList(GraphQLString) },
+        value: { type: new GraphQLList(GraphQLString) }
+      }
+    }))},
+    NEQ: { type: new GraphQLList(new GraphQLInputObjectType({ // path is NOT equal to
+      name: 'ConvertedFetchFilterNEQ',
+      fields: {
+        path: { type: new GraphQLList(GraphQLString) },
+        value: { type: new GraphQLList(GraphQLString) }
+      }
+    }))},
+    IE: { type: new GraphQLList(new GraphQLInputObjectType({ //  = InEquality between values.
+      name: 'ConvertedFetchFilterIE',
+      fields: {
+        path: { type: new GraphQLList(GraphQLString) },
+        denote: { type: GraphQLString },
+        value: { type: new GraphQLList(GraphQLString) }
+      }
+    }))}
   }
-})
+}
 
  
 /**
@@ -407,7 +426,7 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                   name: "WeaviateLocalConvertedFetch",
                   description: "Do a converted fetch to search Things or Actions on the local weaviate",
                   args: {
-                    _filter: { type: ConvertedFetchFilter }
+                    _filter: { type: new GraphQLInputObjectType(ConvertedFetchFilter) }
                   },
                   type: new GraphQLObjectType({
                     name: "WeaviateLocalConvertedFetchObj",
