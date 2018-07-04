@@ -50,16 +50,19 @@ const {
 
 var ConvertedFetchFilter = {
   name: 'ConvertedFetchFilter',
+  description: 'Filter options for the converted fetch search, to convert the data to the filter input',
   fields: {
     EQ: { type: new GraphQLList(new GraphQLInputObjectType({ // is path equal to
       name: 'ConvertedFetchFilterEQ',
+      description: 'filter where the path end should be equal to the value',
       fields: {
         path: { type: new GraphQLList(GraphQLString) },
-        value: { type: new GraphQLList(GraphQLString) }
+        value: { type: GraphQLString }
       }
     }))},
     NEQ: { type: new GraphQLList(new GraphQLInputObjectType({ // path is NOT equal to
       name: 'ConvertedFetchFilterNEQ',
+      description: 'filter where the path end should be not equal to the value',
       fields: {
         path: { type: new GraphQLList(GraphQLString) },
         value: { type: new GraphQLList(GraphQLString) }
@@ -67,9 +70,9 @@ var ConvertedFetchFilter = {
     }))},
     IE: { type: new GraphQLList(new GraphQLInputObjectType({ //  = InEquality between values.
       name: 'ConvertedFetchFilterIE',
+      description: 'filter where the path end should be inequal to the value',
       fields: {
         path: { type: new GraphQLList(GraphQLString) },
-        denote: { type: GraphQLString },
         value: { type: new GraphQLList(GraphQLString) }
       }
     }))}
@@ -120,26 +123,6 @@ function createArgs(item, withKeywords){
       description: "define the max returned values."
     }
 
-    if(withKeywords === true){
-      // always certainty
-      propsForArgs[item.class]["_keywords"] = {
-        type: new GraphQLList(argsKeywords),
-        description: "Add a keyword?"
-      }
-    }
-    
-    // loop over property variables (not classes, therefor it checks if the first letter is uppercase)
-    if(item.properties != undefined){
-      item.properties.forEach(prop => {
-        if(prop["@dataType"][0][0] !== prop["@dataType"][0][0].toUpperCase()){ // is the first letter uppercase?
-          propsForArgs[item.class][prop.name] = {
-            type: GraphQLString, // for now, always return a string
-            description: prop.description
-          }
-        }
-      })
-    }
-
   }
   
   return propsForArgs[item.class] // return the prop with the argument
@@ -166,28 +149,14 @@ function createSubClasses(ontologyThings){
       fields: function(){
         // declare props that should be returned
         var returnProps = {}
-        
+
         // loop over properties
         singleClass.properties.forEach(singleClassProperty => {
-
+          returntypes = []
           singleClassProperty["@dataType"].forEach(singleClassPropertyDatatype => {
             // if class (start with capital, return Class)
             if(singleClassPropertyDatatype[0] === singleClassPropertyDatatype[0].toUpperCase()){
-              // return class as list, set the first to upper to show it is a class
-
-              ontologyThings.classes.forEach(thing => {
-                if(thing.class === singleClassPropertyDatatype){
-                  returnProps[singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1)] = {
-                    description: singleClassProperty.description,
-                    type: new GraphQLList(subClasses[singleClassPropertyDatatype]),
-                    args: createArgs(thing, false),
-                    resolve() {
-                      console.log("resolve ROOT CLASS " + singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1))
-                      return [{}] // resolve with empty array
-                    }
-                  }
-                }
-              })
+              returntypes.push(subClasses[singleClassPropertyDatatype])
             } else if(singleClassPropertyDatatype === "string") {
               // always return string (should be int, float, bool etc later)
               returnProps[singleClassProperty.name] = {
@@ -216,7 +185,7 @@ function createSubClasses(ontologyThings){
               // always return string (should be int, float, bool etc later)
               returnProps[singleClassProperty.name] = {
                 description: singleClassProperty.description,
-                type: GraphQLString
+                type: GraphQLString // string since no GraphQL date type exists
               }} else {
               console.error("I DONT KNOW THIS VALUE! " + singleClassProperty["@dataType"][0])
               // always return string (should be int, float, bool etc later)
@@ -226,8 +195,29 @@ function createSubClasses(ontologyThings){
               }
             }
           })
+          if (returntypes.length > 0) {
+            returnProps[singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1)] = {
+              description: singleClassProperty.description,
+              type: new GraphQLUnionType({
+                name: singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1) + 'UnionType', 
+                types: returntypes,
+                resolveType(obj, context, info) {
+                  // get returntypes here to return right class types
+                  return subClasses[obj.class]
+                },
+              }),
+              //args: createArgs(thing, false),
+              resolve(parentValue, obj) {
+                console.log("resolve ROOT CLASsssS " + singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1))
+                //console.log(singleClassProperty.name)
+                if (typeof parentValue[singleClassProperty.name] === "object") {
+                  return parentValue[singleClassProperty.name]
+                }
+                return 
+              }
+            }
+          }
         });
-        // console.log(returnProps)
         return returnProps
       }
     });
@@ -238,6 +228,32 @@ function createSubClasses(ontologyThings){
 
   return subClasses;
 }
+
+/**
+ * Create class enum for filter options
+ */
+
+function createClassEnum(ontologyThings) {
+
+  var enumValues = {}
+  var counter = 0
+  // loop through classes
+  ontologyThings.classes.forEach(singleClass => {
+    // create enum item
+    enumValues[singleClass.class] = {"value": singleClass.class}
+
+    counter += 1
+  })
+  
+  var classEnum = new GraphQLEnumType({
+    name: 'classEnum',
+    description: 'enum type which denote the classes',
+    values: enumValues,
+  });
+
+  return classEnum
+}
+ 
 
 /**
  * Create the rootclasses of a Thing or Action in the Local function
@@ -256,8 +272,7 @@ function createRootClasses(ontologyThings, subClasses){
       description: singleClass.description,
       args: createArgs(singleClass, false),
       resolve() {
-        console.log("resolve ROOT CLASS " + singleClass.class)
-        return [{}] // resolve with empty array
+        return demoResolver.classResolver(singleClass.class)
       }
     }
 
@@ -399,6 +414,8 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
       var subClasses = createSubClasses(classes);
       var rootClassesThingsFields = createRootClasses(JSON.parse(ontologyThings), subClasses);
       var rootClassesActionsFields = createRootClasses(JSON.parse(ontologyActions), subClasses);
+      var classesEnum = createClassEnum(classes);
+      // var PinPointField = createPinPointField(classes);
 
       var NounFields = createNounFields(nouns, true);
 
@@ -481,28 +498,47 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                               name: "WeaviateLocalHelpersFetchPinPointStackEnum",
                               values: {
                                 Things: {
-                                  value: rootClassesThingsFields,
+                                  value: 0,
                                 },
                                 Actions: {
-                                  value: rootClassesActionsFields,
+                                  value: 1,
                                 }
                               }
                             })
                           }, //Things or Actions ENUM
-                          _classes: {type: GraphQLString}, //an array of potential classes (they should be in the ontology!)
-                          _properties: {type: GraphQLString}, //an array of potential classes (they should be in the ontology, ideally related to the class!)
+                          _classes: {type: new GraphQLList(classesEnum)}, //an array of potential classes (they should be in the ontology!)
+                          _properties: {type: new GraphQLList(GraphQLString)}, //an array of potential classes (they should be in the ontology, ideally related to the class!)
                           _needle: {type: GraphQLString}, //the actual field that will be used in the search. (for example: __needle: "Netflix"
-                          _searchType: {type: GraphQLString}, //should be an ENUM but for now only 1 value: "standard"
+                          _searchType: {
+                            type: new GraphQLEnumType({
+                              name: "WeaviateLocalHelpersFetchPinPointSearchTypeEnum",
+                              values: {
+                                standard: {
+                                  value: 0,
+                                }
+                              }
+                            })
+                          }, //should be an ENUM but for now only 1 value: "standard"
                           _limit: {type: GraphQLInt}
                         },
                         type: new GraphQLObjectType({
                           name: "WeaviateLocalHelpersFetchPinPointObj",
                           description: "Fetch uuid of Things or Actions on the internal Weaviate",
-                          fields: rootClassesActionsFields
+                          fields: {
+                            uuid: {
+                              name: "WeaviateLocalHelpersFetchPinPointUuid",
+                              description: "Do a fuzzy search fetch to search Things or Actions on the network weaviate",
+                              type: GraphQLID,
+                              resolve(parentValue) {
+                                console.log("resolve WeaviateLocalHelpersFetchPinPointUuid")
+                                return [{}] // demoResolver.resolvePinPoint(parentValue) // resolve with empty array
+                              }
+                            }
+                          },
                         }),
-                        resolve() {
+                        resolve(_,args) {
                           console.log("resolve WeaviateLocalHelpersFetchPinPoint")
-                          return [{}] // resolve with empty array
+                          return args // resolve with empty array
                         },
                       }
                     }

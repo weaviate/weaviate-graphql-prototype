@@ -12,7 +12,7 @@
                 {
                     "name": "person",
                     "@dataType": [
-                        "Person", "string", "City"
+                        "Person"
                     ],
                     "description": "Person who moves",
                     "keywords": [
@@ -112,7 +112,7 @@
                 {
                     "name": "date",
                     "@dataType": [
-                        "string"
+                        "date"
                     ],
                     "description": "The date the person is moving",
                     "keywords": [

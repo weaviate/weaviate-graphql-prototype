@@ -124,7 +124,7 @@
                 {
                     "name": "livesIn",
                     "@dataType": [
-                        "City"
+                        "City", "Person"
                     ],
                     "description": "The city where the person lives.",
                     "keywords": [
@@ -143,6 +143,22 @@
                         {
                             "keyword": "city",
                             "weight": 0.25
+                        },
+                        {
+                            "keyword": "person",
+                            "weight": 0.25
+                        }
+                    ]
+                }, {
+                    "name": "birthday",
+                    "@dataType": [
+                        "date"
+                    ],
+                    "description": "Birthday of the person",
+                    "keywords": [
+                        {
+                            "keyword": "birthday",
+                            "weight": 1.0
                         },
                         {
                             "keyword": "person",
