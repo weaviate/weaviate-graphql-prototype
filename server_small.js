@@ -16,6 +16,7 @@ Note: you can follow the construction of the Graphql schema by starting undernea
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const demoResolver = require('./demo_resolver.js');
+const UnionInputType = require('graphql-union-input-type');
 
 // For making calls to http data server
 // const request = require('request');
@@ -45,6 +46,29 @@ const {
  */
 
 /**
+ *  Create union input value type for converted fetch filter fields
+ */
+
+// const ConvertedFetchFilterValueType = UnionInputType({
+//   name: "ValueType",
+//   inputTypes: [GraphQLString, GraphQLBoolean, GraphQLFloat],
+//   resolveType: function resolveType(name) {
+//     //console.log(name)
+//     if (typeof name === "string") {
+//         return GraphQLString;
+//     } 
+//     else if (typeof name === "boolean") {
+//         return GraphQLBoolean;
+//     } 
+//     else if (typeof name === "number") {
+//         return GraphQLFloat;
+//     }
+//   },
+//   typeKey: "name"
+// })
+
+
+/**
  *  Create filter for ConvertedFetch
  */
 
@@ -65,7 +89,7 @@ var ConvertedFetchFilter = {
       description: 'filter where the path end should be not equal to the value',
       fields: {
         path: { type: new GraphQLList(GraphQLString) },
-        value: { type: new GraphQLList(GraphQLString) }
+        value: { type: GraphQLString }
       }
     }))},
     IE: { type: new GraphQLList(new GraphQLInputObjectType({ //  = InEquality between values.
@@ -73,7 +97,7 @@ var ConvertedFetchFilter = {
       description: 'filter where the path end should be inequal to the value',
       fields: {
         path: { type: new GraphQLList(GraphQLString) },
-        value: { type: new GraphQLList(GraphQLString) }
+        value: { type: GraphQLString }
       }
     }))}
   }
@@ -271,8 +295,8 @@ function createRootClasses(ontologyThings, subClasses){
       type: new GraphQLList(subClasses[singleClass.class]),
       description: singleClass.description,
       args: createArgs(singleClass, false),
-      resolve() {
-        return demoResolver.classResolver(singleClass.class)
+      resolve(parentValue) {
+        return demoResolver.rootClassResolver(parentValue, singleClass.class)
       }
     }
 
@@ -457,9 +481,9 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                           description: "Fetch things on the internal Weaviate",
                           fields: rootClassesThingsFields
                         }),
-                        resolve() {
+                        resolve(parentValue) {
                           console.log("resolve WeaviateLocalConvertedFetchThings")
-                          return [{}] // resolve with empty array
+                          return parentValue // resolve with empty array
                         },
                       },
                       Actions: {
@@ -470,16 +494,16 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                           description: "Fetch Actions on the internal Weaviate",
                           fields: rootClassesActionsFields
                         }),
-                        resolve() {
+                        resolve(parentValue) {
                           console.log("resolve WeaviateLocalConvertedFetchActions")
-                          return [{}] // resolve with empty array
+                          return parentValue // resolve with empty array
                         }
                       }
                     }
                   }),
-                  resolve() {
+                  resolve(parentValue, args) {
                     console.log("resolve WeaviateLocalConvertedFetch")
-                    return [{}] // resolve with empty array
+                    return demoResolver.resolveConvertedFetch(args._filter) // resolve with empty array
                   },
                 },
                 HelpersFetch: {
@@ -551,7 +575,53 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                 MetaFetch: {
                   name: "WeaviateLocalMetaFetch",
                   description: "Fetch meta infromation about Things or Actions on the local weaviate",
-                  type: new GraphQLList(GraphQLString), // no input required yet
+                  type: new GraphQLObjectType({
+                    name: "WeaviateLocalMetaFetchObj",
+                    description: "Fetch things or actions on the internal Weaviate",
+                    fields: {
+                      Generic: {
+                        name: "WeaviateLocalMetaFetchGeneric",
+                        description: "Fetch generic meta information based on the type",
+                        type: new GraphQLObjectType({
+                          name: "WeaviateLocalMetaFetchGenericObj",
+                          description: "",
+                          fields: {
+                            Thing: {
+                              name: "WeaviateLocalMetaFetchGenericThing",
+                              description: "",
+                              type: new GraphQLObjectType({
+                                name: "WeaviateLocalMetaFetchGenericThingObj",
+                                description: "",
+                                fields: rootClassesThingsFields
+                              }),
+                              resolve(parentValue) {
+                                console.log("resolve WeaviateLocalMetaFetchGenericThing")
+                                return [{}] // resolve with empty array
+                              }
+                            }, 
+                            Action: {
+                              name: "WeaviateLocalMetaFetchGenericAction",
+                              description: "",
+                              type: new GraphQLObjectType({
+                                name: "WeaviateLocalMetaFetchGenericActionObj",
+                                description: "",
+                                fields: rootClassesActionsFields
+                              }),
+                              resolve(parentValue) {
+                                console.log("resolve WeaviateLocalMetaFetchGenericAction")
+                                return [{}] // resolve with empty array
+                              }
+                            }
+                          },
+                        }),
+                        resolve(_,args) {
+                          console.log("resolve WeaviateLocalMetaFetchGeneric")
+                          return args // resolve with empty array
+                        },
+                      }
+                    }
+                  }),
+
                   resolve() {
                     console.log("resolve WeaviateLocalMetaFetch")
                     return [{}] // resolve with empty array
