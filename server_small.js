@@ -18,9 +18,6 @@ const graphqlHTTP = require('express-graphql');
 const demoResolver = require('./demo_resolver.js');
 const UnionInputType = require('graphql-union-input-type');
 
-// For making calls to http data server
-// const request = require('request');
-
 // file system for reading files
 const fs = require('fs');
 
@@ -72,37 +69,57 @@ const {
  *  Create filter for ConvertedFetch
  */
 
-var ConvertedFetchFilter = {
-  name: 'ConvertedFetchFilter',
-  description: 'Filter options for the converted fetch search, to convert the data to the filter input',
-  fields: {
-    EQ: { type: new GraphQLList(new GraphQLInputObjectType({ // is path equal to
-      name: 'ConvertedFetchFilterEQ',
-      description: 'filter where the path end should be equal to the value',
-      fields: {
-        path: { type: new GraphQLList(GraphQLString) },
-        value: { type: GraphQLString }
-      }
-    }))},
-    NEQ: { type: new GraphQLList(new GraphQLInputObjectType({ // path is NOT equal to
-      name: 'ConvertedFetchFilterNEQ',
-      description: 'filter where the path end should be not equal to the value',
-      fields: {
-        path: { type: new GraphQLList(GraphQLString) },
-        value: { type: GraphQLString }
-      }
-    }))},
-    IE: { type: new GraphQLList(new GraphQLInputObjectType({ //  = InEquality between values.
-      name: 'ConvertedFetchFilterIE',
-      description: 'filter where the path end should be inequal to the value',
-      fields: {
-        path: { type: new GraphQLList(GraphQLString) },
-        value: { type: GraphQLString }
-      }
-    }))}
-  }
+var filterFields = {
+  EQ: { type: new GraphQLList(new GraphQLInputObjectType({ // is path equal to
+    name: 'ConvertedFetchFilterEQ',
+    description: 'filter where the path end should be equal to the value',
+    fields: {
+      path: { type: new GraphQLList(GraphQLString) },
+      value: { type: GraphQLString }
+    }
+  }))},
+  NEQ: { type: new GraphQLList(new GraphQLInputObjectType({ // path is NOT equal to
+    name: 'ConvertedFetchFilterNEQ',
+    description: 'filter where the path end should be not equal to the value',
+    fields: {
+      path: { type: new GraphQLList(GraphQLString) },
+      value: { type: GraphQLString }
+    }
+  }))},
+  IE: { type: new GraphQLList(new GraphQLInputObjectType({ //  = InEquality between values.
+    name: 'ConvertedFetchFilterIE',
+    description: 'filter where the path end should be inequal to the value',
+    fields: {
+      path: { type: new GraphQLList(GraphQLString) },
+      value: { type: GraphQLString }
+    }
+  }))}
 }
 
+/**
+ * Create class enum for filter options
+ */
+
+function createClassEnum(ontologyThings) {
+
+  var enumValues = {}
+  var counter = 0
+  // loop through classes
+  ontologyThings.classes.forEach(singleClass => {
+    // create enum item
+    enumValues[singleClass.class] = {"value": singleClass.class}
+
+    counter += 1
+  })
+  
+  var classEnum = new GraphQLEnumType({
+    name: 'classEnum',
+    description: 'enum type which denote the classes',
+    values: enumValues,
+  });
+
+  return classEnum
+}
  
 /**
  * Create arguments for the network function
@@ -146,10 +163,252 @@ function createArgs(item, withKeywords){
       type: GraphQLInt,
       description: "define the max returned values."
     }
-
+    // always return skip
+    propsForArgs[item.class]["_skip"] = {
+      type: GraphQLInt,
+      description: "define the amount of values to skip."
+    }
   }
   
   return propsForArgs[item.class] // return the prop with the argument
+
+}
+
+
+/**
+ * Create the subclasses of a Thing or Action in the Local function
+ */
+function createMetaSubClasses(ontologyThings){
+
+  console.log("------START METASUBCLASSES--------")
+
+  var subClasses = {};
+  // loop through classes
+  ontologyThings.classes.forEach(singleClass => {
+
+    //console.log(singleClass.class)
+
+    // create recursive sub classes
+    subClasses[singleClass.class] = new GraphQLObjectType({
+      name: singleClass.class + "Meta",
+      description: singleClass.description,
+      fields: function(){
+        // declare props that should be returned
+        var returnProps = {}
+
+        returnProps["meta"] = {
+          description: "meta information about class object",
+          type: new GraphQLObjectType({
+            name: singleClass.class + "MetaObj",
+            description: "meta information about class object",
+            fields: {
+              counter: {
+                description: "how many class instances are there",
+                type: GraphQLInt
+              },
+              pointing: {
+                description: "pointing to and from how many other things",
+                type: new GraphQLObjectType({
+                  name: singleClass.class + "MetaPointing",
+                  description: "pointing to and from how many other things",
+                  fields: {
+                    to: {
+                      description: "how many other classes the class is pointing to",
+                      type: GraphQLInt,
+                    },
+                    from: {
+                      description: "how many other classes the class is pointing from",
+                      type: GraphQLInt
+                    }
+                  }
+                })
+              }
+            }
+          })
+        }
+        
+        // loop over properties
+        singleClass.properties.forEach(singleClassProperty => {
+          returntypes = []
+          singleClassProperty["@dataType"].forEach(singleClassPropertyDatatype => {
+            // if class (start with capital, return Class)
+            if(singleClassPropertyDatatype[0] === singleClassPropertyDatatype[0].toUpperCase()){
+              returnProps[singleClassProperty.name] = {
+                type: new GraphQLObjectType({
+                  name: singleClassProperty.name + "Property",
+                  description: "Property meta information",
+                  fields: {
+                    type: {
+                      description: "datatype of the property",
+                      type: GraphQLString,
+                    },
+                    counter: {
+                      description: "total amount of found instances",
+                      type: GraphQLInt,
+                    },
+                    pointing: {
+                      description: "pointing to and from how many other things",
+                      type: new GraphQLObjectType({
+                        name: singleClassProperty.name + "Property" + "MetaPointing",
+                        description: "pointing to and from how many other things",
+                        fields: {
+                          to: {
+                            description: "how many other classes the class is pointing to",
+                            type: GraphQLInt,
+                          },
+                          from: {
+                            description: "how many other classes the class is pointing from",
+                            type: GraphQLInt
+                          }
+                        }
+                      })
+                    }
+                  }
+                })
+              }
+            } else if(singleClassPropertyDatatype === "string") {
+              returnProps[singleClassProperty.name] = {
+                type: new GraphQLObjectType({
+                  name: singleClassProperty.name + "Property",
+                  description: "Property meta information",
+                  fields: {
+                    type: {
+                      description: "datatype of the property",
+                      type: GraphQLString,
+                    },
+                    counter: {
+                      description: "total amount of found instances",
+                      type: GraphQLInt,
+                    },
+                    topOccurrences: {
+                      description: "most frequent property values",
+                      type: new GraphQLObjectType({
+                        name: singleClassProperty.name + "Property" + "TopOccurrences",
+                        description: "most frequent property values",
+                        fields: {
+                          value: {
+                            description: "property value of the most frequent properties",
+                            type: GraphQLInt
+                          },
+                          occurs: {
+                            description: "number of occurrance",
+                            type: GraphQLInt
+                          }
+                        }
+                      })
+                    }
+                  }
+                })
+              }
+            } else if(singleClassPropertyDatatype === "int" || singleClassPropertyDatatype === "number") {
+              returnProps[singleClassProperty.name] = {
+                type: new GraphQLObjectType({
+                  name: singleClassProperty.name + "Property",
+                  description: "Property meta information",
+                  fields: {
+                    type: {
+                      description: "datatype of the property",
+                      type: GraphQLString,
+                    },
+                    lowest: {
+                      description: "Lowest value occurrence",
+                      type: GraphQLFloat,
+                    },
+                    highest: {
+                      description: "Highest value occurrence",
+                      type: GraphQLFloat,
+                    },
+                    average: {
+                      description: "average number",
+                      type: GraphQLFloat,
+                    },
+                    counter: {
+                      description: "total amount of found instances",
+                      type: GraphQLInt,
+                    },
+                    sum: {
+                      description: "sum of values of found instances",
+                      type: GraphQLFloat,
+                    }
+                  }
+                })
+              }
+            } else if(singleClassPropertyDatatype === "boolean") {
+              returnProps[singleClassProperty.name] = {
+                type: new GraphQLObjectType({
+                  name: singleClassProperty.name + "Property",
+                  description: "Property meta information",
+                  fields: {
+                    type: {
+                      description: "datatype of the property",
+                      type: GraphQLString,
+                    },
+                    total_true: {
+                      description: "total amount of boolean value is true",
+                      type: GraphQLInt,
+                    },
+                    percentage_true: {
+                      description: "percentage of boolean = true",
+                      type: GraphQLFloat,
+                    },
+                    counter: {
+                      description: "total amount of found instances",
+                      type: GraphQLInt,
+                    }
+                  }
+                })
+              }
+            } else if(singleClassPropertyDatatype === "date") {
+              returnProps[singleClassProperty.name] = {
+                description: singleClassProperty.description,
+                type: GraphQLString // string since no GraphQL date type exists
+              }} else {
+              console.error("I DONT KNOW THIS VALUE! " + singleClassProperty["@dataType"][0])
+              returnProps[singleClassProperty.name] = {
+                description: singleClassProperty.description,
+                type: GraphQLString
+              }
+            }
+          })
+        });
+        return returnProps
+
+       }
+    });
+
+  });
+
+  console.log("------DONE METASUBCLASSES--------")
+
+  return subClasses;
+}
+
+/**
+ * Create the rootclasses of a Thing or Action in the Local function
+ */
+function createMetaRootClasses(ontologyThings, metaSubClasses){
+
+  console.log("------START METAROOTCLASSES--------")
+
+  var rootClassesFields = {}
+
+  // loop through classes
+  ontologyThings.classes.forEach(singleClass => {
+    // create root sub classes
+    rootClassesFields[singleClass.class] = {
+      type: metaSubClasses[singleClass.class],
+      description: singleClass.description,
+      args: createArgs(singleClass, false),
+      resolve(parentValue, args) {
+        return demoResolver.metaDataResolver(parentValue, singleClass.class, args)
+      }
+    }
+
+  })
+
+  console.log("------STOP METAROOTCLASSES--------")
+
+  return rootClassesFields
 
 }
 
@@ -182,37 +441,31 @@ function createSubClasses(ontologyThings){
             if(singleClassPropertyDatatype[0] === singleClassPropertyDatatype[0].toUpperCase()){
               returntypes.push(subClasses[singleClassPropertyDatatype])
             } else if(singleClassPropertyDatatype === "string") {
-              // always return string (should be int, float, bool etc later)
               returnProps[singleClassProperty.name] = {
                 description: singleClassProperty.description,
                 type: GraphQLString
               }
             } else if(singleClassPropertyDatatype === "int") {
-              // always return string (should be int, float, bool etc later)
               returnProps[singleClassProperty.name] = {
                 description: singleClassProperty.description,
                 type: GraphQLInt
               }
             } else if(singleClassPropertyDatatype === "number") {
-              // always return string (should be int, float, bool etc later)
               returnProps[singleClassProperty.name] = {
                 description: singleClassProperty.description,
                 type: GraphQLFloat
               }
             } else if(singleClassPropertyDatatype === "boolean") {
-              // always return string (should be int, float, bool etc later)
               returnProps[singleClassProperty.name] = {
                 description: singleClassProperty.description,
                 type: GraphQLBoolean
               }
             } else if(singleClassPropertyDatatype === "date") {
-              // always return string (should be int, float, bool etc later)
               returnProps[singleClassProperty.name] = {
                 description: singleClassProperty.description,
                 type: GraphQLString // string since no GraphQL date type exists
               }} else {
               console.error("I DONT KNOW THIS VALUE! " + singleClassProperty["@dataType"][0])
-              // always return string (should be int, float, bool etc later)
               returnProps[singleClassProperty.name] = {
                 description: singleClassProperty.description,
                 type: GraphQLString
@@ -232,8 +485,7 @@ function createSubClasses(ontologyThings){
               }),
               //args: createArgs(thing, false),
               resolve(parentValue, obj) {
-                console.log("resolve ROOT CLASsssS " + singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1))
-                //console.log(singleClassProperty.name)
+                console.log("resolve ROOT CLASS " + singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1))
                 if (typeof parentValue[singleClassProperty.name] === "object") {
                   return parentValue[singleClassProperty.name]
                 }
@@ -251,31 +503,6 @@ function createSubClasses(ontologyThings){
   console.log("------DONE SUBCLASSES--------")
 
   return subClasses;
-}
-
-/**
- * Create class enum for filter options
- */
-
-function createClassEnum(ontologyThings) {
-
-  var enumValues = {}
-  var counter = 0
-  // loop through classes
-  ontologyThings.classes.forEach(singleClass => {
-    // create enum item
-    enumValues[singleClass.class] = {"value": singleClass.class}
-
-    counter += 1
-  })
-  
-  var classEnum = new GraphQLEnumType({
-    name: 'classEnum',
-    description: 'enum type which denote the classes',
-    values: enumValues,
-  });
-
-  return classEnum
 }
  
 
@@ -295,8 +522,8 @@ function createRootClasses(ontologyThings, subClasses){
       type: new GraphQLList(subClasses[singleClass.class]),
       description: singleClass.description,
       args: createArgs(singleClass, false),
-      resolve(parentValue) {
-        return demoResolver.rootClassResolver(parentValue, singleClass.class)
+      resolve(parentValue, args) {
+        return demoResolver.rootClassResolver(parentValue, singleClass.class, args)
       }
     }
 
@@ -307,6 +534,7 @@ function createRootClasses(ontologyThings, subClasses){
   return rootClassesFields
 
 }
+
 
 /**
  * Merge ontologies because both actions and things can refer to eachother
@@ -440,6 +668,9 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
       var rootClassesActionsFields = createRootClasses(JSON.parse(ontologyActions), subClasses);
       var classesEnum = createClassEnum(classes);
       // var PinPointField = createPinPointField(classes);
+      var metaSubClasses = createMetaSubClasses(classes)
+      var metaRootClassesThingsFields = createMetaRootClasses(JSON.parse(ontologyThings), metaSubClasses);
+      var metaRootClassesActionsFields = createMetaRootClasses(JSON.parse(ontologyActions), metaSubClasses);
 
       var NounFields = createNounFields(nouns, true);
 
@@ -467,7 +698,11 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                   name: "WeaviateLocalConvertedFetch",
                   description: "Do a converted fetch to search Things or Actions on the local weaviate",
                   args: {
-                    _filter: { type: new GraphQLInputObjectType(ConvertedFetchFilter) }
+                    _filter: { type: new GraphQLInputObjectType({
+                      name: "WeaviateLocalConvertedFetchFilter",
+                      description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+                      fields: filterFields
+                    }) }
                   },
                   type: new GraphQLObjectType({
                     name: "WeaviateLocalConvertedFetchObj",
@@ -483,7 +718,7 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                         }),
                         resolve(parentValue) {
                           console.log("resolve WeaviateLocalConvertedFetchThings")
-                          return parentValue // resolve with empty array
+                          return parentValue.Things // resolve with empty array
                         },
                       },
                       Actions: {
@@ -496,7 +731,7 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                         }),
                         resolve(parentValue) {
                           console.log("resolve WeaviateLocalConvertedFetchActions")
-                          return parentValue // resolve with empty array
+                          return parentValue.Actions // resolve with empty array
                         }
                       }
                     }
@@ -575,53 +810,59 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                 MetaFetch: {
                   name: "WeaviateLocalMetaFetch",
                   description: "Fetch meta infromation about Things or Actions on the local weaviate",
+                  args: {
+                    _filter: { type: new GraphQLInputObjectType({
+                      name: "WeaviateLocalMetaFetchFilter",
+                      description: 'Filter options for the meta fetch search, to convert the data to the filter input',
+                      fields: filterFields
+                    }) }
+                  },
                   type: new GraphQLObjectType({
                     name: "WeaviateLocalMetaFetchObj",
                     description: "Fetch things or actions on the internal Weaviate",
                     fields: {
-                      Generic: {
-                        name: "WeaviateLocalMetaFetchGeneric",
+                      Generics: {
+                        name: "WeaviateLocalMetaFetchGenerics",
                         description: "Fetch generic meta information based on the type",
                         type: new GraphQLObjectType({
-                          name: "WeaviateLocalMetaFetchGenericObj",
-                          description: "",
+                          name: "WeaviateLocalMetaFetchGenericsObj",
+                          description: "Object type to fetch",
                           fields: {
-                            Thing: {
-                              name: "WeaviateLocalMetaFetchGenericThing",
-                              description: "",
+                            Things: {
+                              name: "WeaviateLocalMetaFetchGenericsThing",
+                              description: "Thing to fetch for meta generic fetch",
                               type: new GraphQLObjectType({
-                                name: "WeaviateLocalMetaFetchGenericThingObj",
-                                description: "",
-                                fields: rootClassesThingsFields
+                                name: "WeaviateLocalMetaFetchGenericsThingObj",
+                                description: "Thing to fetch for meta generic fetch",
+                                fields: metaRootClassesThingsFields
                               }),
                               resolve(parentValue) {
-                                console.log("resolve WeaviateLocalMetaFetchGenericThing")
-                                return [{}] // resolve with empty array
+                                console.log("resolve WeaviateLocalMetaFetchGenericsThing")
+                                return parentValue.Things // resolve with empty array
                               }
                             }, 
-                            Action: {
-                              name: "WeaviateLocalMetaFetchGenericAction",
-                              description: "",
+                            Actions: {
+                              name: "WeaviateLocalMetaFetchGenericsAction",
+                              description: "Action to fetch for meta generic fetch",
                               type: new GraphQLObjectType({
-                                name: "WeaviateLocalMetaFetchGenericActionObj",
-                                description: "",
-                                fields: rootClassesActionsFields
+                                name: "WeaviateLocalMetaFetchGenericsActionObj",
+                                description: "Action to fetch for meta generic fetch",
+                                fields: metaRootClassesActionsFields
                               }),
                               resolve(parentValue) {
-                                console.log("resolve WeaviateLocalMetaFetchGenericAction")
-                                return [{}] // resolve with empty array
+                                console.log("resolve WeaviateLocalMetaFetchGenericsAction")
+                                return parentValue.Actions // resolve with empty array
                               }
                             }
                           },
                         }),
                         resolve(_,args) {
-                          console.log("resolve WeaviateLocalMetaFetchGeneric")
-                          return args // resolve with empty array
+                          console.log("resolve WeaviateLocalMetaFetchGenerics")
+                          return demoResolver.resolveConvertedFetch(args._filter)
                         },
                       }
                     }
                   }),
-
                   resolve() {
                     console.log("resolve WeaviateLocalMetaFetch")
                     return [{}] // resolve with empty array
