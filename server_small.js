@@ -777,7 +777,7 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                                 }
                               }
                             })
-                          }, //should be an ENUM but for now only 1 value: "standard"
+                          }, 
                           _limit: {type: GraphQLInt}
                         },
                         type: new GraphQLObjectType({
@@ -786,11 +786,11 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                           fields: {
                             uuid: {
                               name: "WeaviateLocalHelpersFetchPinPointUuid",
-                              description: "Do a fuzzy search fetch to search Things or Actions on the network weaviate",
+                              description: "uuid of thing or action pinpointed in fetch query",
                               type: GraphQLID,
                               resolve(parentValue) {
                                 console.log("resolve WeaviateLocalHelpersFetchPinPointUuid")
-                                return [{}] // demoResolver.resolvePinPoint(parentValue) // resolve with empty array
+                                return [{}] // resolve with empty array
                               }
                             }
                           },
@@ -847,6 +847,9 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                             Actions: {
                               name: "WeaviateLocalMetaFetchGenericsAction",
                               description: "Action to fetch for meta generic fetch",
+                              args: {
+                                _maxArraySize: { type: GraphQLString } // If there are arrays in the result, limit them to this size (for example topOccurences).
+                              },
                               type: new GraphQLObjectType({
                                 name: "WeaviateLocalMetaFetchGenericsActionObj",
                                 description: "Action to fetch for meta generic fetch",
@@ -854,7 +857,7 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                               }),
                               resolve(parentValue) {
                                 console.log("resolve WeaviateLocalMetaFetchGenericsAction")
-                                return parentValue.Actions // resolve with empty array
+                                return {"data": parentValue.Things, "_maxArraySize": args._maxArraySize} // resolve with empty array
                               }
                             }
                           },
@@ -893,7 +896,61 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                 HelpersFetch: {
                   name: "WeaviateNetworkHelpersFetch",
                   description: "Do a fetch with help to search Things or Actions on the network weaviate",
-                  type: new GraphQLList(GraphQLString), // no input required yet
+                  type: new GraphQLObjectType({
+                    name: "WeaviateNetworkHelpersFetchObj",
+                    description: "search for things or actions on the network Weaviate",
+                    fields: {
+                      OntologyExplorer: {
+                        name: "WeaviateNetworkHelpersFetchOntologyExplorer",
+                        description: "search for things or actions on the network Weaviate",
+                        args: {
+                          _distance: { type: GraphQLFloat }
+                        },
+                        type: new GraphQLObjectType({
+                            name: "WeaviateNetworkHelpersFetchOntologyExplorerObj",
+                            description: "search for things or actions on the network Weaviate",
+                            fields: {
+                              Things: {
+                                name: "WeaviateNetworkHelpersFetchOntologyExplorerThings",
+                                description: "Thing to fetch in network",
+                                args: {
+                                  _distance: { type: GraphQLFloat }
+                                },
+                                type: new GraphQLObjectType({
+                                  name: "WeaviateNetworkHelpersFetchOntologyExplorerThingsObj",
+                                  description: "Thing to fetch for network fetch",
+                                  fields: rootClassesThingsFields
+                                }),
+                                resolve(parentValue) {
+                                  console.log("resolve WeaviateNetworkHelpersFetchOntologyExplorerThings")
+                                  return [{}] // resolve with empty array
+                                }
+                              }, 
+                              Actions: {
+                                name: "WeaviateNetworkHelpersFetchOntologyExplorerActions",
+                                description: "Action to fetch in network",
+                                args: {
+                                  _distance: { type: GraphQLFloat }
+                                },
+                                type: new GraphQLObjectType({
+                                  name: "WeaviateNetworkHelpersFetchOntologyExplorerActionsObj",
+                                  description: "Action to fetch for network fetch",
+                                  fields: rootClassesActionsFields
+                                }),
+                                resolve(parentValue) {
+                                  console.log("resolve WeaviateNetworkHelpersFetchOntologyExplorerActions")
+                                  return [{}] // resolve with empty array
+                                }
+                              }
+                            }
+                          }),
+                        resolve() {
+                          console.log("resolve WeaviateNetworkHelpersFetchOntologyExplorer")
+                          return [{}] // resolve with empty array
+                        }
+                      }
+                    }
+                  }),
                   resolve() {
                     console.log("resolve WeaviateNetworkHelpersFetch")
                     return [{}] // resolve with empty array
