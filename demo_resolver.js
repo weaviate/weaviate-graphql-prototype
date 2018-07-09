@@ -41,7 +41,7 @@ module.exports = {
 	   }
 	   return list
    },
-   metaDataResolver: function(return_data, className, args) {
+   metaDataResolver: function(return_data, className, args, _maxArraySize) {
 	   // return data
 	   return meta_data[0]
 	   var list = []

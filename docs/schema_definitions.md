@@ -1,78 +1,3 @@
-# Run prototype
-
-- Install `npm install -g nodemon`
-- Install packages: `npm install`
-- Run: `nodemon server_small.js`
-
-# Run cli tool
-
-- `npm install -g graphql-cli`
-- `cd` into a new dir
-- `graphql init` (schema for this prototype = `http://localhost:8081/graphql`)
-
-Get the schema:
-- `graphql get-schema`
-
-Result will be in: `./schema.graphql`
-
-Get complete schema definitions:
-- Install: `npm install -g graphql-markdown`
-- Run: `graphql-markdown http://localhost:8081/graphql > docs/schema_definitions.md`
-
-# Naming conventions
-
-Names of query fields are structured as follows. 
-The root query is called 'Weaviate'. The GraphQL Object Type names of the fields are built on top of the root query, so that the names trickle down the path of the query.
-For example, the query 
-
-```
-{
-  	Local{
-    	TargetedFetch{
-			Things{
-				City{
-					name
-				}
-			}
-		}
-  	}
-}
-```
-
-Has GraphQLObjectType names:
-
-```
-{
-	<WeaviateObj>{
-		<WeaviateLocalObj>{
-			<WeaviateLocalTargetedFetchObj>{
-				<WeaviateLocalTargetedFetchThingsObj>{
-						<PropertyName>
-				}
-			}
-		}
-	}
-}
-```
-
-Important to note is that the GraphQLObjectTypes names itself end with `Obj`, while the Field names do not. The Field names of the objects in the example above are:
-
-```
-{
-	<WeaviateLocal>{
-		<WeaviateLocalTargetedFetch>{
-			<WeaviateLocalTargetedFetchThings>{
-				City{
-					name
-				}
-			}
-		}
-	}
-}
-```
-
-# Schema definitions
-
 # Schema Types
 
 <details>
@@ -1776,5 +1701,4 @@ The `Int` scalar type represents non-fractional signed whole numeric values. Int
 ### String
 
 The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.
-
 

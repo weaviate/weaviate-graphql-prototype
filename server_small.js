@@ -400,7 +400,7 @@ function createMetaRootClasses(ontologyThings, metaSubClasses){
       description: singleClass.description,
       args: createArgs(singleClass, false),
       resolve(parentValue, args) {
-        return demoResolver.metaDataResolver(parentValue, singleClass.class, args)
+        return demoResolver.metaDataResolver(parentValue.data, singleClass.class, args, parentValue._maxArraySize)
       }
     }
 
@@ -831,6 +831,9 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                             Things: {
                               name: "WeaviateLocalMetaFetchGenericsThing",
                               description: "Thing to fetch for meta generic fetch",
+                              args: {
+                                _maxArraySize: { type: GraphQLString } // If there are arrays in the result, limit them to this size (for example topOccurences).
+                              },
                               type: new GraphQLObjectType({
                                 name: "WeaviateLocalMetaFetchGenericsThingObj",
                                 description: "Thing to fetch for meta generic fetch",
@@ -838,7 +841,7 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                               }),
                               resolve(parentValue) {
                                 console.log("resolve WeaviateLocalMetaFetchGenericsThing")
-                                return parentValue.Things // resolve with empty array
+                                return {"data": parentValue.Things, "_maxArraySize": args._maxArraySize} // resolve with empty array
                               }
                             }, 
                             Actions: {

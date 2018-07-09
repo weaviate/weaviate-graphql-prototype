@@ -27,11 +27,11 @@ describe('Local', function() {
 
     describe('Nested TargetedFetch', function() {
         // TEST 1
-        it('should return data.Local.TargetedFetch.Things.City with an array', function(done) {
+        it('should return data.Local.ConvertedFetch.Things.City with an array', function(done) {
             doGraphQLRequest(`
             {
                 Local {
-                  TargetedFetch{
+                  ConvertedFetch{
                     Things{
                       City{
                         name
@@ -42,17 +42,17 @@ describe('Local', function() {
               }
             `, function(error, response, resultBody){
                 // validate the test
-                assert.equal(Array.isArray(resultBody.data.Local.TargetedFetch.Things.City), true);
+                assert.equal(Array.isArray(resultBody.data.Local.ConvertedFetch.Things.City), true);
                 done();
             })
         });
 
         // TEST 2
-        it('should return data.Local.TargetedFetch.Things.City[0] with name = null', function(done) {
+        it('should return data.Local.ConvertedFetch.Things.City[0] with name = string', function(done) {
             doGraphQLRequest(`
             {
                 Local {
-                  TargetedFetch {
+                    ConvertedFetch {
                     Things {
                       City {
                         name
@@ -64,17 +64,17 @@ describe('Local', function() {
               }              
             `, function(error, response, resultBody){
                 // validate the test
-                assert.equal(resultBody.data.Local.TargetedFetch.Things.City[0].name, null);
+                assert.equal(typeof resultBody.data.Local.ConvertedFetch.Things.City[0].name, "string");
                 done();
             })
         });
 
-        // TEST 2
-        it('should return data.Local.TargetedFetch.Things.City[0] with latitude = latitude', function(done) {
+        // TEST 3
+        it('should return data.Local.ConvertedFetch.Things.City[0] with latitude = number', function(done) {
             doGraphQLRequest(`
             {
                 Local {
-                  TargetedFetch {
+                    ConvertedFetch {
                     Things {
                       City {
                         name
@@ -86,7 +86,7 @@ describe('Local', function() {
               }              
             `, function(error, response, resultBody){
                 // validate the test
-                assert.equal(resultBody.data.Local.TargetedFetch.Things.City[0].latitude, null);
+                assert.equal(typeof resultBody.data.Local.ConvertedFetch.Things.City[0].latitude, "number");
                 done();
             })
         });        
@@ -94,7 +94,7 @@ describe('Local', function() {
 
     describe('Validate the Object Schemas (graphql introspection)', function() {
 
-        //TEST 3
+        //TEST 4
         it('should contain the correct naming convention: "WeaviateObj"', function(done){
             doGraphQLRequest(`
             {
@@ -110,7 +110,7 @@ describe('Local', function() {
             })
         })
 
-        // TEST 4
+        // TEST 5
         it('should contain the correct naming convention: "WeaviateLocalObj"', function(done){
             doGraphQLRequest(`
             {

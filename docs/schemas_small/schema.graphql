@@ -1,84 +1,46 @@
 # source: http://localhost:8081/graphql
-# timestamp: Mon Jul 09 2018 15:41:23 GMT+0200 (W. Europe Summer Time)
+# timestamp: Mon Jul 09 2018 15:46:05 GMT+0200 (W. Europe Summer Time)
 
 schema {
   query: WeaviateObj
 }
 
-"""DESCRIPTION ACTION1"""
-type ACTION1 {
-  """DESCRIPTION ACTION1_PROP1"""
-  ACTION1_PROP1: ACTION1_PROP1UnionType
+"""City"""
+type City {
+  """Official name of the city."""
+  name: String
 
-  """DESCRIPTION ACTION1_PROP2"""
-  ACTION1_PROP2: ACTION1_PROP2UnionType
+  """The city's latitude"""
+  latitude: Float
+
+  """Number of inhabitants of the city"""
+  population: Int
+
+  """True if the city is a capital"""
+  isCapital: Boolean
 }
 
-"""Property meta information"""
-type ACTION1_PROP1Property {
-  """datatype of the property"""
-  type: String
-
-  """total amount of found instances"""
-  counter: Int
-
-  """pointing to and from how many other things"""
-  pointing: ACTION1_PROP1PropertyMetaPointing
-}
-
-"""pointing to and from how many other things"""
-type ACTION1_PROP1PropertyMetaPointing {
-  """how many other classes the class is pointing to"""
-  to: Int
-
-  """how many other classes the class is pointing from"""
-  from: Int
-}
-
-union ACTION1_PROP1UnionType = THING1
-
-"""Property meta information"""
-type ACTION1_PROP2Property {
-  """datatype of the property"""
-  type: String
-
-  """total amount of found instances"""
-  counter: Int
-
-  """most frequent property values"""
-  topOccurrences: ACTION1_PROP2PropertyTopOccurrences
-}
-
-"""most frequent property values"""
-type ACTION1_PROP2PropertyTopOccurrences {
-  """property value of the most frequent properties"""
-  value: Int
-
-  """number of occurrance"""
-  occurs: Int
-}
-
-union ACTION1_PROP2UnionType = THING2
-
-"""DESCRIPTION ACTION1"""
-type ACTION1Meta {
+"""City"""
+type CityMeta {
   """meta information about class object"""
-  meta: ACTION1MetaObj
-  ACTION1_PROP1: ACTION1_PROP1Property
-  ACTION1_PROP2: ACTION1_PROP2Property
+  meta: CityMetaObj
+  name: nameProperty
+  latitude: latitudeProperty
+  population: populationProperty
+  isCapital: isCapitalProperty
 }
 
 """meta information about class object"""
-type ACTION1MetaObj {
+type CityMetaObj {
   """how many class instances are there"""
   counter: Int
 
   """pointing to and from how many other things"""
-  pointing: ACTION1MetaPointing
+  pointing: CityMetaPointing
 }
 
 """pointing to and from how many other things"""
-type ACTION1MetaPointing {
+type CityMetaPointing {
   """how many other classes the class is pointing to"""
   to: Int
 
@@ -88,9 +50,9 @@ type ACTION1MetaPointing {
 
 """enum type which denote the classes"""
 enum classEnum {
-  THING1
-  THING2
-  ACTION1
+  City
+  Person
+  MoveAction
 }
 
 """filter where the path end should be equal to the value"""
@@ -111,44 +73,8 @@ input ConvertedFetchFilterNEQ {
   value: String
 }
 
-"""DESCRIPTION THING 1"""
-type THING1 {
-  """DESCRIPTION THING1_PROP1"""
-  THING1_PROP1: String
-
-  """DESCRIPTION THING1_PROP1"""
-  THING1_PROP2: Float
-
-  """DESCRIPTION THING1_PROP1"""
-  THING1_PROP3: Int
-
-  """DESCRIPTION THING1_PROP1"""
-  THING1_PROP4: Boolean
-}
-
 """Property meta information"""
-type THING1_PROP1Property {
-  """datatype of the property"""
-  type: String
-
-  """total amount of found instances"""
-  counter: Int
-
-  """most frequent property values"""
-  topOccurrences: THING1_PROP1PropertyTopOccurrences
-}
-
-"""most frequent property values"""
-type THING1_PROP1PropertyTopOccurrences {
-  """property value of the most frequent properties"""
-  value: Int
-
-  """number of occurrance"""
-  occurs: Int
-}
-
-"""Property meta information"""
-type THING1_PROP2Property {
+type costProperty {
   """datatype of the property"""
   type: String
 
@@ -169,28 +95,30 @@ type THING1_PROP2Property {
 }
 
 """Property meta information"""
-type THING1_PROP3Property {
+type fromCityProperty {
   """datatype of the property"""
   type: String
-
-  """Lowest value occurrence"""
-  lowest: Float
-
-  """Highest value occurrence"""
-  highest: Float
-
-  """average number"""
-  average: Float
 
   """total amount of found instances"""
   counter: Int
 
-  """sum of values of found instances"""
-  sum: Float
+  """pointing to and from how many other things"""
+  pointing: fromCityPropertyMetaPointing
 }
 
+"""pointing to and from how many other things"""
+type fromCityPropertyMetaPointing {
+  """how many other classes the class is pointing to"""
+  to: Int
+
+  """how many other classes the class is pointing from"""
+  from: Int
+}
+
+union FromCityUnionType = City
+
 """Property meta information"""
-type THING1_PROP4Property {
+type isCapitalProperty {
   """datatype of the property"""
   type: String
 
@@ -204,45 +132,44 @@ type THING1_PROP4Property {
   counter: Int
 }
 
-"""DESCRIPTION THING 1"""
-type THING1Meta {
-  """meta information about class object"""
-  meta: THING1MetaObj
-  THING1_PROP1: THING1_PROP1Property
-  THING1_PROP2: THING1_PROP2Property
-  THING1_PROP3: THING1_PROP3Property
-  THING1_PROP4: THING1_PROP4Property
-}
+"""Property meta information"""
+type isMovedProperty {
+  """datatype of the property"""
+  type: String
 
-"""meta information about class object"""
-type THING1MetaObj {
-  """how many class instances are there"""
+  """total amount of boolean value is true"""
+  total_true: Int
+
+  """percentage of boolean = true"""
+  percentage_true: Float
+
+  """total amount of found instances"""
   counter: Int
-
-  """pointing to and from how many other things"""
-  pointing: THING1MetaPointing
-}
-
-"""pointing to and from how many other things"""
-type THING1MetaPointing {
-  """how many other classes the class is pointing to"""
-  to: Int
-
-  """how many other classes the class is pointing from"""
-  from: Int
-}
-
-"""DESCRIPTION THING2"""
-type THING2 {
-  """DESCRIPTION THING2_PROP1"""
-  THING2_PROP1: THING2_PROP1UnionType
-
-  """DESCRIPTION THING2_PROP2"""
-  THING2_PROP2: String
 }
 
 """Property meta information"""
-type THING2_PROP1Property {
+type latitudeProperty {
+  """datatype of the property"""
+  type: String
+
+  """Lowest value occurrence"""
+  lowest: Float
+
+  """Highest value occurrence"""
+  highest: Float
+
+  """average number"""
+  average: Float
+
+  """total amount of found instances"""
+  counter: Int
+
+  """sum of values of found instances"""
+  sum: Float
+}
+
+"""Property meta information"""
+type livesInProperty {
   """datatype of the property"""
   type: String
 
@@ -250,11 +177,11 @@ type THING2_PROP1Property {
   counter: Int
 
   """pointing to and from how many other things"""
-  pointing: THING2_PROP1PropertyMetaPointing
+  pointing: livesInPropertyMetaPointing
 }
 
 """pointing to and from how many other things"""
-type THING2_PROP1PropertyMetaPointing {
+type livesInPropertyMetaPointing {
   """how many other classes the class is pointing to"""
   to: Int
 
@@ -262,29 +189,61 @@ type THING2_PROP1PropertyMetaPointing {
   from: Int
 }
 
-union THING2_PROP1UnionType = THING1 | THING2
+union LivesInUnionType = City | Person
 
-"""DESCRIPTION THING2"""
-type THING2Meta {
+"""Action of buying a thing"""
+type MoveAction {
+  """Person who moves"""
+  Person: PersonUnionType
+
+  """The city the person moves to"""
+  toCity: String
+
+  """The city the person moves to"""
+  ToCity: ToCityUnionType
+
+  """The city the person moves from"""
+  FromCity: FromCityUnionType
+
+  """Whether the person is already moved"""
+  isMoved: Boolean
+
+  """The date the person is moving"""
+  date: String
+
+  """The total amount of house moves the person has made"""
+  moveNumber: Int
+
+  """The total costs of the movement"""
+  cost: Float
+}
+
+"""Action of buying a thing"""
+type MoveActionMeta {
   """meta information about class object"""
-  meta: THING2MetaObj
-  THING2_PROP1: THING2_PROP1Property
+  meta: MoveActionMetaObj
+  person: personProperty
+  toCity: toCityProperty
+  fromCity: fromCityProperty
+  isMoved: isMovedProperty
 
-  """DESCRIPTION THING2_PROP2"""
-  THING2_PROP2: String
+  """The date the person is moving"""
+  date: String
+  moveNumber: moveNumberProperty
+  cost: costProperty
 }
 
 """meta information about class object"""
-type THING2MetaObj {
+type MoveActionMetaObj {
   """how many class instances are there"""
   counter: Int
 
   """pointing to and from how many other things"""
-  pointing: THING2MetaPointing
+  pointing: MoveActionMetaPointing
 }
 
 """pointing to and from how many other things"""
-type THING2MetaPointing {
+type MoveActionMetaPointing {
   """how many other classes the class is pointing to"""
   to: Int
 
@@ -292,10 +251,156 @@ type THING2MetaPointing {
   from: Int
 }
 
+"""Property meta information"""
+type moveNumberProperty {
+  """datatype of the property"""
+  type: String
+
+  """Lowest value occurrence"""
+  lowest: Float
+
+  """Highest value occurrence"""
+  highest: Float
+
+  """average number"""
+  average: Float
+
+  """total amount of found instances"""
+  counter: Int
+
+  """sum of values of found instances"""
+  sum: Float
+}
+
+"""Property meta information"""
+type nameProperty {
+  """datatype of the property"""
+  type: String
+
+  """total amount of found instances"""
+  counter: Int
+
+  """most frequent property values"""
+  topOccurrences: namePropertyTopOccurrences
+}
+
+"""most frequent property values"""
+type namePropertyTopOccurrences {
+  """property value of the most frequent properties"""
+  value: Int
+
+  """number of occurrance"""
+  occurs: Int
+}
+
+"""Person"""
+type Person {
+  """The city where the person lives."""
+  LivesIn: LivesInUnionType
+
+  """Birthday of the person"""
+  birthday: String
+}
+
+"""Person"""
+type PersonMeta {
+  """meta information about class object"""
+  meta: PersonMetaObj
+  livesIn: livesInProperty
+
+  """Birthday of the person"""
+  birthday: String
+}
+
+"""meta information about class object"""
+type PersonMetaObj {
+  """how many class instances are there"""
+  counter: Int
+
+  """pointing to and from how many other things"""
+  pointing: PersonMetaPointing
+}
+
+"""pointing to and from how many other things"""
+type PersonMetaPointing {
+  """how many other classes the class is pointing to"""
+  to: Int
+
+  """how many other classes the class is pointing from"""
+  from: Int
+}
+
+"""Property meta information"""
+type personProperty {
+  """datatype of the property"""
+  type: String
+
+  """total amount of found instances"""
+  counter: Int
+
+  """pointing to and from how many other things"""
+  pointing: personPropertyMetaPointing
+}
+
+"""pointing to and from how many other things"""
+type personPropertyMetaPointing {
+  """how many other classes the class is pointing to"""
+  to: Int
+
+  """how many other classes the class is pointing from"""
+  from: Int
+}
+
+union PersonUnionType = Person
+
+"""Property meta information"""
+type populationProperty {
+  """datatype of the property"""
+  type: String
+
+  """Lowest value occurrence"""
+  lowest: Float
+
+  """Highest value occurrence"""
+  highest: Float
+
+  """average number"""
+  average: Float
+
+  """total amount of found instances"""
+  counter: Int
+
+  """sum of values of found instances"""
+  sum: Float
+}
+
+"""Property meta information"""
+type toCityProperty {
+  """datatype of the property"""
+  type: String
+
+  """total amount of found instances"""
+  counter: Int
+
+  """most frequent property values"""
+  topOccurrences: toCityPropertyTopOccurrences
+}
+
+"""most frequent property values"""
+type toCityPropertyTopOccurrences {
+  """property value of the most frequent properties"""
+  value: Int
+
+  """number of occurrance"""
+  occurs: Int
+}
+
+union ToCityUnionType = City
+
 """Fetch Actions on the internal Weaviate"""
 type WeaviateLocalConvertedFetchActionsObj {
-  """DESCRIPTION ACTION1"""
-  ACTION1(
+  """Action of buying a thing"""
+  MoveAction(
     """How certain about these values?"""
     _certainty: Float
 
@@ -304,7 +409,7 @@ type WeaviateLocalConvertedFetchActionsObj {
 
     """define the amount of values to skip."""
     _skip: Int
-  ): [ACTION1]
+  ): [MoveAction]
 }
 
 """
@@ -327,8 +432,8 @@ type WeaviateLocalConvertedFetchObj {
 
 """Fetch things on the internal Weaviate"""
 type WeaviateLocalConvertedFetchThingsObj {
-  """DESCRIPTION THING 1"""
-  THING1(
+  """City"""
+  City(
     """How certain about these values?"""
     _certainty: Float
 
@@ -337,10 +442,10 @@ type WeaviateLocalConvertedFetchThingsObj {
 
     """define the amount of values to skip."""
     _skip: Int
-  ): [THING1]
+  ): [City]
 
-  """DESCRIPTION THING2"""
-  THING2(
+  """Person"""
+  Person(
     """How certain about these values?"""
     _certainty: Float
 
@@ -349,7 +454,7 @@ type WeaviateLocalConvertedFetchThingsObj {
 
     """define the amount of values to skip."""
     _skip: Int
-  ): [THING2]
+  ): [Person]
 }
 
 """Fetch things or actions on the internal Weaviate"""
@@ -386,8 +491,8 @@ input WeaviateLocalMetaFetchFilter {
 
 """Action to fetch for meta generic fetch"""
 type WeaviateLocalMetaFetchGenericsActionObj {
-  """DESCRIPTION ACTION1"""
-  ACTION1(
+  """Action of buying a thing"""
+  MoveAction(
     """How certain about these values?"""
     _certainty: Float
 
@@ -396,7 +501,7 @@ type WeaviateLocalMetaFetchGenericsActionObj {
 
     """define the amount of values to skip."""
     _skip: Int
-  ): ACTION1Meta
+  ): MoveActionMeta
 }
 
 """Object type to fetch"""
@@ -410,8 +515,8 @@ type WeaviateLocalMetaFetchGenericsObj {
 
 """Thing to fetch for meta generic fetch"""
 type WeaviateLocalMetaFetchGenericsThingObj {
-  """DESCRIPTION THING 1"""
-  THING1(
+  """City"""
+  City(
     """How certain about these values?"""
     _certainty: Float
 
@@ -420,10 +525,10 @@ type WeaviateLocalMetaFetchGenericsThingObj {
 
     """define the amount of values to skip."""
     _skip: Int
-  ): THING1Meta
+  ): CityMeta
 
-  """DESCRIPTION THING2"""
-  THING2(
+  """Person"""
+  Person(
     """How certain about these values?"""
     _certainty: Float
 
@@ -432,7 +537,7 @@ type WeaviateLocalMetaFetchGenericsThingObj {
 
     """define the amount of values to skip."""
     _skip: Int
-  ): THING2Meta
+  ): PersonMeta
 }
 
 """Fetch things or actions on the internal Weaviate"""
