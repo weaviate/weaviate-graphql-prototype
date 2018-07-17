@@ -1,0 +1,6 @@
+{
+	"FetchFilterPathField": "path from the root Thing or Action until class property",
+	"FetchFilterValueField": "the value to class property should be filtered at",
+	"FetchFilterEQ": "filter where the path end should be equal to the value",
+	"FetchFilterEQInpObj": "filter where the path end should be equal to the value"
+}

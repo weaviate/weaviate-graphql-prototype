@@ -62,7 +62,46 @@ const {
 //     }
 //   },
 //   typeKey: "name"
-// })
+// }) 
+
+const descriptions = JSON.parse(fs.readFileSync('descriptions.json', 'utf8'));
+function getDesc(name) {
+  return descriptions[name]
+}
+
+
+var fetchFilterFields = {
+  AND: {
+    name: "FetchFilterFieldAND",
+    description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+    type: new GraphQLList(new GraphQLInputObjectType({
+      name: "FetchFilterFieldANDInpObj",
+      description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+      fields: function () {return fetchFilterFields}
+    }))
+  },
+  OR: {
+    name: "FetchFilterFieldOR",
+    description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+    type: new GraphQLList(new GraphQLInputObjectType({
+      name: "FetchFilterFieldORInpObj",
+      description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+      fields: function () {return fetchFilterFields}
+    }))
+  },
+  path: { 
+    name: "FetchFilterPathField",
+    description: function() {
+      return getDesc("FetchFilterPathField")}, //"path from the root Thing or Action until class property",
+    type: new GraphQLList(GraphQLString) 
+  },
+  value: { 
+    name: "FetchFilterValueField",
+    description: function() {
+      return getDesc("FetchFilterValueField")}, //"the value to class property should be filtered at",
+    type: GraphQLString 
+  }
+}
 
 
 /**
@@ -70,30 +109,54 @@ const {
  */
 
 var filterFields = {
-  EQ: { type: new GraphQLList(new GraphQLInputObjectType({ // is path equal to
-    name: 'ConvertedFetchFilterEQ',
-    description: 'filter where the path end should be equal to the value',
-    fields: {
-      path: { type: new GraphQLList(GraphQLString) },
-      value: { type: GraphQLString }
-    }
-  }))},
-  NEQ: { type: new GraphQLList(new GraphQLInputObjectType({ // path is NOT equal to
-    name: 'ConvertedFetchFilterNEQ',
-    description: 'filter where the path end should be not equal to the value',
-    fields: {
-      path: { type: new GraphQLList(GraphQLString) },
-      value: { type: GraphQLString }
-    }
-  }))},
-  IE: { type: new GraphQLList(new GraphQLInputObjectType({ //  = InEquality between values.
-    name: 'ConvertedFetchFilterIE',
+  AND: {
+    name: "FetchFilterAND",
+    description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+    type: new GraphQLInputObjectType({
+      name: "FetchFilterANDInpObj",
+      description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+      fields: function () {return filterFields}
+    })
+  },
+  OR: {
+    name: "FetchFilterAND",
+    description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+    type: new GraphQLInputObjectType({
+      name: "FetchFilterORInpObj",
+      description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+      fields: function () {return filterFields}
+    })
+  },
+  EQ: { 
+    name: 'FetchFilterEQ',
+    description: function() {
+      //console.log(Object.keys(this))
+      return getDesc("FetchFilterEQ")}, 
+    type: new GraphQLList(new GraphQLInputObjectType({ // is path equal to
+      name: 'FetchFilterEQInpObj',
+      description: function() {
+        return getDesc(this.name)}, 
+      fields: fetchFilterFields
+    }))
+  },
+  NEQ: { 
+    name: 'FetchFilterNEQ',
+    description: 'filter where the path end should NOT be equal to the value',
+    type: new GraphQLList(new GraphQLInputObjectType({ // path is NOT equal to
+      name: 'FetchFilterNEQInpObj',
+      description: 'filter where the path end should be not equal to the value',
+      fields: fetchFilterFields
+    }))
+  },
+  IE: { 
+    name: 'FetchFilterIE',
     description: 'filter where the path end should be inequal to the value',
-    fields: {
-      path: { type: new GraphQLList(GraphQLString) },
-      value: { type: GraphQLString }
-    }
-  }))}
+    type: new GraphQLList(new GraphQLInputObjectType({ //  = InEquality between values.
+      name: 'FetchFilterIEInpObj',
+      description: 'filter where the path end should be inequal to the value',
+      fields: fetchFilterFields
+    }))
+  }
 }
 
 /**
@@ -190,33 +253,38 @@ function createMetaSubClasses(ontologyThings){
 
     // create recursive sub classes
     subClasses[singleClass.class] = new GraphQLObjectType({
-      name: singleClass.class + "Meta",
+      name: "Meta" + singleClass.class,
       description: singleClass.description,
       fields: function(){
         // declare props that should be returned
         var returnProps = {}
 
-        returnProps["meta"] = {
+        returnProps["Meta"] = {
+          name: "Meta"+ singleClass.class + "Meta",
           description: "meta information about class object",
           type: new GraphQLObjectType({
-            name: singleClass.class + "MetaObj",
+            name: "Meta" + singleClass.class + "MetaObj",
             description: "meta information about class object",
             fields: {
               counter: {
+                name: "Meta" + singleClass.class + "MetaCounter",
                 description: "how many class instances are there",
                 type: GraphQLInt
               },
               pointing: {
+                name: "Meta" + singleClass.class + "MetaPointing",
                 description: "pointing to and from how many other things",
                 type: new GraphQLObjectType({
-                  name: singleClass.class + "MetaPointing",
+                  name: "Meta" + singleClass.class + "MetaPointingObj",
                   description: "pointing to and from how many other things",
                   fields: {
                     to: {
+                      name: "Meta" + singleClass.class + "MetaPointingTo",
                       description: "how many other classes the class is pointing to",
                       type: GraphQLInt,
                     },
                     from: {
+                      name: "Meta" + singleClass.class + "MetaPointingFrom",
                       description: "how many other classes the class is pointing from",
                       type: GraphQLInt
                     }
@@ -231,32 +299,40 @@ function createMetaSubClasses(ontologyThings){
         singleClass.properties.forEach(singleClassProperty => {
           returntypes = []
           singleClassProperty["@dataType"].forEach(singleClassPropertyDatatype => {
+
             // if class (start with capital, return Class)
             if(singleClassPropertyDatatype[0] === singleClassPropertyDatatype[0].toUpperCase()){
               returnProps[singleClassProperty.name] = {
+                name: "Meta" + singleClass.class + singleClassProperty.name,
+                description: "Meta information about the property \"" + singleClassProperty.name + "\"",
                 type: new GraphQLObjectType({
-                  name: singleClassProperty.name + "Property",
+                  name: "Meta" + singleClass.class + singleClassProperty.name + "Obj",
                   description: "Property meta information",
                   fields: {
                     type: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "Type",
                       description: "datatype of the property",
                       type: GraphQLString,
                     },
                     counter: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "Counter",
                       description: "total amount of found instances",
                       type: GraphQLInt,
                     },
                     pointing: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "Pointing",
                       description: "pointing to and from how many other things",
                       type: new GraphQLObjectType({
-                        name: singleClassProperty.name + "Property" + "MetaPointing",
+                        name: "Meta" + singleClass.class + singleClassProperty.name + "PointingObj",
                         description: "pointing to and from how many other things",
                         fields: {
                           to: {
+                            name: "Meta" + singleClass.class + singleClassProperty.name + "PointingTo",
                             description: "how many other classes the class is pointing to",
                             type: GraphQLInt,
                           },
                           from: {
+                            name: "Meta" + singleClass.class + singleClassProperty.name + "PointingFrom",
                             description: "how many other classes the class is pointing from",
                             type: GraphQLInt
                           }
@@ -266,67 +342,83 @@ function createMetaSubClasses(ontologyThings){
                   }
                 })
               }
-            } else if(singleClassPropertyDatatype === "string") {
+            } else if(singleClassPropertyDatatype === "string" || singleClassPropertyDatatype === "date") {
+              topOccurrencesType = new GraphQLObjectType({
+                name: "Meta" + singleClass.class + singleClassProperty.name + "TopOccurrencesObj",
+                description: "most frequent property values",
+                fields: {
+                  value: {
+                    name: "Meta" + singleClass.class + singleClassProperty.name + "TopOccurrencesValue",
+                    description: "property value of the most frequent properties",
+                    type: GraphQLString
+                  },
+                  occurs: {
+                    name: "Meta" + singleClass.class + singleClassProperty.name + "TopOccurrencesOccurs",
+                    description: "number of occurrance",
+                    type: GraphQLInt
+                  }
+                }
+              })
               returnProps[singleClassProperty.name] = {
+                name: "Meta" + singleClass.class + singleClassProperty.name,
+                description: "Meta information about the property \"" + singleClassProperty.name + "\"",
                 type: new GraphQLObjectType({
-                  name: singleClassProperty.name + "Property",
+                  name: "Meta" + singleClass.class + singleClassProperty.name + "Obj",
                   description: "Property meta information",
                   fields: {
                     type: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "Type",
                       description: "datatype of the property",
                       type: GraphQLString,
                     },
                     counter: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "Counter",
                       description: "total amount of found instances",
                       type: GraphQLInt,
                     },
                     topOccurrences: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "TopOccurrences",
                       description: "most frequent property values",
-                      type: new GraphQLObjectType({
-                        name: singleClassProperty.name + "Property" + "TopOccurrences",
-                        description: "most frequent property values",
-                        fields: {
-                          value: {
-                            description: "property value of the most frequent properties",
-                            type: GraphQLInt
-                          },
-                          occurs: {
-                            description: "number of occurrance",
-                            type: GraphQLInt
-                          }
-                        }
-                      })
+                      type: new GraphQLList( topOccurrencesType )
                     }
                   }
                 })
               }
             } else if(singleClassPropertyDatatype === "int" || singleClassPropertyDatatype === "number") {
               returnProps[singleClassProperty.name] = {
+                name: "Meta" + singleClass.class + singleClassProperty.name,
+                description: "Meta information about the property \"" + singleClassProperty.name + "\"",
                 type: new GraphQLObjectType({
-                  name: singleClassProperty.name + "Property",
+                  name: "Meta" + singleClass.class + singleClassProperty.name + "Obj",
                   description: "Property meta information",
                   fields: {
                     type: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "Type",
                       description: "datatype of the property",
                       type: GraphQLString,
                     },
                     lowest: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "Lowest",
                       description: "Lowest value occurrence",
                       type: GraphQLFloat,
                     },
                     highest: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "Highest",
                       description: "Highest value occurrence",
                       type: GraphQLFloat,
                     },
                     average: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "Average",
                       description: "average number",
                       type: GraphQLFloat,
                     },
                     counter: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "Counter",
                       description: "total amount of found instances",
                       type: GraphQLInt,
                     },
                     sum: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "Sum",
                       description: "sum of values of found instances",
                       type: GraphQLFloat,
                     }
@@ -335,36 +427,46 @@ function createMetaSubClasses(ontologyThings){
               }
             } else if(singleClassPropertyDatatype === "boolean") {
               returnProps[singleClassProperty.name] = {
+                name: "Meta" + singleClass.class + singleClassProperty.name,
+                description: "Meta information about the property \"" + singleClassProperty.name + "\"",
                 type: new GraphQLObjectType({
-                  name: singleClassProperty.name + "Property",
+                  name: "Meta" + singleClass.class + singleClassProperty.name + "Obj",
                   description: "Property meta information",
                   fields: {
                     type: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "Type",
                       description: "datatype of the property",
                       type: GraphQLString,
                     },
-                    total_true: {
+                    totalTrue: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "TotalTrue",
                       description: "total amount of boolean value is true",
                       type: GraphQLInt,
                     },
-                    percentage_true: {
+                    percentageTrue: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "PercentageTrue",
                       description: "percentage of boolean = true",
                       type: GraphQLFloat,
                     },
                     counter: {
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "Counter",
                       description: "total amount of found instances",
                       type: GraphQLInt,
                     }
                   }
                 })
               }
-            } else if(singleClassPropertyDatatype === "date") {
-              returnProps[singleClassProperty.name] = {
-                description: singleClassProperty.description,
-                type: GraphQLString // string since no GraphQL date type exists
-              }} else {
+              // TO DO: CREATE META INFORMATION FOR DATE, NOW THIS IS SAME AS STRING DATATYPE
+            // } else if(singleClassPropertyDatatype === "date") {
+            //   returnProps[singleClassProperty.name] = {
+            //     name: "Meta" + singleClass.class + singleClassProperty.name,
+            //     description: singleClassProperty.description,
+            //     type: GraphQLString // string since no GraphQL date type exists
+            //   }
+            } else {
               console.error("I DONT KNOW THIS VALUE! " + singleClassProperty["@dataType"][0])
               returnProps[singleClassProperty.name] = {
+                name: "Meta" + singleClass.class + singleClassProperty.name,
                 description: singleClassProperty.description,
                 type: GraphQLString
               }
@@ -396,6 +498,7 @@ function createMetaRootClasses(ontologyThings, metaSubClasses){
   ontologyThings.classes.forEach(singleClass => {
     // create root sub classes
     rootClassesFields[singleClass.class] = {
+      name: "Meta" + singleClass.class,
       type: metaSubClasses[singleClass.class],
       description: singleClass.description,
       args: createArgs(singleClass, false),
@@ -442,31 +545,37 @@ function createSubClasses(ontologyThings){
               returntypes.push(subClasses[singleClassPropertyDatatype])
             } else if(singleClassPropertyDatatype === "string") {
               returnProps[singleClassProperty.name] = {
+                name: singleClass.class + singleClassProperty.name,
                 description: singleClassProperty.description,
                 type: GraphQLString
               }
             } else if(singleClassPropertyDatatype === "int") {
               returnProps[singleClassProperty.name] = {
+                name: singleClass.class + singleClassProperty.name,
                 description: singleClassProperty.description,
                 type: GraphQLInt
               }
             } else if(singleClassPropertyDatatype === "number") {
               returnProps[singleClassProperty.name] = {
+                name: singleClass.class + singleClassProperty.name,
                 description: singleClassProperty.description,
                 type: GraphQLFloat
               }
             } else if(singleClassPropertyDatatype === "boolean") {
               returnProps[singleClassProperty.name] = {
+                name: singleClass.class + singleClassProperty.name,
                 description: singleClassProperty.description,
                 type: GraphQLBoolean
               }
             } else if(singleClassPropertyDatatype === "date") {
               returnProps[singleClassProperty.name] = {
+                name: singleClass.class + singleClassProperty.name,
                 description: singleClassProperty.description,
                 type: GraphQLString // string since no GraphQL date type exists
               }} else {
               console.error("I DONT KNOW THIS VALUE! " + singleClassProperty["@dataType"][0])
               returnProps[singleClassProperty.name] = {
+                name: singleClass.class + singleClassProperty.name,
                 description: singleClassProperty.description,
                 type: GraphQLString
               }
@@ -474,9 +583,11 @@ function createSubClasses(ontologyThings){
           })
           if (returntypes.length > 0) {
             returnProps[singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1)] = {
+              name: singleClass.class + singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1),
               description: singleClassProperty.description,
               type: new GraphQLUnionType({
-                name: singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1) + 'UnionType', 
+                name: singleClass.class + singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1) + 'Obj', 
+                description: singleClassProperty.description,
                 types: returntypes,
                 resolveType(obj, context, info) {
                   // get returntypes here to return right class types
@@ -519,6 +630,7 @@ function createRootClasses(ontologyThings, subClasses){
   ontologyThings.classes.forEach(singleClass => {
     // create root sub classes
     rootClassesFields[singleClass.class] = {
+      name: singleClass.class,
       type: new GraphQLList(subClasses[singleClass.class]),
       description: singleClass.description,
       args: createArgs(singleClass, false),
@@ -648,6 +760,7 @@ function createNounFields(nouns, depth){
 
 }
 
+
 /**
  * END - ALL RELATED TO INTERNAL
  */
@@ -698,11 +811,15 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                   name: "WeaviateLocalConvertedFetch",
                   description: "Do a converted fetch to search Things or Actions on the local weaviate",
                   args: {
-                    _filter: { type: new GraphQLInputObjectType({
+                    _filter: { 
                       name: "WeaviateLocalConvertedFetchFilter",
                       description: 'Filter options for the converted fetch search, to convert the data to the filter input',
-                      fields: filterFields
-                    }) }
+                      type: new GraphQLInputObjectType({
+                        name: "WeaviateLocalConvertedFetchFilterInpObj",
+                        description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+                        fields: filterFields
+                      }) 
+                    }
                   },
                   type: new GraphQLObjectType({
                     name: "WeaviateLocalConvertedFetchObj",
@@ -753,6 +870,7 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                         description: "Find a set of exact ID's of Things or Actions on the local Weaviate",
                         args: {
                           _stack: {
+                            description: "Things or Actions",
                             type: new GraphQLEnumType({
                               name: "WeaviateLocalHelpersFetchPinPointStackEnum",
                               values: {
@@ -765,10 +883,19 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                               }
                             })
                           }, //Things or Actions ENUM
-                          _classes: {type: new GraphQLList(classesEnum)}, //an array of potential classes (they should be in the ontology!)
-                          _properties: {type: new GraphQLList(GraphQLString)}, //an array of potential classes (they should be in the ontology, ideally related to the class!)
-                          _needle: {type: GraphQLString}, //the actual field that will be used in the search. (for example: __needle: "Netflix"
+                          _classes: {
+                            description: "an array of potential classes (they should be in the ontology!)",
+                            type: new GraphQLList(classesEnum)
+                          },
+                          _properties: {
+                            description: "an array of potential classes",
+                            type: new GraphQLList(GraphQLString)
+                          }, //an array of potential classes (they should be in the ontology, ideally related to the class!)
+                          _needle: {
+                            description: "the actual field that will be used in the search.",
+                            type: GraphQLString}, // (for example: __needle: "Netflix"
                           _searchType: {
+                            description: "the type of search.",
                             type: new GraphQLEnumType({
                               name: "WeaviateLocalHelpersFetchPinPointSearchTypeEnum",
                               values: {
@@ -778,7 +905,9 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                               }
                             })
                           }, 
-                          _limit: {type: GraphQLInt}
+                          _limit: {
+                            description: "limit of search results",
+                            type: GraphQLInt}
                         },
                         type: new GraphQLObjectType({
                           name: "WeaviateLocalHelpersFetchPinPointObj",
@@ -811,11 +940,15 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                   name: "WeaviateLocalMetaFetch",
                   description: "Fetch meta infromation about Things or Actions on the local weaviate",
                   args: {
-                    _filter: { type: new GraphQLInputObjectType({
+                    _filter: { 
                       name: "WeaviateLocalMetaFetchFilter",
                       description: 'Filter options for the meta fetch search, to convert the data to the filter input',
-                      fields: filterFields
-                    }) }
+                      type: new GraphQLInputObjectType({
+                        name: "WeaviateLocalMetaFetchFilterInpObj",
+                        description: 'Filter options for the meta fetch search, to convert the data to the filter input',
+                        fields: filterFields
+                      }) 
+                  }
                   },
                   type: new GraphQLObjectType({
                     name: "WeaviateLocalMetaFetchObj",
@@ -829,34 +962,40 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                           description: "Object type to fetch",
                           fields: {
                             Things: {
-                              name: "WeaviateLocalMetaFetchGenericsThing",
+                              name: "WeaviateLocalMetaFetchGenericsThings",
                               description: "Thing to fetch for meta generic fetch",
                               args: {
-                                _maxArraySize: { type: GraphQLString } // If there are arrays in the result, limit them to this size (for example topOccurences).
+                                _maxArraySize: { 
+                                  description: "If there are arrays in the result, limit them to this size",
+                                  type: GraphQLString 
+                                } 
                               },
                               type: new GraphQLObjectType({
-                                name: "WeaviateLocalMetaFetchGenericsThingObj",
+                                name: "WeaviateLocalMetaFetchGenericsThingsObj",
                                 description: "Thing to fetch for meta generic fetch",
                                 fields: metaRootClassesThingsFields
                               }),
-                              resolve(parentValue) {
-                                console.log("resolve WeaviateLocalMetaFetchGenericsThing")
+                              resolve(parentValue, args) {
+                                console.log("resolve WeaviateLocalMetaFetchGenericsThings")
                                 return {"data": parentValue.Things, "_maxArraySize": args._maxArraySize} // resolve with empty array
                               }
                             }, 
                             Actions: {
-                              name: "WeaviateLocalMetaFetchGenericsAction",
+                              name: "WeaviateLocalMetaFetchGenericsActions",
                               description: "Action to fetch for meta generic fetch",
                               args: {
-                                _maxArraySize: { type: GraphQLString } // If there are arrays in the result, limit them to this size (for example topOccurences).
+                                _maxArraySize: { 
+                                  description: "If there are arrays in the result, limit them to this size",
+                                  type: GraphQLString 
+                                } 
                               },
                               type: new GraphQLObjectType({
-                                name: "WeaviateLocalMetaFetchGenericsActionObj",
+                                name: "WeaviateLocalMetaFetchGenericsActionsObj",
                                 description: "Action to fetch for meta generic fetch",
                                 fields: metaRootClassesActionsFields
                               }),
-                              resolve(parentValue) {
-                                console.log("resolve WeaviateLocalMetaFetchGenericsAction")
+                              resolve(parentValue, args) {
+                                console.log("resolve WeaviateLocalMetaFetchGenericsActions")
                                 return {"data": parentValue.Things, "_maxArraySize": args._maxArraySize} // resolve with empty array
                               }
                             }
@@ -904,7 +1043,11 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                         name: "WeaviateNetworkHelpersFetchOntologyExplorer",
                         description: "search for things or actions on the network Weaviate",
                         args: {
-                          _distance: { type: GraphQLFloat }
+                          _distance: { 
+                            name: "WeaviateNetworkHelpersFetchOntologyExplorerDistance",
+                            description: "maximum distance to other class instances",
+                            type: GraphQLFloat 
+                          }
                         },
                         type: new GraphQLObjectType({
                             name: "WeaviateNetworkHelpersFetchOntologyExplorerObj",
@@ -914,7 +1057,11 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                                 name: "WeaviateNetworkHelpersFetchOntologyExplorerThings",
                                 description: "Thing to fetch in network",
                                 args: {
-                                  _distance: { type: GraphQLFloat }
+                                  _distance: { 
+                                    name: "WeaviateNetworkHelpersFetchOntologyExplorerThingsDistance",
+                                    description: "maximum distance to other instances",
+                                    type: GraphQLFloat 
+                                  }
                                 },
                                 type: new GraphQLObjectType({
                                   name: "WeaviateNetworkHelpersFetchOntologyExplorerThingsObj",
@@ -930,7 +1077,11 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                                 name: "WeaviateNetworkHelpersFetchOntologyExplorerActions",
                                 description: "Action to fetch in network",
                                 args: {
-                                  _distance: { type: GraphQLFloat }
+                                  _distance: { 
+                                    name: "WeaviateNetworkHelpersFetchOntologyExplorerActionsDistance",
+                                    description: "maximum distance to other instances",
+                                    type: GraphQLFloat 
+                                  }
                                 },
                                 type: new GraphQLObjectType({
                                   name: "WeaviateNetworkHelpersFetchOntologyExplorerActionsObj",
