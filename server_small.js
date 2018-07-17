@@ -64,28 +64,39 @@ const {
 //   typeKey: "name"
 // }) 
 
+
+/**
+ *  Get descriptions from json file. 
+ * NOTE: getDesc(this.name) not possible because this.name refers to keyname of object, and not the key 'name' IN the object (this 'name' is reserved)
+ */
 const descriptions = JSON.parse(fs.readFileSync('descriptions.json', 'utf8'));
 function getDesc(name) {
   return descriptions[name]
 }
 
-
+/**
+ * Create filter fields for fetching queries
+ */
 var fetchFilterFields = {
   AND: {
     name: "FetchFilterFieldAND",
-    description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+    description: function() {
+      return getDesc("FetchFilterFieldAND")},
     type: new GraphQLList(new GraphQLInputObjectType({
       name: "FetchFilterFieldANDInpObj",
-      description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+      description: function() {
+        return getDesc("FetchFilterFieldANDInpObj")},
       fields: function () {return fetchFilterFields}
     }))
   },
   OR: {
     name: "FetchFilterFieldOR",
-    description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+    description: function() {
+      return getDesc("FetchFilterFieldOR")},
     type: new GraphQLList(new GraphQLInputObjectType({
       name: "FetchFilterFieldORInpObj",
-      description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+      description: function() {
+        return getDesc("FetchFilterFieldORInpObj")},
       fields: function () {return fetchFilterFields}
     }))
   },
@@ -111,19 +122,23 @@ var fetchFilterFields = {
 var filterFields = {
   AND: {
     name: "FetchFilterAND",
-    description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+    description: function() {
+      return getDesc("FetchFilterAND")},
     type: new GraphQLInputObjectType({
       name: "FetchFilterANDInpObj",
-      description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+      description: function() {
+        return getDesc("FetchFilterANDInpObj")},
       fields: function () {return filterFields}
     })
   },
   OR: {
     name: "FetchFilterAND",
-    description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+    description: function() {
+      return getDesc("FetchFilterAND")},
     type: new GraphQLInputObjectType({
       name: "FetchFilterORInpObj",
-      description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+      description: function() {
+        return getDesc("FetchFilterORInpObj")},
       fields: function () {return filterFields}
     })
   },
@@ -141,19 +156,23 @@ var filterFields = {
   },
   NEQ: { 
     name: 'FetchFilterNEQ',
-    description: 'filter where the path end should NOT be equal to the value',
+    description: function() {
+      return getDesc("FetchFilterNEQ")},
     type: new GraphQLList(new GraphQLInputObjectType({ // path is NOT equal to
       name: 'FetchFilterNEQInpObj',
-      description: 'filter where the path end should be not equal to the value',
+      description: function() {
+        return getDesc("FetchFilterNEQInpObj")},
       fields: fetchFilterFields
     }))
   },
   IE: { 
     name: 'FetchFilterIE',
-    description: 'filter where the path end should be inequal to the value',
+    description: function() {
+      return getDesc("FetchFilterIE")},
     type: new GraphQLList(new GraphQLInputObjectType({ //  = InEquality between values.
       name: 'FetchFilterIEInpObj',
-      description: 'filter where the path end should be inequal to the value',
+      description: function() {
+        return getDesc("FetchFilterIEInpObj")},
       fields: fetchFilterFields
     }))
   }
@@ -177,7 +196,8 @@ function createClassEnum(ontologyThings) {
   
   var classEnum = new GraphQLEnumType({
     name: 'classEnum',
-    description: 'enum type which denote the classes',
+    description: function() {
+      return getDesc("classEnum")},
     values: enumValues,
   });
 
@@ -189,16 +209,19 @@ function createClassEnum(ontologyThings) {
  */
 var argsKeywords = new GraphQLInputObjectType({
   name: "argsKeywords",
-  description: "list of keywords and weights",
+  description: function() {
+    return getDesc("argsKeywords")},
   fields: {
     keyword: {
       name: "WeaviateNetworkKeywordsKeyword",
-      description: "The keyword",
+      description: function() {
+        return getDesc("WeaviateNetworkKeywordsKeyword")},
       type: GraphQLString
     },
     weight: {
-      name: "WeaviateNetworkKeywordsWeigth",
-      description: "The weight",
+      name: "WeaviateNetworkKeywordsWeight",
+      description: function() {
+        return getDesc("WeaviateNetworkKeywordsWeight")},
       type: GraphQLFloat
     }
   }
@@ -218,18 +241,24 @@ function createArgs(item, withKeywords){
 
     // always certainty
     propsForArgs[item.class]["_certainty"] = {
+      name: "certaintyFilter",
       type: GraphQLFloat,
-      description: "How certain about these values?"
+      description: function() {
+        return getDesc("certaintyFilter")},
     }
     // always return limit
     propsForArgs[item.class]["_limit"] = {
+      name: "limitFilter",
       type: GraphQLInt,
-      description: "define the max returned values."
+      description: function() {
+        return getDesc("limitFilter")},
     }
     // always return skip
     propsForArgs[item.class]["_skip"] = {
+      name: "skipFilter",
       type: GraphQLInt,
-      description: "define the amount of values to skip."
+      description: function() {
+        return getDesc("skipFilter")},
     }
   }
   
@@ -261,31 +290,38 @@ function createMetaSubClasses(ontologyThings){
 
         returnProps["Meta"] = {
           name: "Meta"+ singleClass.class + "Meta",
-          description: "meta information about class object",
+          description: function() {
+            return getDesc("MetaClassMeta")},
           type: new GraphQLObjectType({
             name: "Meta" + singleClass.class + "MetaObj",
-            description: "meta information about class object",
+            description: function() {
+              return getDesc("MetaClassMetaObj")},
             fields: {
               counter: {
                 name: "Meta" + singleClass.class + "MetaCounter",
-                description: "how many class instances are there",
+                description: function() {
+                  return getDesc("MetaClassMetaCounter")},
                 type: GraphQLInt
               },
               pointing: {
                 name: "Meta" + singleClass.class + "MetaPointing",
-                description: "pointing to and from how many other things",
+                description: function() {
+                  return getDesc("MetaClassMetaPointing")},
                 type: new GraphQLObjectType({
                   name: "Meta" + singleClass.class + "MetaPointingObj",
-                  description: "pointing to and from how many other things",
+                  description: function() {
+                    return getDesc("MetaClassMetaPointingObj")},
                   fields: {
                     to: {
                       name: "Meta" + singleClass.class + "MetaPointingTo",
-                      description: "how many other classes the class is pointing to",
+                      description: function() {
+                        return getDesc("MetaClassMetaPointingTo")},
                       type: GraphQLInt,
                     },
                     from: {
                       name: "Meta" + singleClass.class + "MetaPointingFrom",
-                      description: "how many other classes the class is pointing from",
+                      description: function() {
+                        return getDesc("MetaClassMetaPointingFrom")},
                       type: GraphQLInt
                     }
                   }
@@ -307,33 +343,40 @@ function createMetaSubClasses(ontologyThings){
                 description: "Meta information about the property \"" + singleClassProperty.name + "\"",
                 type: new GraphQLObjectType({
                   name: "Meta" + singleClass.class + singleClassProperty.name + "Obj",
-                  description: "Property meta information",
+                  description: function() {
+                    return getDesc("MetaClassPropertyObj")},
                   fields: {
                     type: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Type",
-                      description: "datatype of the property",
+                      description: function() {
+                        return getDesc("MetaClassPropertyType")},
                       type: GraphQLString,
                     },
                     counter: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Counter",
-                      description: "total amount of found instances",
+                      description: function() {
+                        return getDesc("MetaClassPropertyCounter")},
                       type: GraphQLInt,
                     },
                     pointing: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Pointing",
-                      description: "pointing to and from how many other things",
+                      description: function() {
+                        return getDesc("MetaClassPropertyPointing")},
                       type: new GraphQLObjectType({
                         name: "Meta" + singleClass.class + singleClassProperty.name + "PointingObj",
-                        description: "pointing to and from how many other things",
+                        description: function() {
+                          return getDesc("MetaClassPropertyPointingObj")},
                         fields: {
                           to: {
                             name: "Meta" + singleClass.class + singleClassProperty.name + "PointingTo",
-                            description: "how many other classes the class is pointing to",
+                            description: function() {
+                              return getDesc("MetaClassPropertyPointingTo")},
                             type: GraphQLInt,
                           },
                           from: {
                             name: "Meta" + singleClass.class + singleClassProperty.name + "PointingFrom",
-                            description: "how many other classes the class is pointing from",
+                            description: function() {
+                              return getDesc("MetaClassPropertyPointingFrom")},
                             type: GraphQLInt
                           }
                         }
@@ -345,16 +388,19 @@ function createMetaSubClasses(ontologyThings){
             } else if(singleClassPropertyDatatype === "string" || singleClassPropertyDatatype === "date") {
               topOccurrencesType = new GraphQLObjectType({
                 name: "Meta" + singleClass.class + singleClassProperty.name + "TopOccurrencesObj",
-                description: "most frequent property values",
+                description: function() {
+                  return getDesc("MetaClassPropertyTopOccurrencesObj")},
                 fields: {
                   value: {
                     name: "Meta" + singleClass.class + singleClassProperty.name + "TopOccurrencesValue",
-                    description: "property value of the most frequent properties",
+                    description: function() {
+                      return getDesc("MetaClassPropertyTopOccurrencesValue")},
                     type: GraphQLString
                   },
                   occurs: {
                     name: "Meta" + singleClass.class + singleClassProperty.name + "TopOccurrencesOccurs",
-                    description: "number of occurrance",
+                    description: function() {
+                      return getDesc("MetaClassPropertyTopOccurrencesOccurs")},
                     type: GraphQLInt
                   }
                 }
@@ -364,21 +410,25 @@ function createMetaSubClasses(ontologyThings){
                 description: "Meta information about the property \"" + singleClassProperty.name + "\"",
                 type: new GraphQLObjectType({
                   name: "Meta" + singleClass.class + singleClassProperty.name + "Obj",
-                  description: "Property meta information",
+                  description: function() {
+                    return getDesc("MetaClassPropertyObj")},
                   fields: {
                     type: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Type",
-                      description: "datatype of the property",
+                      description: function() {
+                        return getDesc("MetaClassPropertyType")},
                       type: GraphQLString,
                     },
                     counter: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Counter",
-                      description: "total amount of found instances",
+                      description: function() {
+                        return getDesc("MetaClassPropertyCounter")},
                       type: GraphQLInt,
                     },
                     topOccurrences: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "TopOccurrences",
-                      description: "most frequent property values",
+                      description: function() {
+                        return getDesc("MetaClassPropertyTopOccurrences")},
                       type: new GraphQLList( topOccurrencesType )
                     }
                   }
@@ -390,36 +440,43 @@ function createMetaSubClasses(ontologyThings){
                 description: "Meta information about the property \"" + singleClassProperty.name + "\"",
                 type: new GraphQLObjectType({
                   name: "Meta" + singleClass.class + singleClassProperty.name + "Obj",
-                  description: "Property meta information",
+                  description: function() {
+                    return getDesc("MetaClassPropertyObj")},
                   fields: {
                     type: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Type",
-                      description: "datatype of the property",
+                      description: function() {
+                        return getDesc("MetaClassPropertyType")},
                       type: GraphQLString,
                     },
                     lowest: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Lowest",
-                      description: "Lowest value occurrence",
+                      description: function() {
+                        return getDesc("FetchFilterPathField")},
                       type: GraphQLFloat,
                     },
                     highest: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Highest",
-                      description: "Highest value occurrence",
+                      description: function() {
+                        return getDesc("MetaClassPropertyLowest")},
                       type: GraphQLFloat,
                     },
                     average: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Average",
-                      description: "average number",
+                      description: function() {
+                        return getDesc("MetaClassPropertyHighest")},
                       type: GraphQLFloat,
                     },
                     counter: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Counter",
-                      description: "total amount of found instances",
+                      description: function() {
+                        return getDesc("MetaClassPropertyCounter")},
                       type: GraphQLInt,
                     },
                     sum: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Sum",
-                      description: "sum of values of found instances",
+                      description: function() {
+                        return getDesc("MetaClassPropertySum")},
                       type: GraphQLFloat,
                     }
                   }
@@ -431,26 +488,31 @@ function createMetaSubClasses(ontologyThings){
                 description: "Meta information about the property \"" + singleClassProperty.name + "\"",
                 type: new GraphQLObjectType({
                   name: "Meta" + singleClass.class + singleClassProperty.name + "Obj",
-                  description: "Property meta information",
+                  description: function() {
+                    return getDesc("MetaClassPropertyObj")},
                   fields: {
                     type: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Type",
-                      description: "datatype of the property",
+                      description: function() {
+                        return getDesc("MetaClassPropertyType")},
                       type: GraphQLString,
                     },
                     totalTrue: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "TotalTrue",
-                      description: "total amount of boolean value is true",
+                      description: function() {
+                        return getDesc("MetaClassPropertyTotalTrue")},
                       type: GraphQLInt,
                     },
                     percentageTrue: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "PercentageTrue",
-                      description: "percentage of boolean = true",
+                      description: function() {
+                        return getDesc("MetaClassPropertyPerentageTrue")},
                       type: GraphQLFloat,
                     },
                     counter: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Counter",
-                      description: "total amount of found instances",
+                      description: function() {
+                        return getDesc("MetaClassPropertyCounter")},
                       type: GraphQLInt,
                     }
                   }
@@ -768,8 +830,8 @@ function createNounFields(nouns, depth){
 /**
  * START CONSTRUCTING THE SERVICE
  */
-fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyThings) { // read things ontology
-  fs.readFile('schemas_small/actions_schema.json', 'utf8', function(err, ontologyActions) { // read actions ontology
+fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThings) { // read things ontology
+  fs.readFile('demo_schemas/actions_schema.json', 'utf8', function(err, ontologyActions) { // read actions ontology
     fs.readFile('schemas_small/nounlist.txt', 'utf8', function(err, nouns) { // read the nounlist
 
       // merge
@@ -790,18 +852,21 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
       // This is the root 
       var Weaviate = new GraphQLObjectType({
         name: 'WeaviateObj',
-        description: "Location of the root query",
+        description: function() {
+          return getDesc("WeaviateObj")},
         fields: {
           Local: {
             name: "WeaviateLocal",
-            description: "Locate on the local Weaviate",
+            description: function() {
+              return getDesc("WeaviateLocal")},
             resolve() {
               console.log("resolve WeaviateLocal")
               return [{}] // resolve with empty array
             },
             type: new GraphQLObjectType({
               name: "WeaviateLocalObj",
-              description: "Type of fetch on the internal Weaviate",
+              description: function() {
+                return getDesc("WeaviateLocalObj")},
               resolve() {
                 console.log("resolve WeaviateLocalObj")
                 return [{}] // resolve with empty array
@@ -809,28 +874,34 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
               fields: {
                 ConvertedFetch: {
                   name: "WeaviateLocalConvertedFetch",
-                  description: "Do a converted fetch to search Things or Actions on the local weaviate",
+                  description: function() {
+                    return getDesc("WeaviateLocalConvertedFetch")},
                   args: {
                     _filter: { 
                       name: "WeaviateLocalConvertedFetchFilter",
-                      description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+                      description: function() {
+                        return getDesc("WeaviateLocalConvertedFetchFilter")},
                       type: new GraphQLInputObjectType({
                         name: "WeaviateLocalConvertedFetchFilterInpObj",
-                        description: 'Filter options for the converted fetch search, to convert the data to the filter input',
+                        description: function() {
+                          return getDesc("WeaviateLocalConvertedFetchFilterInpObj")},
                         fields: filterFields
                       }) 
                     }
                   },
                   type: new GraphQLObjectType({
                     name: "WeaviateLocalConvertedFetchObj",
-                    description: "Fetch things or actions on the internal Weaviate",
+                    description: function() {
+                      return getDesc("WeaviateLocalConvertedFetchObj")},
                     fields: {
                       Things: {
                         name: "WeaviateLocalConvertedFetchThings",
-                        description: "Locate Things on the local Weaviate",
+                        description: function() {
+                          return getDesc("WeaviateLocalConvertedFetchThings")},
                         type: new GraphQLObjectType({
                           name: "WeaviateLocalConvertedFetchThingsObj",
-                          description: "Fetch things on the internal Weaviate",
+                          description: function() {
+                            return getDesc("WeaviateLocalConvertedFetchThingsObj")},
                           fields: rootClassesThingsFields
                         }),
                         resolve(parentValue) {
@@ -840,10 +911,12 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                       },
                       Actions: {
                         name: "WeaviateLocalConvertedFetchActions",
-                        description: "Locate Actions on the local Weaviate",
+                        description: function() {
+                          return getDesc("WeaviateLocalConvertedFetchActions")},
                         type: new GraphQLObjectType({
                           name: "WeaviateLocalConvertedFetchActionsObj",
-                          description: "Fetch Actions on the internal Weaviate",
+                          description: function() {
+                            return getDesc("WeaviateLocalConvertedFetchActionsObj")},
                           fields: rootClassesActionsFields
                         }),
                         resolve(parentValue) {
@@ -860,19 +933,26 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                 },
                 HelpersFetch: {
                   name: "WeaviateLocalHelpersFetch",
-                  description: "Do a helpers fetch to search Things or Actions on the local weaviate",
+                  description: function() {
+                    return getDesc("WeaviateLocalHelpersFetch")},
                   type: new GraphQLObjectType({
                     name: "WeaviateLocalHelpersFetchObj",
-                    description: "Fetch things or actions on the internal Weaviate",
+                    description: function() {
+                      return getDesc("WeaviateLocalHelpersFetchObj")},
                     fields: {
                       PinPoint: {
                         name: "WeaviateLocalHelpersFetchPinPoint",
-                        description: "Find a set of exact ID's of Things or Actions on the local Weaviate",
+                        description: function() {
+                          return getDesc("WeaviateLocalHelpersFetchPinPoint")},
                         args: {
                           _stack: {
-                            description: "Things or Actions",
+                            name: "WeaviateLocalHelpersFetchPinPointStack",
+                            description: function() {
+                              return getDesc("WeaviateLocalHelpersFetchPinPointStack")},
                             type: new GraphQLEnumType({
                               name: "WeaviateLocalHelpersFetchPinPointStackEnum",
+                              description: function() {
+                                return getDesc("WeaviateLocalHelpersFetchPinPointStackEnum")},
                               values: {
                                 Things: {
                                   value: 0,
@@ -884,20 +964,30 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                             })
                           }, //Things or Actions ENUM
                           _classes: {
-                            description: "an array of potential classes (they should be in the ontology!)",
+                            name: "WeaviateLocalHelpersFetchPinPointClasses",
+                            description: function() {
+                              return getDesc("WeaviateLocalHelpersFetchPinPointClasses")},
                             type: new GraphQLList(classesEnum)
                           },
                           _properties: {
-                            description: "an array of potential classes",
+                            name: "WeaviateLocalHelpersFetchPinPointProperties",
+                            description: function() {
+                              return getDesc("WeaviateLocalHelpersFetchPinPointProperties")},
                             type: new GraphQLList(GraphQLString)
                           }, //an array of potential classes (they should be in the ontology, ideally related to the class!)
                           _needle: {
-                            description: "the actual field that will be used in the search.",
+                            name: "WeaviateLocalHelpersFetchPinPointNeedle",
+                            description: function() {
+                              return getDesc("WeaviateLocalHelpersFetchPinPointNeedle")},
                             type: GraphQLString}, // (for example: __needle: "Netflix"
                           _searchType: {
-                            description: "the type of search.",
+                            name: "WeaviateLocalHelpersFetchPinPointSearchType",
+                            description: function() {
+                              return getDesc("WeaviateLocalHelpersFetchPinPointSearchType")},
                             type: new GraphQLEnumType({
                               name: "WeaviateLocalHelpersFetchPinPointSearchTypeEnum",
+                              description: function() {
+                                return getDesc("WeaviateLocalHelpersFetchPinPointSearchTypeEnum")},
                               values: {
                                 standard: {
                                   value: 0,
@@ -906,16 +996,20 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                             })
                           }, 
                           _limit: {
-                            description: "limit of search results",
+                            name: "WeaviateLocalHelpersFetchPinPointLimit",
+                            description: function() {
+                              return getDesc("WeaviateLocalHelpersFetchPinPointLimit")},
                             type: GraphQLInt}
                         },
                         type: new GraphQLObjectType({
                           name: "WeaviateLocalHelpersFetchPinPointObj",
-                          description: "Fetch uuid of Things or Actions on the internal Weaviate",
+                          description: function() {
+                            return getDesc("WeaviateLocalHelpersFetchPinPointObj")},
                           fields: {
                             uuid: {
                               name: "WeaviateLocalHelpersFetchPinPointUuid",
-                              description: "uuid of thing or action pinpointed in fetch query",
+                              description: function() {
+                                return getDesc("WeaviateLocalHelpersFetchPinPointUuid")},
                               type: GraphQLID,
                               resolve(parentValue) {
                                 console.log("resolve WeaviateLocalHelpersFetchPinPointUuid")
@@ -938,41 +1032,51 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                 },
                 MetaFetch: {
                   name: "WeaviateLocalMetaFetch",
-                  description: "Fetch meta infromation about Things or Actions on the local weaviate",
+                  description: function() {
+                    return getDesc("WeaviateLocalMetaFetch")},
                   args: {
                     _filter: { 
                       name: "WeaviateLocalMetaFetchFilter",
-                      description: 'Filter options for the meta fetch search, to convert the data to the filter input',
+                      description: function() {
+                        return getDesc("WeaviateLocalMetaFetchFilter")},
                       type: new GraphQLInputObjectType({
                         name: "WeaviateLocalMetaFetchFilterInpObj",
-                        description: 'Filter options for the meta fetch search, to convert the data to the filter input',
+                        description: function() {
+                          return getDesc("WeaviateLocalMetaFetchFilterInpObj")},
                         fields: filterFields
                       }) 
                   }
                   },
                   type: new GraphQLObjectType({
                     name: "WeaviateLocalMetaFetchObj",
-                    description: "Fetch things or actions on the internal Weaviate",
+                    description: function() {
+                      return getDesc("WeaviateLocalMetaFetchObj")},
                     fields: {
                       Generics: {
                         name: "WeaviateLocalMetaFetchGenerics",
-                        description: "Fetch generic meta information based on the type",
+                        description: function() {
+                          return getDesc("WeaviateLocalMetaFetchGenerics")},
                         type: new GraphQLObjectType({
                           name: "WeaviateLocalMetaFetchGenericsObj",
-                          description: "Object type to fetch",
+                          description: function() {
+                            return getDesc("WeaviateLocalMetaFetchGenericsObj")},
                           fields: {
                             Things: {
                               name: "WeaviateLocalMetaFetchGenericsThings",
-                              description: "Thing to fetch for meta generic fetch",
+                              description: function() {
+                                return getDesc("WeaviateLocalMetaFetchGenericsThings")},
                               args: {
                                 _maxArraySize: { 
-                                  description: "If there are arrays in the result, limit them to this size",
+                                  name: "WeaviateLocalMetaFetchGenericsMaxArraySize",
+                                  description: function() {
+                                    return getDesc("WeaviateLocalMetaFetchGenericsMaxArraySize")},
                                   type: GraphQLString 
                                 } 
                               },
                               type: new GraphQLObjectType({
                                 name: "WeaviateLocalMetaFetchGenericsThingsObj",
-                                description: "Thing to fetch for meta generic fetch",
+                                description: function() {
+                                  return getDesc("WeaviateLocalMetaFetchGenericsThingsObj")},
                                 fields: metaRootClassesThingsFields
                               }),
                               resolve(parentValue, args) {
@@ -982,16 +1086,20 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                             }, 
                             Actions: {
                               name: "WeaviateLocalMetaFetchGenericsActions",
-                              description: "Action to fetch for meta generic fetch",
+                              description: function() {
+                                return getDesc("WeaviateLocalMetaFetchGenericsActions")},
                               args: {
                                 _maxArraySize: { 
-                                  description: "If there are arrays in the result, limit them to this size",
+                                  name: "WeaviateLocalMetaFetchGenericsMaxArraySize",
+                                  description: function() {
+                                    return getDesc("WeaviateLocalMetaFetchGenericsMaxArraySize")},
                                   type: GraphQLString 
                                 } 
                               },
                               type: new GraphQLObjectType({
                                 name: "WeaviateLocalMetaFetchGenericsActionsObj",
-                                description: "Action to fetch for meta generic fetch",
+                                description: function() {
+                                  return getDesc("WeaviateLocalMetaFetchGenericsActionsObj")},
                                 fields: metaRootClassesActionsFields
                               }),
                               resolve(parentValue, args) {
@@ -1018,14 +1126,17 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
           },
           Network: {
             name: "WeaviateNetwork",
-            description: "Locate on the Weaviate network",
+            description: function() {
+              return getDesc("WeaviateNetwork")},
             type: new GraphQLObjectType({
               name: "WeaviateNetworkObj",
-              description: "Type of fetch on the Weaviate network",
+              description: function() {
+                return getDesc("WeaviateNetworkObj")},
               fields: {
                 FuzzyFetch: {
                   name: "WeaviateNetworkFuzzyFetch",
-                  description: "Do a fuzzy search fetch to search Things or Actions on the network weaviate",
+                  description: function() {
+                    return getDesc("WeaviateNetworkFuzzyFetch")},
                   type: new GraphQLList(GraphQLString), // no input required yet
                   resolve() {
                     console.log("resolve WeaviateNetworkFuzzyFetch")
@@ -1034,38 +1145,46 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                 },
                 HelpersFetch: {
                   name: "WeaviateNetworkHelpersFetch",
-                  description: "Do a fetch with help to search Things or Actions on the network weaviate",
+                  description: function() {
+                    return getDesc("WeaviateNetworkHelpersFetch")},
                   type: new GraphQLObjectType({
                     name: "WeaviateNetworkHelpersFetchObj",
-                    description: "search for things or actions on the network Weaviate",
+                    description: function() {
+                      return getDesc("WeaviateNetworkHelpersFetchObj")},
                     fields: {
                       OntologyExplorer: {
                         name: "WeaviateNetworkHelpersFetchOntologyExplorer",
-                        description: "search for things or actions on the network Weaviate",
+                        description: function() {
+                          return getDesc("WeaviateNetworkHelpersFetchOntologyExplorer")},
                         args: {
                           _distance: { 
                             name: "WeaviateNetworkHelpersFetchOntologyExplorerDistance",
-                            description: "maximum distance to other class instances",
+                            description: function() {
+                              return getDesc("WeaviateNetworkHelpersFetchOntologyExplorerDistance")},
                             type: GraphQLFloat 
                           }
                         },
                         type: new GraphQLObjectType({
                             name: "WeaviateNetworkHelpersFetchOntologyExplorerObj",
-                            description: "search for things or actions on the network Weaviate",
+                            description: function() {
+                              return getDesc("WeaviateNetworkHelpersFetchOntologyExplorerObj")},
                             fields: {
                               Things: {
                                 name: "WeaviateNetworkHelpersFetchOntologyExplorerThings",
-                                description: "Thing to fetch in network",
+                                description: function() {
+                                  return getDesc("WeaviateNetworkHelpersFetchOntologyExplorerThings")},
                                 args: {
                                   _distance: { 
                                     name: "WeaviateNetworkHelpersFetchOntologyExplorerThingsDistance",
-                                    description: "maximum distance to other instances",
+                                    description: function() {
+                                      return getDesc("WeaviateNetworkHelpersFetchOntologyExplorerThingsDistance")},
                                     type: GraphQLFloat 
                                   }
                                 },
                                 type: new GraphQLObjectType({
                                   name: "WeaviateNetworkHelpersFetchOntologyExplorerThingsObj",
-                                  description: "Thing to fetch for network fetch",
+                                  description: function() {
+                                    return getDesc("WeaviateNetworkHelpersFetchOntologyExplorerThingsObj")},
                                   fields: rootClassesThingsFields
                                 }),
                                 resolve(parentValue) {
@@ -1075,17 +1194,20 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                               }, 
                               Actions: {
                                 name: "WeaviateNetworkHelpersFetchOntologyExplorerActions",
-                                description: "Action to fetch in network",
+                                description: function() {
+                                  return getDesc("WeaviateNetworkHelpersFetchOntologyExplorerActions")},
                                 args: {
                                   _distance: { 
                                     name: "WeaviateNetworkHelpersFetchOntologyExplorerActionsDistance",
-                                    description: "maximum distance to other instances",
+                                    description: function() {
+                                      return getDesc("WeaviateNetworkHelpersFetchOntologyExplorerActionsDistance")},
                                     type: GraphQLFloat 
                                   }
                                 },
                                 type: new GraphQLObjectType({
                                   name: "WeaviateNetworkHelpersFetchOntologyExplorerActionsObj",
-                                  description: "Action to fetch for network fetch",
+                                  description: function() {
+                                    return getDesc("WeaviateNetworkHelpersFetchOntologyExplorerActionsObj")},
                                   fields: rootClassesActionsFields
                                 }),
                                 resolve(parentValue) {
@@ -1109,7 +1231,8 @@ fs.readFile('schemas_small/things_schema.json', 'utf8', function(err, ontologyTh
                 },
                 MetaFetch: {
                   name: "WeaviateNetworkMetaFetch",
-                  description: "To fetch meta information Things or Actions on the network weaviate",
+                  description: function() {
+                    return getDesc("WeaviateNetworkMetaFetch")},
                   type: new GraphQLList(GraphQLString), // no input required yet
                   resolve() {
                     console.log("resolve WeaviateNetworkMetaFetch")
