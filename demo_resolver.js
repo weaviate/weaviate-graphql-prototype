@@ -80,7 +80,12 @@ const solve_filter = function (filters, operator) {
 
 module.exports = {
 	resolveConvertedFetch: function(filters) {
-		return solve_filter(filters, "AND")
+		if (filters) {
+			return solve_filter(filters, "AND")
+		}
+		else {
+			return data
+		}
    },
    rootClassResolver: function(return_data, className, args) {
 	   // return data
