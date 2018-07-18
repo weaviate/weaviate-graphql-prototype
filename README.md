@@ -1,81 +1,181 @@
-# Run prototype
+# GraphQL API
 
+## Usage
+
+To run the prototype: 
 - Install `npm install -g nodemon`
 - Install packages: `npm install`
 - Run: `nodemon server_small.js`
+The GraphQL API prototype will be running at `http://localhost:8081/`. To expore, you can use GraphiQL (an in-browser IDE for exploring GraphQL APIs), which can be found at `http://localhost:8081/graphql`.
 
-# Run cli tool
-
-- `npm install -g graphql-cli`
+To run the CLI tool:
+- Install `npm install -g graphql-cli`
 - `cd` into a new dir
 - `graphql init` (schema for this prototype = `http://localhost:8081/graphql`)
 
-Get the schema:
-- `graphql get-schema`
+To get the full graphql schema by the CLI tool:
+- Run: `graphql get-schema`
+The result will be in `./schema.graphql`
 
-Result will be in: `./schema.graphql`
+To get the full schema definitions by a graphql introspection query:
+- Install: `npm install -g graphdoq`
+- DESCRIBE HOW TO DO INTROSPECTION AND GET THE SCHEMA GENERATED DOCUMENTATION
+- Run: `graphdoc -s ./introspection_result.json -o documentation`
+The result will be in the folder `documentation`
 
-Get complete schema definitions:
-- Install: `npm install -g graphql-markdown`
-- Run: `graphql-markdown http://localhost:8081/graphql > docs/schema_definitions.md`
 
-# Naming conventions
+## Query API
 
-Names of query fields are structured as follows. 
-The root query is called 'Weaviate'. The GraphQL Object Type names of the fields are built on top of the root query, so that the names trickle down the path of the query.
-For example, the query 
+In this section, some example queries will be clarified. A full schema definition can be found HERE or at the GraphiQL IDE when you are running the prototype at `http://localhost:8081/graphql`.
 
-```
+##### Fetch Things in a converted way on a local Weaviate instance
+Fetch information about all Things from a specified class.
+In this case all airports will be returned, with information about properties references to cities and countries nested in these Things. Note that when the property refers to a class (like `InCity` and `InCountry`), these fields start with a capital (although this is not the case in the original schema where all property names start with small letters). These fields are filled with an object mentioning the Class as an object like `...on <Class> {<property>}`.
+
+``` graphql
 {
-  	Local{
-    	TargetedFetch{
-			Things{
-				City{
-					name
-				}
-			}
-		}
-  	}
+  Local{
+    ConvertedFetch{
+      Things{
+        Airport{
+          code
+          name
+          InCity{
+            ...on City{
+              name
+              population
+              coordinates
+              isCapital
+              InCountry{
+                ...on Country{
+                  name
+                  population
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 ```
 
-Has GraphQLObjectType names:
+##### Fetch Things in a converted way on a local Weaviate instance with filters
+The query below returns information about all airports which lie in a city with a population bigger than 1,000,000, AND which also lies in the Netherlands. Filters for the converted fetch always contain a `path` and a `value`. The path always starts with `Actions` or `Things`, and then follows the path of classes and properties to the last property to which value the result should be equal to. `value` is always a string or `null`. Possible filters are:
+- EQ (equality)
+- NEQ (not equal)
+- IE (inequality): Where the value should always be a string, with a comparson operator followed by a number. Possible comparison operators:
+    - `>` (bigger than)
+    - `=>` or `>=` (bigger than or equal to)
+    - `<` (smaller than)
+    - `=<` or `<=` (smaller than or equal to)
 
-```
+``` graphql
 {
-	<WeaviateObj>{
-		<WeaviateLocalObj>{
-			<WeaviateLocalTargetedFetchObj>{
-				<WeaviateLocalTargetedFetchThingsObj>{
-						<PropertyName>
-				}
-			}
-		}
-	}
+  Local{
+    ConvertedFetch(_filter:{
+        EQ: [{
+            path: ["Things", "Airport", "inCity", "City", "inCountry", "Country", "name"],
+            value: "Netherlands"
+        }],
+        IE: [{
+            path: ["Things", "Airport", "inCity", "City", "population"],
+            value: ">1000000"
+        }]
+    }){
+      Things{
+        Airport{
+          code
+          name
+          InCity{
+            ...on City{
+                name
+                population
+                coordinates
+                isCapital
+                InCountry{
+                      ...on Country{
+                          name
+                          population
+                    }
+                  }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 ```
 
-Important to note is that the GraphQLObjectTypes names itself end with `Obj`, while the Field names do not. The Field names of the objects in the example above are:
+##### Fetch Things in a converted way on a local Weaviate instance with arbitratry AND an OR filters
+Filter combinators `OR` and `AND` can be used to create an arbitrary logical combination of filter conditions. When multiple filters are written, but no `OR` or `AND` operator is specified, the filters will be applied and solved as an `AND` combination. 
+The query below returns all cities where either (at least one of the followinf conditions should hold):
+- The population is between 1,000,000 and 10,000,000
+- The city is a capital
 
-```
+``` graphql
 {
-	<WeaviateLocal>{
-		<WeaviateLocalTargetedFetch>{
-			<WeaviateLocalTargetedFetchThings>{
-				City{
-					name
-				}
-			}
-		}
-	}
+  Local{
+    ConvertedFetch(_filter:{
+        OR: {
+            AND: {
+                EQ: [{
+                    path: ["Things", "City", "population"],
+                    value: ">1000000"
+                }],
+                IE: [{
+                    path: ["Things", "City", "population"],
+                    value: "<10000000"
+                }]
+            }, {
+                EQ: [{
+                    path: ["Things", "City", "isCapital"],
+                    value: "true"
+                }]
+            }
+            
+        }
+
+    }){
+      Things{
+        City{
+        name
+        population
+        coordinates
+        isCapital
+      }
+    }
+  }
 }
 ```
+
+
+##### Pagination
+Pagination allows to request a certain amount of Things or Actions at one query. The arguments `_limit` and `_skip` can be combined in the query for classes of Things and Actions, where
+- `_limit` is an integer with the maximum amount of returned nodes.
+- `_skip` is an integer representing how many nodes should be skipped in the returned data.
+
+``` graphql
+{
+  Local{
+    ConvertedFetch{
+      Things{
+        City(_limit:10, _skip:2){
+        name
+        population
+        coordinates
+        isCapital
+      }
+    }
+  }
+}
+```
+
+
 
 # Schema definitions
-
-# Schema Types
-
-# Schema Types
 
 <details>
   <summary><strong>Table of Contents</strong></summary>
