@@ -143,20 +143,6 @@ var resolve_EQ = function (filter) {
 		var object = object_list[j]
 
 		for (var p=1; p < path.length; p++) { // loop over rest of items in path
-			// if (path[p][0] !== path[p][0].toUpperCase()) { // path item is property (or: string starts with small letter)
-			// 	if (p == (path.length - 1)) { // if last item in path list 
-			// 		if (value == object[path[p]] || value == String(object[path[p]]).toLowerCase()) { // if property value is same as path prop object value
-			// 			new_list = _.union(new_list, [object_list[j]])
-			// 		}
-			// 	} else {
-			// 		object = object[path[p]]
-			// 	}
-			// 	continue
-			// }
-			// else if (object.class === path[p]) {
-			// 	continue
-			// }
-
 			if (object.class === path[p]) {
 				continue
 			}
@@ -168,7 +154,6 @@ var resolve_EQ = function (filter) {
 								new_list = _.union(new_list, [object_list[j]])
 							}
 						} else {
-							console.log(object)
 							if (path[p][0] !== path[p][0].toUpperCase()) {
 								object = object[path[p]]
 							}
@@ -181,7 +166,6 @@ var resolve_EQ = function (filter) {
 					}
 				}
 			}
-			//else {break}
 		}
 	}
 	return_array[path[0]] = _.union(new_list, return_array[path[0]])
@@ -213,21 +197,30 @@ var resolve_NEQ = function (filter) {
 		var object = object_list[j]
 
 		for (var p=1; p < path.length; p++) { // loop over rest of items in path
-			if (path[p][0] !== path[p][0].toUpperCase()) { // path item is property (or: string starts with small letter)
-				if (p == (path.length - 1)) { // if last item in path list 
-					if (value == object[path[p]] || value == String(object[path[p]]).toLowerCase()) { // if property value is same as path prop object value
-						var index = short_list.indexOf(object_list[j])
-						short_list.splice(index, 1)
+			if (object.class === path[p]) {
+				continue
+			}
+			else { // path item is property (or: string starts with small letter)
+				for (var key in object) {
+					if (key == path[p] || (key.toLowerCase() == path[p].toLowerCase())) {
+						if (p == (path.length - 1)) { // if last item in path list 
+							if (value == object[path[p]] || value == String(object[path[p]]).toLowerCase()) { // if property value is same as path prop object value
+								var index = short_list.indexOf(object_list[j])
+								short_list.splice(index, 1)
+							}
+						} else {
+							if (path[p][0] !== path[p][0].toUpperCase()) {
+								object = object[path[p]]
+							}
+							else { // object is undefined because capital differences
+								prop = path[p][0].toLowerCase() + path[p].substring(1)
+								object = object[prop]
+							}
+						}
+						continue
 					}
-				} else {
-					object = object[path[p]]
 				}
-				continue
 			}
-			else if (object.class === path[p]) {
-				continue
-			}
-			else {break}
 		}
 	}
 	return_list = _.union(return_list, short_list)
@@ -268,40 +261,48 @@ var resolve_IE = function (filters) {
 	for(var j=0; j < object_list.length; j++) {
 		var object = object_list[j]
 
-		for (var p=1; p < path.length; p++) { // loop over rest of items in path
-			if (path[p][0] !== path[p][0].toUpperCase()) { // path item is property (or: string starts with small letter)
-				if (p == (path.length - 1)) { // if last item in path list 
-					if (operator == ">") {
-						if (parseFloat(object[path[p]]) > number) {
-							//return_list.push(object_list[j])
-							return_list = _.union(return_list, [object_list[j]])
+		for (var p=1; p < path.length; p++) { // loop over rest of items in path			
+			if (object.class === path[p]) {
+				continue
+			}
+			else {
+				for (var key in object) {
+					if (key == path[p] || (key.toLowerCase() == path[p].toLowerCase())) {
+						if (p == (path.length - 1)) { // if last item in path list 
+							if (operator == ">") {
+								if (parseFloat(object[path[p]]) > number) {
+									//return_list.push(object_list[j])
+									return_list = _.union(return_list, [object_list[j]])
+								}
+							} else if (operator == "<" || operator == "<") {
+								if (parseFloat(object[path[p]]) < number) {
+									//return_list.push(object_list[j])
+									return_list = _.union(return_list, [object_list[j]])
+								}
+							} else if (operator == "=>" || operator == ">=") {
+								if (parseFloat(object[path[p]]) >= number) {
+									//return_list.push(object_list[j])
+									return_list = _.union(return_list, [object_list[j]])
+								}
+							} else if (operator == "=<" || operator == "<=") {
+								if (parseFloat(object[path[p]]) <= number) {
+									//return_list.push(object_list[j])
+									return_list = _.union(return_list, [object_list[j]])
+								}
+							}
+						} else {
+							if (path[p][0] !== path[p][0].toUpperCase()) {
+								object = object[path[p]]
+							}
+							else { // object is undefined because capital differences
+								prop = path[p][0].toLowerCase() + path[p].substring(1)
+								object = object[prop]
+							}
 						}
-					} else if (operator == "<" || operator == "<") {
-						if (parseFloat(object[path[p]]) < number) {
-							//return_list.push(object_list[j])
-							return_list = _.union(return_list, [object_list[j]])
-						}
-					} else if (operator == "=>" || operator == ">=") {
-						if (parseFloat(object[path[p]]) >= number) {
-							//return_list.push(object_list[j])
-							return_list = _.union(return_list, [object_list[j]])
-						}
-					} else if (operator == "=<" || operator == "<=") {
-						if (parseFloat(object[path[p]]) <= number) {
-							//return_list.push(object_list[j])
-							return_list = _.union(return_list, [object_list[j]])
-						}
+						continue
 					}
-
-				} else {
-					object = object[path[p]]
 				}
-				continue
 			}
-			else if (object.class === path[p]) {
-				continue
-			}
-			else {break}
 		}
 	}
 	var return_array = {}

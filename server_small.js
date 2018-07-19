@@ -1142,6 +1142,14 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
             name: "WeaviateNetwork",
             description: function() {
               return getDesc("WeaviateNetwork")},
+            args: {
+              _networkTimeout: { 
+                name: "WeaviateNetworkNetworkTimeout",
+                description: function() {
+                  return getDesc("WeaviateNetworkNetworkTimeout")},
+                type: GraphQLInt
+              } 
+            },
             type: new GraphQLObjectType({
               name: "WeaviateNetworkObj",
               description: function() {

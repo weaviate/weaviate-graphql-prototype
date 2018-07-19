@@ -92,5 +92,6 @@
 	"WeaviateNetworkHelpersFetchOntologyExplorerActions": "Action to fetch in network",
 	"WeaviateNetworkHelpersFetchOntologyExplorerActionsDistance": "maximum distance to other instances",
 	"WeaviateNetworkHelpersFetchOntologyExplorerActionsObj": "Action to fetch for network fetch",
-	"WeaviateNetworkMetaFetch": "To fetch meta information Things or Actions on the network weaviate"
+	"WeaviateNetworkMetaFetch": "To fetch meta information Things or Actions on the network weaviate",
+	"WeaviateNetworkNetworkTimeout": "the max time to request an answer from the network. It is the time in seconds"
 }
