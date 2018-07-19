@@ -288,7 +288,7 @@ function createMetaSubClasses(ontologyThings){
         // declare props that should be returned
         var returnProps = {}
 
-        returnProps["Meta"] = {
+        returnProps["meta"] = {
           name: "Meta"+ singleClass.class + "Meta",
           description: function() {
             return getDesc("MetaClassMeta")},
@@ -429,7 +429,21 @@ function createMetaSubClasses(ontologyThings){
                       name: "Meta" + singleClass.class + singleClassProperty.name + "TopOccurrences",
                       description: function() {
                         return getDesc("MetaClassPropertyTopOccurrences")},
-                      type: new GraphQLList( topOccurrencesType )
+                      type: new GraphQLList( topOccurrencesType ),
+                      args: {
+                        _limit: { 
+                          name: "limitFilter",
+                          description: function() {
+                            return getDesc("limitFilter")},
+                          type: GraphQLInt 
+                        },
+                        _skip: { 
+                          name: "skipFilter",
+                          description: function() {
+                            return getDesc("skipFilter")},
+                          type: GraphQLInt 
+                        }
+                      }
                     }
                   }
                 })

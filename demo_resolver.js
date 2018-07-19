@@ -142,21 +142,46 @@ var resolve_EQ = function (filter) {
 	for(var j=0; j < object_list.length; j++) {
 		var object = object_list[j]
 
-		for (var p=1; p < path.length; p++) { // loop over rest of items in pathy
-			if (path[p][0] !== path[p][0].toUpperCase()) { // path item is property (or: string starts with small letter)
-				if (p == (path.length - 1)) { // if last item in path list 
-					if (value == object[path[p]] || value == String(object[path[p]]).toLowerCase()) { // if property value is same as path prop object value
-						new_list = _.union(new_list, [object_list[j]])
+		for (var p=1; p < path.length; p++) { // loop over rest of items in path
+			// if (path[p][0] !== path[p][0].toUpperCase()) { // path item is property (or: string starts with small letter)
+			// 	if (p == (path.length - 1)) { // if last item in path list 
+			// 		if (value == object[path[p]] || value == String(object[path[p]]).toLowerCase()) { // if property value is same as path prop object value
+			// 			new_list = _.union(new_list, [object_list[j]])
+			// 		}
+			// 	} else {
+			// 		object = object[path[p]]
+			// 	}
+			// 	continue
+			// }
+			// else if (object.class === path[p]) {
+			// 	continue
+			// }
+
+			if (object.class === path[p]) {
+				continue
+			}
+			else { // path item is property (or: string starts with small letter)
+				for (var key in object) {
+					if (key == path[p] || (key.toLowerCase() == path[p].toLowerCase())) {
+						if (p == (path.length - 1)) { // if last item in path list 
+							if (value == object[path[p]] || value == String(object[path[p]]).toLowerCase()) { // if property value is same as path prop object value
+								new_list = _.union(new_list, [object_list[j]])
+							}
+						} else {
+							console.log(object)
+							if (path[p][0] !== path[p][0].toUpperCase()) {
+								object = object[path[p]]
+							}
+							else { // object is undefined because capital differences
+								prop = path[p][0].toLowerCase() + path[p].substring(1)
+								object = object[prop]
+							}
+						}
+						continue
 					}
-				} else {
-					object = object[path[p]]
 				}
-				continue
 			}
-			else if (object.class === path[p]) {
-				continue
-			}
-			else {break}
+			//else {break}
 		}
 	}
 	return_array[path[0]] = _.union(new_list, return_array[path[0]])
@@ -319,130 +344,130 @@ const meta_data = [{
 }]
 
 
-// object - list - objects (things) - strings or objects
-const data = {
-	"Things": [{
-		"class": "City",
-		"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-		"name": "Amsterdam",
-		"latitude": 25.4,
-		"population": "1800000",
-		"isCapital": true,
-		}, 	{
-		"class": "City",
-		"uuid": "6f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-		"name": "Rotterdam",
-		"latitude": 95.4,
-		"population": "1300000",
-		"isCapital": false,
-	}, 	{
-		"class": "Person",
-		"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-		"livesIn": {
-			"class": "City",
-			"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-			"name": "Amsterdam",
-			"latitude": 25.4,
-			"population": "1800000",
-			"isCapital": true,
-		},
-		"birthday": "01-02-1996",
-	}, 	{
-		"class": "Person",
-		"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b5f",
-		"livesIn": {
-			"class": "City",
-			"uuid": "6f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-			"name": "Rotterdam",
-			"latitude": 95.4,
-			"population": "1300000",
-			"isCapital": false,
-		},
-		"birthday": "11-12-1986",
-	}, 	{
-		"class": "Person",
-		"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045asdfjk",
-		"livesIn": {
-			"class": "Person",
-			"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-			"livesIn": {
-				"class": "City",
-				"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-				"name": "Amsterdam",
-				"latitude": 25.4,
-				"population": "1800000",
-				"isCapital": true,
-			},
-			"birthday": "01-02-1996",
-		},
-		"birthday": "01-02-1996",
-	}],
-	"Actions": [{
-		"class": "MoveAction",
-		"uuid": "7f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-		"person": {
-			"class": "Person",
-			"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-			"livesIn": {
-				"class": "City",
-				"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-				"name": "Amsterdam",
-				"latitude": 25.4,
-				"population": "1800000",
-				"isCapital": true,
-			},
-			"birthday": "01-02-1996",
-		},
-		"toCity": {
-			"class": "City",
-			"uuid": "6f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-			"name": "Rotterdam",
-			"latitude": 95.4,
-			"population": "1300000",
-			"isCapital": false,
-		},
-		"fromCity": {
-			"class": "City",
-			"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-			"name": "Amsterdam",
-			"latitude": 25.4,
-			"population": "1800000",
-			"isCapital": true,
-		}
-	}, {
-		"class": "MoveAction",
-		"uuid": "7f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-		"person": {
-			"class": "Person",
-			"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-			"livesIn": {
-				"class": "City",
-				"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-				"name": "Amsterdam",
-				"latitude": 25.4,
-				"population": "1800000",
-				"isCapital": true,
-			},
-			"birthday": "01-02-1996",
-		},
-		"toCity": {
-			"class": "City",
-			"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-			"name": "Amsterdam",
-			"latitude": 25.4,
-			"population": "1800000",
-			"isCapital": true,
-		},
-		"fromCity": {
-			"class": "City",
-			"uuid": "6f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-			"name": "Rotterdam",
-			"latitude": 95.4,
-			"population": "1300000",
-			"isCapital": false,
-		}
-	}]
-}
+// // object - list - objects (things) - strings or objects
+// const data = {
+// 	"Things": [{
+// 		"class": "City",
+// 		"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 		"name": "Amsterdam",
+// 		"latitude": 25.4,
+// 		"population": "1800000",
+// 		"isCapital": true,
+// 		}, 	{
+// 		"class": "City",
+// 		"uuid": "6f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 		"name": "Rotterdam",
+// 		"latitude": 95.4,
+// 		"population": "1300000",
+// 		"isCapital": false,
+// 	}, 	{
+// 		"class": "Person",
+// 		"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 		"livesIn": {
+// 			"class": "City",
+// 			"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 			"name": "Amsterdam",
+// 			"latitude": 25.4,
+// 			"population": "1800000",
+// 			"isCapital": true,
+// 		},
+// 		"birthday": "01-02-1996",
+// 	}, 	{
+// 		"class": "Person",
+// 		"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b5f",
+// 		"livesIn": {
+// 			"class": "City",
+// 			"uuid": "6f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 			"name": "Rotterdam",
+// 			"latitude": 95.4,
+// 			"population": "1300000",
+// 			"isCapital": false,
+// 		},
+// 		"birthday": "11-12-1986",
+// 	}, 	{
+// 		"class": "Person",
+// 		"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045asdfjk",
+// 		"livesIn": {
+// 			"class": "Person",
+// 			"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 			"livesIn": {
+// 				"class": "City",
+// 				"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 				"name": "Amsterdam",
+// 				"latitude": 25.4,
+// 				"population": "1800000",
+// 				"isCapital": true,
+// 			},
+// 			"birthday": "01-02-1996",
+// 		},
+// 		"birthday": "01-02-1996",
+// 	}],
+// 	"Actions": [{
+// 		"class": "MoveAction",
+// 		"uuid": "7f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 		"person": {
+// 			"class": "Person",
+// 			"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 			"livesIn": {
+// 				"class": "City",
+// 				"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 				"name": "Amsterdam",
+// 				"latitude": 25.4,
+// 				"population": "1800000",
+// 				"isCapital": true,
+// 			},
+// 			"birthday": "01-02-1996",
+// 		},
+// 		"toCity": {
+// 			"class": "City",
+// 			"uuid": "6f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 			"name": "Rotterdam",
+// 			"latitude": 95.4,
+// 			"population": "1300000",
+// 			"isCapital": false,
+// 		},
+// 		"fromCity": {
+// 			"class": "City",
+// 			"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 			"name": "Amsterdam",
+// 			"latitude": 25.4,
+// 			"population": "1800000",
+// 			"isCapital": true,
+// 		}
+// 	}, {
+// 		"class": "MoveAction",
+// 		"uuid": "7f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 		"person": {
+// 			"class": "Person",
+// 			"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 			"livesIn": {
+// 				"class": "City",
+// 				"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 				"name": "Amsterdam",
+// 				"latitude": 25.4,
+// 				"population": "1800000",
+// 				"isCapital": true,
+// 			},
+// 			"birthday": "01-02-1996",
+// 		},
+// 		"toCity": {
+// 			"class": "City",
+// 			"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 			"name": "Amsterdam",
+// 			"latitude": 25.4,
+// 			"population": "1800000",
+// 			"isCapital": true,
+// 		},
+// 		"fromCity": {
+// 			"class": "City",
+// 			"uuid": "6f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
+// 			"name": "Rotterdam",
+// 			"latitude": 95.4,
+// 			"population": "1300000",
+// 			"isCapital": false,
+// 		}
+// 	}]
+// }
 
 
 /*
@@ -495,3 +520,190 @@ var weaviate_data = {"things": [
 	}
 ]}
 */
+
+
+const data = {
+	"Things": [{
+		"class": "City",
+		"uuid": "001",
+		"name": "Amsterdam",
+		"coordinate": "N52, E004",
+		"population": "1800000",
+		"isCapital": true,
+		"coordinates": "N50, E004",
+		"inCountry": {
+			"class": "Country",
+			"uuid": "005",
+			"name": "Netherlands",
+			"population": "17000000"
+			}
+		}, {
+		"class": "City",
+		"uuid": "002",
+		"name": "Rotterdam",
+		"coordinate": "N50, E004",
+		"population": "1800000",
+		"isCapital": false,
+		"inCountry": {
+			"class": "Country",
+			"uuid": "005",
+			"name": "Netherlands",
+			"population": "17000000"
+			}
+		}, {
+		"class": "City",
+		"uuid": "003",
+		"name": "Berlin",
+		"coordinate": "N52, E007",
+		"population": "3470000",
+		"isCapital": true,
+		"inCountry": {
+			"class": "Country",
+			"uuid": "006",
+			"name": "Germany",
+			"population": "83000000"
+			}
+		}, {
+		"class": "City",
+		"uuid": "004",
+		"name": "Dusseldorf",
+		"coordinate": "N48, E005",
+		"population": "600000",
+		"isCapital": false,
+		"inCountry": {
+			"class": "Country",
+			"uuid": "006",
+			"name": "Germany",
+			"population": "83000000"
+			}
+		}, {
+		"class": "Country",
+		"uuid": "005",
+		"name": "Netherlands",
+		"population": "17000000"
+		}, {
+		"class": "Country",
+		"uuid": "006",
+		"name": "Germany",
+		"population": "83000000"
+		}, {
+		"class": "Person",
+		"uuid": "007",
+		"livesIn": {
+			"class": "City",
+			"uuid": "004",
+			"name": "Dusseldorf",
+			"coordinate": "N48, E005",
+			"population": "600000",
+			"isCapital": false,
+			"inCountry": {
+				"class": "Country",
+				"uuid": "006",
+				"name": "Germany",
+				"population": "83000000"
+				}
+		},
+		"nationality": {
+			"class": "Country",
+			"uuid": "006",
+			"name": "Germany",
+			"population": "83000000"
+			}
+		}, {
+		"class": "Person",
+		"uuid": "008",
+		"livesIn": {
+			"class": "City",
+			"uuid": "001",
+			"name": "Amsterdam",
+			"coordinate": "N52, E004",
+			"population": "1800000",
+			"isCapital": true,
+			"inCountry": {
+				"class": "Country",
+				"uuid": "005",
+				"name": "Netherlands",
+				"population": "17000000"
+				}
+		},
+		"nationality": {
+			"class": "Country",
+			"uuid": "005",
+			"name": "Netherlands",
+			"population": "17000000"
+			}
+		}, {
+		"class": "Airport",
+		"uuid": "009",
+		"inCity": {
+			"class": "City",
+			"uuid": "001",
+			"name": "Amsterdam",
+			"coordinate": "N52, E004",
+			"population": "1800000",
+			"isCapital": true,
+			"inCountry": {
+				"class": "Country",
+				"uuid": "005",
+				"name": "Netherlands",
+				"population": "17000000"
+				}
+		},
+		"code": "10000"
+		}, {
+		"class": "Airport",
+		"uuid": "010",
+		"inCity": {
+			"class": "City",
+			"uuid": "002",
+			"name": "Rotterdam",
+			"coordinate": "N50, E004",
+			"population": "1800000",
+			"isCapital": false,
+			"inCountry": {
+				"class": "Country",
+				"uuid": "005",
+				"name": "Netherlands",
+				"population": "17000000"
+				}
+		},
+		"code": "20000"
+		}, {
+		"class": "Airport",
+		"uuid": "011",
+		"inCity": {
+			"class": "City",
+			"uuid": "004",
+			"name": "Dusseldorf",
+			"coordinate": "N48, E005",
+			"population": "600000",
+			"isCapital": false,
+			"inCountry": {
+				"class": "Country",
+				"uuid": "006",
+				"name": "Germany",
+				"population": "83000000"
+				}
+		},
+		"code": "30000"
+		}, {
+		"class": "Airport",
+		"uuid": "012",
+		"inCity": {
+			"class": "City",
+			"uuid": "003",
+			"name": "Berlin",
+			"coordinate": "N52, E007",
+			"population": "3470000",
+			"isCapital": true,
+			"inCountry": {
+				"class": "Country",
+				"uuid": "006",
+				"name": "Germany",
+				"population": "83000000"
+				}
+		},
+		"code": "40000"
+	}
+]
+}
