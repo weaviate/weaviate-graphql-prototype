@@ -6,177 +6,65 @@
     "maintainer": "yourfriends@weaviate.com",
     "classes": [
         {
-            "class": "THING1",
-            "description": "DESCRIPTION THING 1",
+            "class": "THING1__",
+            "description": "DESCRIPTION THING 1__",
             "properties": [
                 {
-                    "name": "THING1_PROP1",
+                    "name": "thing1_prop1__",
                     "@dataType": [
                         "string"
                     ],
-                    "description": "DESCRIPTION THING1_PROP1",
-                    "keywords": [
-                        {
-                            "keyword": "name",
-                            "weight": 1.0
-                        },
-                        {
-                            "keyword": "official",
-                            "weight": 0.25
-                        },
-                        {
-                            "keyword": "name",
-                            "weight": 0.25
-                        },
-                        {
-                            "keyword": "city",
-                            "weight": 0.25
-                        }
-                    ]
+                    "description": "DESCRIPTION THING1_PROP1__",
+                    "keywords": []
                 },
                 {
-                    "name": "THING1_PROP2",
+                    "name": "thing1_prop2__",
                     "@dataType": [
                         "number"
                     ],
-                    "description": "DESCRIPTION THING1_PROP1",
-                    "keywords": [
-                        {
-                            "keyword": "latitude",
-                            "weight": 1.0
-                        },
-                        {
-                            "keyword": "city",
-                            "weight": 0.25
-                        },
-                        {
-                            "keyword": "latitude",
-                            "weight": 0.25
-                        }
-                    ]
+                    "description": "DESCRIPTION THING1_PROP1__",
+                    "keywords": []
                 },
                 {
-                    "name": "THING1_PROP3",
+                    "name": "thing1_prop3__",
                     "@dataType": [
                         "int"
                     ],
-                    "description": "DESCRIPTION THING1_PROP1",
-                    "keywords": [
-                        {
-                            "keyword": "population",
-                            "weight": 1.0
-                        },
-                        {
-                            "keyword": "number",
-                            "weight": 0.25
-                        },
-                        {
-                            "keyword": "inhabitants",
-                            "weight": 0.25
-                        },
-                        {
-                            "keyword": "city",
-                            "weight": 0.25
-                        }
-                    ]
+                    "description": "DESCRIPTION THING1_PROP1__",
+                    "keywords": []
                 },
                 {
-                    "name": "THING1_PROP4",
+                    "name": "thing1_prop4__",
                     "@dataType": [
                         "boolean"
                     ],
-                    "description": "DESCRIPTION THING1_PROP1",
-                    "keywords": [
-                        {
-                            "keyword": "is",
-                            "weight": 1.0
-                        },
-                        {
-                            "keyword": "capital",
-                            "weight": 1.0
-                        },
-                        {
-                            "keyword": "city",
-                            "weight": 0.25
-                        },
-                        {
-                            "keyword": "capital",
-                            "weight": 0.25
-                        }
-                    ]
+                    "description": "DESCRIPTION THING1_PROP1__",
+                    "keywords": []
                 }
             ],
-            "keywords": [
-                {
-                    "keyword": "city",
-                    "weight": 1.0
-                },
-                {
-                    "keyword": "city",
-                    "weight": 0.25
-                }
-            ]
+            "keywords": []
         },
         {
-            "class": "THING2",
-            "description": "DESCRIPTION THING2",
+            "class": "THING2__",
+            "description": "DESCRIPTION THING2__",
             "properties": [
                 {
-                    "name": "THING2_PROP1",
+                    "name": "thing2_prop1__",
                     "@dataType": [
-                        "THING1", "THING2"
+                        "THING1__", "THING2__"
                     ],
-                    "description": "DESCRIPTION THING2_PROP1",
-                    "keywords": [
-                        {
-                            "keyword": "lives",
-                            "weight": 1.0
-                        },
-                        {
-                            "keyword": "in",
-                            "weight": 1.0
-                        },
-                        {
-                            "keyword": "city",
-                            "weight": 0.5
-                        },
-                        {
-                            "keyword": "city",
-                            "weight": 0.25
-                        },
-                        {
-                            "keyword": "person",
-                            "weight": 0.25
-                        }
-                    ]
+                    "description": "DESCRIPTION THING2_PROP1__",
+                    "keywords": []
                 }, {
-                    "name": "THING2_PROP2",
+                    "name": "thing2_prop2__",
                     "@dataType": [
                         "date"
                     ],
-                    "description": "DESCRIPTION THING2_PROP2",
-                    "keywords": [
-                        {
-                            "keyword": "birthday",
-                            "weight": 1.0
-                        },
-                        {
-                            "keyword": "person",
-                            "weight": 0.25
-                        }
-                    ]
+                    "description": "DESCRIPTION THING2_PROP2__",
+                    "keywords": []
                 }
             ],
-            "keywords": [
-                {
-                    "keyword": "person",
-                    "weight": 1.0
-                },
-                {
-                    "keyword": "person",
-                    "weight": 0.25
-                }
-            ]
+            "keywords": []
         }
     ]
 }

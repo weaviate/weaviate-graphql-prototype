@@ -6,78 +6,27 @@
     "maintainer": "yourfriends@weaviate.com",
     "classes": [
         {
-            "class": "ACTION1",
-            "description": "DESCRIPTION ACTION1",
+            "class": "ACTION1__",
+            "description": "DESCRIPTION ACTION1__",
             "properties": [
                 {
-                    "name": "ACTION1_PROP1",
+                    "name": "action1_prop1__",
                     "@dataType": [
-                        "THING1"
+                        "THING1__"
                     ],
-                    "description": "DESCRIPTION ACTION1_PROP1",
-                    "keywords": [
-                        {
-                            "keyword": "person",
-                            "weight": 1.0
-                        },
-                        {
-                            "keyword": "person",
-                            "weight": 0.5
-                        },
-                        {
-                            "keyword": "person",
-                            "weight": 0.25
-                        }
-                    ]
+                    "description": "DESCRIPTION ACTION1_PROP1__",
+                    "keywords": []
                 },
                 {
-                    "name": "ACTION1_PROP2",
+                    "name": "action1_prop2__",
                     "@dataType": [
-                        "THING2", "string"
+                        "THING2__", "string"
                     ],
-                    "description": "DESCRIPTION ACTION1_PROP2",
-                    "keywords": [
-                        {
-                            "keyword": "to",
-                            "weight": 1.0
-                        },
-                        {
-                            "keyword": "city",
-                            "weight": 1.0
-                        },
-                        {
-                            "keyword": "city",
-                            "weight": 0.5
-                        },
-                        {
-                            "keyword": "city",
-                            "weight": 0.25
-                        },
-                        {
-                            "keyword": "person",
-                            "weight": 0.25
-                        }
-                    ]
+                    "description": "DESCRIPTION ACTION1_PROP2__",
+                    "keywords": []
                 }
             ],
-            "keywords": [
-                {
-                    "keyword": "move",
-                    "weight": 1.0
-                },
-                {
-                    "keyword": "action",
-                    "weight": 1.0
-                },
-                {
-                    "keyword": "action",
-                    "weight": 0.25
-                },
-                {
-                    "keyword": "thing",
-                    "weight": 0.25
-                }
-            ]
+            "keywords": []
         }
     ]
 }
