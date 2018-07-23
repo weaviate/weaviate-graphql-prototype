@@ -15,7 +15,7 @@ Note: you can follow the construction of the Graphql schema by starting undernea
 // Express for the webserver & graphql
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
-const demoResolver = require('./demo_resolver.js');
+const demoResolver = require('./demo_resolver/demo_resolver.js');
 const UnionInputType = require('graphql-union-input-type');
 
 // file system for reading files
@@ -611,6 +611,14 @@ function createSubClasses(ontologyThings){
       fields: function(){
         // declare props that should be returned
         var returnProps = {}
+
+        // add uuid to props
+        returnProps["uuid"] = {
+          name: "SubClassUuid",
+          description: function() {
+            return getDesc("SubClassUuid")},
+          type: GraphQLString
+        }
 
         // loop over properties
         singleClass.properties.forEach(singleClassProperty => {

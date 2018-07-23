@@ -35,14 +35,14 @@
                     ]
                 },
                 {
-                    "name": "coordinate",
+                    "name": "coordinates",
                     "@dataType": [
                         "string"
                     ],
                     "description": "The city's longitude and latitude",
                     "keywords": [
                         {
-                            "keyword": "coordinate",
+                            "keyword": "coordinates",
                             "weight": 1.0
                         },
                         {
@@ -55,6 +55,27 @@
                         },
                         {
                             "keyword": "latitude",
+                            "weight": 0.25
+                        }
+                    ]
+                },
+                {
+                    "name": "inCountry",
+                    "@dataType": [
+                        "Country"
+                    ],
+                    "description": "The country the city lies in",
+                    "keywords": [
+                        {
+                            "keyword": "country",
+                            "weight": 1.0
+                        },
+                        {
+                            "keyword": "city",
+                            "weight": 0.25
+                        },
+                        {
+                            "keyword": "country",
                             "weight": 0.25
                         }
                     ]
