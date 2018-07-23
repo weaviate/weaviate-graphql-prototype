@@ -318,10 +318,10 @@ var resolve_IE = function (filters) {
 const meta_data = [{
 	"class": "City",
 	"meta": {
-		"counter": 2,
+		"counter": 4,
 		"pointing": {
-			"to": 3,
-			"from": 0
+			"to": 10,
+			"from": 2
 		}
 	},
 	"name": {
