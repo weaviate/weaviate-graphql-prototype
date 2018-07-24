@@ -297,6 +297,12 @@ function createMetaSubClasses(ontologyThings){
             description: function() {
               return getDesc("MetaClassMetaObj")},
             fields: {
+              kind: {
+                name: "Meta" + singleClass.class + "MetaKind",
+                description: function() {
+                  return getDesc("MetaClassMetaKind")},
+                type: GraphQLString
+              },
               counter: {
                 name: "Meta" + singleClass.class + "MetaCounter",
                 description: function() {
@@ -334,6 +340,26 @@ function createMetaSubClasses(ontologyThings){
         // loop over properties
         singleClass.properties.forEach(singleClassProperty => {
           returntypes = []
+          standard_fields = {
+            type: {
+              name: "Meta" + singleClass.class + singleClassProperty.name + "Type",
+              description: function() {
+                return getDesc("MetaClassPropertyType")},
+              type: GraphQLString,
+            },
+            counter: {
+              name: "Meta" + singleClass.class + singleClassProperty.name + "Counter",
+              description: function() {
+                return getDesc("MetaClassPropertyCounter")},
+              type: GraphQLInt,
+            },
+            kind: {
+              name: "Meta" + singleClass.class + singleClassProperty.name + "Kind",
+              description: function() {
+                return getDesc("MetaClassPropertyKind")},
+              type: GraphQLString,
+            }
+          }
           singleClassProperty["@dataType"].forEach(singleClassPropertyDatatype => {
 
             // if class (start with capital, return Class)
@@ -345,19 +371,7 @@ function createMetaSubClasses(ontologyThings){
                   name: "Meta" + singleClass.class + singleClassProperty.name + "Obj",
                   description: function() {
                     return getDesc("MetaClassPropertyObj")},
-                  fields: {
-                    type: {
-                      name: "Meta" + singleClass.class + singleClassProperty.name + "Type",
-                      description: function() {
-                        return getDesc("MetaClassPropertyType")},
-                      type: GraphQLString,
-                    },
-                    counter: {
-                      name: "Meta" + singleClass.class + singleClassProperty.name + "Counter",
-                      description: function() {
-                        return getDesc("MetaClassPropertyCounter")},
-                      type: GraphQLInt,
-                    },
+                  fields: Object.assign(standard_fields, {
                     pointing: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Pointing",
                       description: function() {
@@ -382,7 +396,7 @@ function createMetaSubClasses(ontologyThings){
                         }
                       })
                     }
-                  }
+                  })
                 })
               }
             } else if(singleClassPropertyDatatype === "string" || singleClassPropertyDatatype === "date") {
@@ -412,19 +426,7 @@ function createMetaSubClasses(ontologyThings){
                   name: "Meta" + singleClass.class + singleClassProperty.name + "Obj",
                   description: function() {
                     return getDesc("MetaClassPropertyObj")},
-                  fields: {
-                    type: {
-                      name: "Meta" + singleClass.class + singleClassProperty.name + "Type",
-                      description: function() {
-                        return getDesc("MetaClassPropertyType")},
-                      type: GraphQLString,
-                    },
-                    counter: {
-                      name: "Meta" + singleClass.class + singleClassProperty.name + "Counter",
-                      description: function() {
-                        return getDesc("MetaClassPropertyCounter")},
-                      type: GraphQLInt,
-                    },
+                  fields: Object.assign(standard_fields, {
                     topOccurrences: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "TopOccurrences",
                       description: function() {
@@ -445,7 +447,7 @@ function createMetaSubClasses(ontologyThings){
                         }
                       }
                     }
-                  }
+                  })
                 })
               }
             } else if(singleClassPropertyDatatype === "int" || singleClassPropertyDatatype === "number") {
@@ -456,13 +458,7 @@ function createMetaSubClasses(ontologyThings){
                   name: "Meta" + singleClass.class + singleClassProperty.name + "Obj",
                   description: function() {
                     return getDesc("MetaClassPropertyObj")},
-                  fields: {
-                    type: {
-                      name: "Meta" + singleClass.class + singleClassProperty.name + "Type",
-                      description: function() {
-                        return getDesc("MetaClassPropertyType")},
-                      type: GraphQLString,
-                    },
+                  fields: Object.assign(standard_fields, {
                     lowest: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Lowest",
                       description: function() {
@@ -481,19 +477,13 @@ function createMetaSubClasses(ontologyThings){
                         return getDesc("MetaClassPropertyHighest")},
                       type: GraphQLFloat,
                     },
-                    counter: {
-                      name: "Meta" + singleClass.class + singleClassProperty.name + "Counter",
-                      description: function() {
-                        return getDesc("MetaClassPropertyCounter")},
-                      type: GraphQLInt,
-                    },
                     sum: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Sum",
                       description: function() {
                         return getDesc("MetaClassPropertySum")},
                       type: GraphQLFloat,
                     }
-                  }
+                  })
                 })
               }
             } else if(singleClassPropertyDatatype === "boolean") {
@@ -504,13 +494,7 @@ function createMetaSubClasses(ontologyThings){
                   name: "Meta" + singleClass.class + singleClassProperty.name + "Obj",
                   description: function() {
                     return getDesc("MetaClassPropertyObj")},
-                  fields: {
-                    type: {
-                      name: "Meta" + singleClass.class + singleClassProperty.name + "Type",
-                      description: function() {
-                        return getDesc("MetaClassPropertyType")},
-                      type: GraphQLString,
-                    },
+                  fields: Object.assign(standard_fields, {
                     totalTrue: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "TotalTrue",
                       description: function() {
@@ -522,14 +506,8 @@ function createMetaSubClasses(ontologyThings){
                       description: function() {
                         return getDesc("MetaClassPropertyPerentageTrue")},
                       type: GraphQLFloat,
-                    },
-                    counter: {
-                      name: "Meta" + singleClass.class + singleClassProperty.name + "Counter",
-                      description: function() {
-                        return getDesc("MetaClassPropertyCounter")},
-                      type: GraphQLInt,
                     }
-                  }
+                  })
                 })
               }
               // TO DO: CREATE META INFORMATION FOR DATE, NOW THIS IS SAME AS STRING DATATYPE

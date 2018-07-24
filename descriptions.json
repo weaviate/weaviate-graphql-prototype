@@ -94,5 +94,7 @@
 	"WeaviateNetworkHelpersFetchOntologyExplorerActionsObj": "Action to fetch for network fetch",
 	"WeaviateNetworkMetaFetch": "To fetch meta information Things or Actions on the network weaviate",
 	"WeaviateNetworkNetworkTimeout": "the max time to request an answer from the network. It is the time in seconds",
-	"SubClassUuid": "uuid of the thing given by the local Weaviate instance"
+	"SubClassUuid": "uuid of the thing given by the local Weaviate instance",
+	"MetaClassMetaKind": "The kind or suggested format based on the contextionairy attached to the class.",
+	"MetaClassPropertyKind": "The kind or suggested format based on the contextionairy attached to the property."
 }

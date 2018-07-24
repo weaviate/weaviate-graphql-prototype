@@ -322,11 +322,13 @@ const meta_data = [{
 		"pointing": {
 			"to": 10,
 			"from": 2
-		}
+		},
+		"kind": "city"
 	},
 	"name": {
 		"type": "string", 
 		"counter": 2,
+		"kind": "name",
 		"topOccurrences": [{
 			"value": "Amsterdam", 
 			"occurs": 1
@@ -336,6 +338,7 @@ const meta_data = [{
 		}]
 	},
 	"population": {
+		"kind": "integer",
 		"type": "int", 
 		"lowest": 1300000, 
 		"total": 2, 
@@ -343,6 +346,7 @@ const meta_data = [{
 		"average": 1550000
 	},
 	"isCapital": {
+		"kind": "boolean",
 		"type": "boolean", 
 		"total": 1 // total true
 	}
