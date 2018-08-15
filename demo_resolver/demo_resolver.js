@@ -83,7 +83,7 @@ const solve_filter = function (filters, operator) {
 
 
 module.exports = {
-	resolveConvertedFetch: function(filters) {
+	resolveGet: function(filters) {
 		if (filters) {
 			return solve_filter(filters, "AND")
 		}
