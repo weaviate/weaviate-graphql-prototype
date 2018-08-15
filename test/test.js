@@ -53,7 +53,6 @@ describe('Unit Tests', function() {
                             Things{
                                 City{
                                     name
-                                    latitude
                                     population
                                     isCapital
                                 }
@@ -77,7 +76,6 @@ describe('Unit Tests', function() {
                             Things{
                                 City{
                                     name
-                                    latitude
                                     population
                                     isCapital
                                 }
@@ -101,7 +99,6 @@ describe('Unit Tests', function() {
                             Things {
                                 City {
                                     name
-                                    latitude
                                     population
                                     isCapital
                                 }
@@ -117,7 +114,7 @@ describe('Unit Tests', function() {
             });
 
             // TEST 3
-            it('should return data.Local.ConvertedFetch.Things.City[0] with latitude = number', function(done) {
+            it('should return data.Local.ConvertedFetch.Things.City[0] with population = number', function(done) {
                 doGraphQLRequest(`
                 {
                     Local {
@@ -125,7 +122,6 @@ describe('Unit Tests', function() {
                             Things {
                                 City {
                                     name
-                                    latitude
                                     population
                                     isCapital
                                 }
@@ -135,7 +131,7 @@ describe('Unit Tests', function() {
                 }              
                 `, function(error, response, resultBody){
                     // validate the test
-                    assert.equal(typeof resultBody.data.Local.ConvertedFetch.Things.City[0].latitude, "number");
+                    assert.equal(typeof resultBody.data.Local.ConvertedFetch.Things.City[0].population, "number");
                     done();
                 })
             });
@@ -149,7 +145,6 @@ describe('Unit Tests', function() {
                             Things {
                                 City {
                                     name
-                                    latitude
                                     population
                                     isCapital
                                 }
@@ -186,32 +181,6 @@ describe('Unit Tests', function() {
                 `, function(error, response, resultBody){
                     // validate the test
                     assert.equal(typeof resultBody.data.Local.ConvertedFetch.Things.Person[0].LivesIn.name, "string");
-                    done();
-                })
-            });
-
-            // TEST 7 property type date is returned as string
-            it('should return data.Local.ConvertedFetch.Things.Person[0] with birthday = string', function(done) {
-                doGraphQLRequest(`
-                {
-                    Local {
-                        ConvertedFetch {
-                            Things {
-                                Person {
-                                    LivesIn {
-                                        ...on City {
-                                            name
-                                        }
-                                    }
-                                    birthday
-                                }
-                            }
-                        }
-                    }
-                }              
-                `, function(error, response, resultBody){
-                    // validate the test
-                    assert.equal(typeof resultBody.data.Local.ConvertedFetch.Things.Person[0].birthday, "string");
                     done();
                 })
             });
@@ -414,29 +383,34 @@ describe('Unit Tests', function() {
             });
 
             // TEST 
-            it('should return for each data.Local.ConvertedFetch.Actions.MoveAction with ToCity.name == "Amsterdam" AND FromCity.name == "Rotterdam"', function(done) {
+            it('should return for each data.Local.ConvertedFetch.Things.Airport with inCity.name == "Rotterdam" AND inCity.inCountry.Country.name == "Netherlands"', function(done) {
                 doGraphQLRequest(`
                 {
-                    Local{
-                      ConvertedFetch(_filter: {
-                        EQ: [{
-                          path: ["Actions", "MoveAction", "toCity", "name"],
-                          value: "Amsterdam"
-                        }, {
-                          path: ["Actions", "MoveAction", "fromCity", "name"],
-                          value: "Rotterdam"
-                        }]
-                      }){
-                        Actions{
-                          MoveAction{
-                            ToCity{
-                              ...on City{
-                                name
-                              }
-                            }
-                            FromCity{
-                              ...on City{
-                                name
+                  Local{
+                    ConvertedFetch(_filter:{
+                      EQ: [{
+                        path: ["Things", "Airport", "inCity", "City", "inCountry", "Country", "name"],
+                        value: "Netherlands"
+                      }, {
+                        path: ["Things", "Airport", "inCity", "City", "name"],
+                        value: "Rotterdam"
+                      }],
+                    }){
+                      Things{
+                        Airport{
+                          code
+                          name
+                          InCity{
+                            ...on City{
+                              name
+                              population
+                              coordinates
+                              isCapital
+                              InCountry{
+                                ...on Country{
+                                  name
+                                  population
+                                }
                               }
                             }
                           }
@@ -444,39 +418,45 @@ describe('Unit Tests', function() {
                       }
                     }
                   }
+                }
                 `, function(error, response, resultBody){
                     // validate the test
-                    for (var i in resultBody.data.Local.ConvertedFetch.Actions.MoveAction) {
-                        assert((resultBody.data.Local.ConvertedFetch.Actions.MoveAction[i].ToCity.name, "Amsterdam") && (resultBody.data.Local.ConvertedFetch.Actions.MoveAction[i].FromCity.name, "Rotterdam"));
+                    for (var i in resultBody.data.Local.ConvertedFetch.Things.Airport) {
+                        assert((resultBody.data.Local.ConvertedFetch.Things.Airport[i].InCity.name, "Rotterdam") && (resultBody.data.Local.ConvertedFetch.Things.Airport[i].InCity.InCountry.name, "Netherlands"));
                     }
                     done();
                 })
             });
 
             // TEST 
-            it('should return for each data.Local.ConvertedFetch.Actions.MoveAction with ToCity.name !== "Amsterdam" AND FromCity.name !== "Rotterdam"', function(done) {
+            it('should return for each data.Local.ConvertedFetch.Things.Airport with inCity.name !== "Rotterdam" AND inCity.inCountry.Country.name !== "Netherlands"', function(done) {
                 doGraphQLRequest(`
                 {
-                    Local{
-                      ConvertedFetch(_filter: {
-                        NEQ: [{
-                          path: ["Actions", "MoveAction", "toCity", "name"],
-                          value: "Amsterdam"
-                        }, {
-                          path: ["Actions", "MoveAction", "fromCity", "name"],
-                          value: "Rotterdam"
-                        }]
-                      }){
-                        Actions{
-                          MoveAction{
-                            ToCity{
-                              ...on City{
-                                name
-                              }
-                            }
-                            FromCity{
-                              ...on City{
-                                name
+                  Local{
+                    ConvertedFetch(_filter:{
+                      NEQ: [{
+                        path: ["Things", "Airport", "inCity", "City", "inCountry", "Country", "name"],
+                        value: "Netherlands"
+                      }, {
+                        path: ["Things", "Airport", "inCity", "City", "name"],
+                        value: "Rotterdam"
+                      }],
+                    }){
+                      Things{
+                        Airport{
+                          code
+                          name
+                          InCity{
+                            ...on City{
+                              name
+                              population
+                              coordinates
+                              isCapital
+                              InCountry{
+                                ...on Country{
+                                  name
+                                  population
+                                }
                               }
                             }
                           }
@@ -484,10 +464,11 @@ describe('Unit Tests', function() {
                       }
                     }
                   }
+                }
                 `, function(error, response, resultBody){
                     // validate the test
-                    for (var i in resultBody.data.Local.ConvertedFetch.Actions.MoveAction) {
-                        assert((resultBody.data.Local.ConvertedFetch.Actions.MoveAction[i].ToCity.name !== "Amsterdam") && (resultBody.data.Local.ConvertedFetch.Actions.MoveAction[i].FromCity.name !=="Rotterdam"));
+                    for (var i in resultBody.data.Local.ConvertedFetch.Things.Airport) {
+                        assert((resultBody.data.Local.ConvertedFetch.Things.Airport[i].InCity.name !== "Rotterdam") && (resultBody.data.Local.ConvertedFetch.Things.Airport[i].InCity.InCountry.name !== "Netherlands"));
                     }
                     done();
                 })
