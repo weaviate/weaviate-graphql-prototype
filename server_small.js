@@ -38,10 +38,19 @@ const {
   GraphQLScalarType
 } = require('graphql');
 
+/**
+ *  Get descriptions from json file. 
+ * NOTE: getDesc(this.name) not possible because this.name refers to keyname of object, and not the key 'name' IN the object (this 'name' is reserved)
+ */
+const descriptions = JSON.parse(fs.readFileSync('descriptions.json', 'utf8'));
+function getDesc(name) {
+  return descriptions[name]
+}
 
 /**
  * START - ALL RELATED TO INTERNAL FUNCTION
  */
+
 
 /**
  *  Create union input value type for converted fetch filter fields
@@ -66,40 +75,45 @@ const {
 // }) 
 
 
-/**
- *  Get descriptions from json file. 
- * NOTE: getDesc(this.name) not possible because this.name refers to keyname of object, and not the key 'name' IN the object (this 'name' is reserved)
- */
-const descriptions = JSON.parse(fs.readFileSync('descriptions.json', 'utf8'));
-function getDesc(name) {
-  return descriptions[name]
+var NetworkIntrospectThingsActionsFields = {
+  className: {
+    name: "WeaviateNetworkFetchMetaClassName",
+    description: function() {
+      return getDesc("WeaviateNetworkFetchMetaClassName")},
+    type: GraphQLString
+  },
+  certainty: {
+    name: "WeaviateNetworkFetchMetaCertainty",
+    description: function() {
+      return getDesc("WeaviateNetworkFetchMetaCertainty")},
+    type: GraphQLFloat
+  },
+  properties: {
+    name: "WeaviateNetworkFetchMetaProperties",
+    description: function() {
+      return getDesc("WeaviateNetworkFetchMetaProperties")},
+    type: new GraphQLList(new GraphQLObjectType({
+      name: "WeaviateNetworkFetchMetaPropertiesObj",
+      description: function() {
+        return getDesc("WeaviateNetworkFetchMetaProperties")},
+      fields: {
+        propertyName: {
+          name: "WeaviateNetworkFetchMetaPropertiesPropertyName",
+          description: function() {
+            return getDesc("WeaviateNetworkFetchMetaPropertiesPropertyName")},
+          type: GraphQLString
+        },
+        certainty: {
+          name: "WeaviateNetworkFetchMetaPropertiesCertainty",
+          description: function() {
+            return getDesc("WeaviateNetworkFetchMetaPropertiesCertainty")},
+          type: GraphQLFloat
+        }
+      }
+    }))
+  }
 }
 
-/**
- * Create class enum for filter options
- */
-var fuzzyFetchEnum = new GraphQLEnumType({
-  name: "fuzzyFetchPropertiesValueTypeEnum",
-  description: function() {
-    return getDesc("fuzzyFetchPropertiesValueTypeEnum")},
-  values: {
-    "EQ": {
-      value: "EQ"
-    }, 
-    "NEQ": {
-      value: "NEQ"
-    }, 
-    "PREFIX": {
-      value: "PREFIX"
-    }, 
-    "REGEX": {
-      value: "REGEX"
-    }, 
-    "FUZZY": {
-      value: "FUZZY"
-    }
-  }
-})
 
 /**
  * Create enum for filter operators
@@ -191,6 +205,236 @@ var whereFields = {
     type: GraphQLString 
   }
 }
+
+
+var NetworkFetchWherePropertyFilterFields = {
+  name: {
+    name: "NetworkFetchWherePropertyWhereName",
+    description: function() {
+      return getDesc("NetworkFetchWherePropertyWhereName")},
+    type: GraphQLString,
+  }, 
+  kinds: {
+    name: "NetworkFetchWherePropertyWhereKinds",
+    description: function() {
+      return getDesc("NetworkFetchWherePropertyWhereKinds")},
+    type: new GraphQLList(new GraphQLInputObjectType({
+      name: "NetworkFetchWherePropertyWhereKindsInpObj",
+      description: function() {
+        return getDesc("NetworkFetchWherePropertyWhereKindsInpObj")},
+      fields: {
+        value: {
+          name: "NetworkFetchWherePropertyWhereKindsValue",
+          description: function() {
+            return getDesc("NetworkFetchWherePropertyWhereKindsValue")},
+          type: GraphQLString,
+        },
+        weight: {
+          name: "NetworkFetchWherePropertyWhereKindsWeight",
+          description: function() {
+            return getDesc("NetworkFetchWherePropertyWhereKindsWeight")},
+          type: GraphQLFloat,
+        }
+      }
+    }))
+  }, 
+  certainty: {
+    name: "NetworkFetchWherePropertyWhereCertainty",
+    description: function() {
+      return getDesc("NetworkFetchWherePropertyWhereCertainty")},
+    type: GraphQLFloat,
+  },
+  operator: {
+    name: "NetworkFetchWherePropertyWhereOperator",
+    description: function() {
+      return getDesc("NetworkFetchWherePropertyWhereOperator")},
+    type: WhereOperators
+  },
+  valueInt: { 
+    name: "NetworkFetchWherePropertyWhereValueInt",
+    description: function() {
+      return getDesc("NetworkFetchWherePropertyWhereValueInt")},
+    type: GraphQLInt 
+  },
+  valueFloat: { 
+    name: "NetworkFetchWherePropertyWhereValueFloat",
+    description: function() {
+      return getDesc("NetworkFetchWherePropertyWhereValueFloat")},
+    type: GraphQLFloat
+  },
+  valueBoolean: { 
+    name: "NetworkFetchWherePropertyWhereValueBoolean",
+    description: function() {
+      return getDesc("NetworkFetchWherePropertyWhereValueBoolean")},
+    type: GraphQLBoolean
+  },
+  valueString: { 
+    name: "NetworkFetchWherePropertyWhereValueString",
+    description: function() {
+      return getDesc("NetworkFetchWherePropertyWhereValueString")},
+    type: GraphQLString 
+  }
+}
+
+/**
+ * Create class and property filter options for network fetch 
+ */
+var NetworkIntrospectWhereClassAndPropertyFilterFields = {
+  name: {
+    name: "WeaviateNetworkWhereName",
+    description: function() {
+      return getDesc("WeaviateNetworkWhereName")},
+    type: GraphQLString,
+  }, 
+  kinds: {
+    name: "WeaviateNetworkWhereNameKinds",
+    description: function() {
+      return getDesc("WeaviateNetworkWhereNameKinds")},
+    type: new GraphQLList(new GraphQLInputObjectType({
+      name: "WeaviateNetworkWhereNameKindsInpObj",
+      description: function() {
+        return getDesc("WeaviateNetworkWhereNameKindsInpObj")},
+      fields: {
+        value: {
+          name: "WeaviateNetworkWhereNameKindsValue",
+          description: function() {
+            return getDesc("WeaviateNetworkWhereNameKindsValue")},
+          type: GraphQLString,
+        },
+        weight: {
+          name: "WeaviateNetworkWhereNameKindsWeight",
+          description: function() {
+            return getDesc("WeaviateNetworkWhereNameKindsWeight")},
+          type: GraphQLFloat,
+        }
+      }
+    }))
+  }, 
+  certainty: {
+    name: "WeaviateNetworkWhereCertainty",
+    description: function() {
+      return getDesc("WeaviateNetworkWhereCertainty")},
+    type: GraphQLFloat,
+  }, 
+  limit: {
+    name: "WeaviateNetworkWhereLimit",
+    description: function() {
+      return getDesc("WeaviateNetworkWhereLimit")},
+    type: GraphQLFloat,
+  }
+}
+
+
+/**
+ * Create filter options for network fetch 
+ */
+var NetworkIntrospectWhereFilterFields = {
+  where: { 
+    name: "WeaviateNetworkIntrospectWhere",
+    description: function() {
+      return getDesc("WeaviateNetworkIntrospectWhere")},
+    type: new GraphQLList(new GraphQLInputObjectType({
+      name: "WeaviateNetworkIntrospectWhereInpObj",
+      description: function() {
+        return getDesc("WeaviateNetworkIntrospectWhereInpObj")},
+      fields: {
+        class: {
+          name: "WeaviateNetworkIntrospectWhereClass",
+          description: function() {
+            return getDesc("WeaviateNetworkIntrospectWhereClass")},
+          type: new GraphQLList(new GraphQLInputObjectType({
+            name: "WeaviateNetworkIntrospectWhereClassObj",
+            description: function() {
+              return getDesc("WeaviateNetworkIntrospectWhereClassObj")},
+            fields: NetworkIntrospectWhereClassAndPropertyFilterFields
+          }))
+        },
+        properties: {
+          name: "WeaviateNetworkIntrospectWhereProperties",
+          description: function() {
+            return getDesc("WeaviateNetworkIntrospectWhereProperties")},
+          type: new GraphQLList(new GraphQLInputObjectType({
+            name: "WeaviateNetworkIntrospectWherePropertiesObj",
+            description: function() {
+              return getDesc("WeaviateNetworkIntrospectWherePropertiesObj")},
+            fields: NetworkIntrospectWhereClassAndPropertyFilterFields
+          }))
+        }
+      }
+    })) //Needs to be in contextionary, weight = always 1.0
+  }
+}
+
+
+var NetworkFetchFilterFields = {
+  where: { 
+    name: "NetworkFetchWhere",
+    description: function() {
+      return getDesc("NetworkFetchWhere")},
+    type: new GraphQLList(new GraphQLInputObjectType({
+      name: "NetworkFetchWhereInpObj",
+      description: function() {
+        return getDesc("NetworkFetchWhereInpObj")},
+      fields: {
+        class: {
+          name: "NetworkFetchWhereInpObjClass",
+          description: function() {
+            return getDesc("NetworkFetchWhereInpObjClass")},
+          type: new GraphQLList(new GraphQLInputObjectType({
+            name: "NetworkFetchWhereInpObjClassInpObj",
+            description: function() {
+              return getDesc("NetworkFetchWhereInpObjClassInpObj")},
+            fields: NetworkIntrospectWhereClassAndPropertyFilterFields
+          }))
+        },
+        properties: {
+          name: "NetworkFetchWhereInpObjProperties",
+          description: function() {
+            return getDesc("NetworkFetchWhereInpObjProperties")},
+          type: new GraphQLList(new GraphQLInputObjectType({
+            name: "NetworkFetchWhereInpObjProperties",
+            description: function() {
+              return getDesc("NetworkFetchWhereInpObjProperties")},
+            fields: NetworkFetchWherePropertyFilterFields
+          }))
+        },
+        limit: {
+          name: "NetworkFetchWhereInpObjLimit",
+          description: function() {
+            return getDesc("NetworkFetchWhereInpObjLimit")},
+          type: GraphQLInt,
+        }
+      }
+    })) //Needs to be in contextionary, weight = always 1.0
+  }
+}
+
+/**
+ * Create class enum for filter options
+ */
+var fuzzyFetchEnum = new GraphQLEnumType({
+  name: "fuzzyFetchPropertiesValueTypeEnum",
+  description: function() {
+    return getDesc("fuzzyFetchPropertiesValueTypeEnum")},
+  values: {
+    "EQ": {
+      value: "EQ"
+    }, 
+    "NEQ": {
+      value: "NEQ"
+    }, 
+    "PREFIX": {
+      value: "PREFIX"
+    }, 
+    "REGEX": {
+      value: "REGEX"
+    }, 
+    "FUZZY": {
+      value: "FUZZY"
+    }
+  }
+})
+
 
 
 /**
@@ -1078,866 +1322,167 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
             description: function() {
               return getDesc("WeaviateNetworkObj")},
             fields: {
-              GetMeta: {
-                name: "WeaviateNetworkGetMeta",
+              Fetch: {
+                name: "WeaviateNetworkFetch",
                 description: function() {
-                  return getDesc("WeaviateNetworkGetMeta")},
+                  return getDesc("WeaviateNetworkFetch")},
                 type: new GraphQLObjectType({
-                  name: "WeaviateNetworkGetMetaObj",
+                  name: "WeaviateNetworkFetchObj",
                   description: function() {
-                    return getDesc("WeaviateNetworkGetMetaObj")},
+                    return getDesc("WeaviateNetworkFetchObj")},
                   fields: {
                     Things: {
-                      name: "WeaviateNetworkGetMetaThings",
+                      name: "WeaviateNetworkFetchThings",
                       description: function() {
-                        return getDesc("WeaviateNetworkGetMetaThings")},
-                      type: new GraphQLObjectType({
-                        name: "WeaviateNetworkGetMetaThingsObj",
+                        return getDesc("WeaviateNetworkFetchThings")},
+                      args: NetworkFetchFilterFields,
+                      type: new GraphQLList(new GraphQLObjectType({
+                        name: "WeaviateNetworkFetchThingsObj",
                         description: function() {
-                          return getDesc("WeaviateNetworkGetMetaThingsObj")},
+                          return getDesc("WeaviateNetworkFetchThingsObj")},
                         fields: {
-                          Class: {
-                            name: "WeaviateNetworkGetMetaThingsClass",
+                          beacon: { // The beacon to do a convertedfetch
+                            name: "WeaviateNetworkFetchThingsBeacon",
                             description: function() {
-                              return getDesc("WeaviateNetworkGetMetaThingsClass")},
-                            args: {
-                              value: { 
-                                name: "WeaviateNetworkGetMetaThingsClassValue",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkGetMetaThingsClassValue")},
-                                type: GraphQLString // needs to be in contextionary, weight = always 1.0
-                              },
-                              distance: {  // How close?
-                                name: "WeaviateNetworkGetMetaThingsClassDistance",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkGetMetaThingsClassDistance")},
-                                type: GraphQLFloat // needs to be between 0 and 1
-                              },
-                              limit: { // how many classes to return maximum
-                                name: "WeaviateNetworkGetMetaThingsClassLimit",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkGetMetaThingsClassLimit")},
-                                type: GraphQLFloat
-                              },
-                              kinds: { // Any kinds to define centroids?
-                                name: "WeaviateNetworkGetMetaThingsClassKinds",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkGetMetaThingsClassKinds")},
-                                type: new GraphQLList(new GraphQLInputObjectType({
-                                  name: "WeaviateNetworkGetMetaThingsClassKindsObj",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkGetMetaThingsClassKindsObj")},
-                                  fields: {
-                                    value: {
-                                      name: "WeaviateNetworkGetMetaThingsClassKindsValue",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkGetMetaThingsClassKindsValue")},
-                                      type: GraphQLString // Needs to be in contextionary
-                                    },
-                                    weight: {
-                                      name: "WeaviateNetworkGetMetaThingsClassKindsWeight",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkGetMetaThingsClassKindsWeight")},
-                                      type: GraphQLFloat // What weight should be used to calculate centroid
-                                    }
-                                  }
-                                }))
-                              },
-                            },
-                            type: new GraphQLList(new GraphQLObjectType({
-                              name: "WeaviateNetworkGetMetaThingsClassObj",
-                              description: function() {
-                                return getDesc("WeaviateNetworkGetMetaThingsClassObj")},
-                              fields: {
-                                orbit: { // What's in orbit of this property?
-                                  name: "WeaviateNetworkGetMetaThingsClassOrbit",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkGetMetaThingsClassOrbit")},
-                                  type: new GraphQLObjectType({
-                                    name: "WeaviateNetworkGetMetaThingsClassOrbitObj",
-                                    description: function() {
-                                      return getDesc("WeaviateNetworkGetMetaThingsClassOrbitObj")},
-                                    fields: {
-                                      value: { // What's the contextionary value that is closest
-                                        name: "WeaviateNetworkGetMetaThingsClassOrbitValue",
-                                        description: function() {
-                                          return getDesc("WeaviateNetworkGetMetaThingsClassOrbitValue")},
-                                        type: GraphQLString,
-                                        resolve(parentValue, args) {
-                                          console.log("resolve WeaviateNetworkGetMetaThingsClassOrbitValue")
-                                          return [{}] // resolve with empty array
-                                        }
-                                      },
-                                      distance: { // What is the distance to the original request?
-                                        name: "WeaviateNetworkGetMetaThingsClassOrbitDistance",
-                                        description: function() {
-                                          return getDesc("WeaviateNetworkGetMetaThingsClassOrbitDistance")},
-                                        type: GraphQLFloat,
-                                        resolve(parentValue, args) {
-                                          console.log("resolve WeaviateNetworkGetMetaThingsClassOrbitDistance")
-                                          return [{}] // resolve with empty array
-                                        }
-                                      },
-                                    }
-                                  }),
-                                  resolve(parentValue, args) {
-                                    console.log("resolve WeaviateNetworkGetMetaThingsClassOrbit")
-                                    return [{}] // resolve with empty array
-                                  }
-                                },
-                                property: {
-                                  name: "WeaviateNetworkGetMetaThingsClassProperty",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkGetMetaThingsClassProperty")},
-                                  args: {
-                                    value: { 
-                                      name: "WeaviateNetworkGetMetaThingsClassPropertyValue",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkGetMetaThingsClassPropertyValue")},
-                                      type: GraphQLString // Needs to be in contextionary, weight = always 1.0
-                                    },
-                                    distance: { 
-                                      name: "WeaviateNetworkGetMetaThingsClassPropertyDistance",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkGetMetaThingsClassPropertyDistance")},
-                                      type: GraphQLFloat // How close? needs to be 0-1
-                                    },
-                                    limit: { // How close?
-                                      name: "WeaviateNetworkGetMetaThingsClassPropertyLimit",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkGetMetaThingsClassPropertyLimit")},
-                                      type: GraphQLFloat
-                                    },
-                                    kinds: { // Any kinds to define centroids?
-                                      name: "WeaviateNetworkGetMetaThingsClassPropertyKinds",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkGetMetaThingsClassPropertyKinds")},
-                                      type: new GraphQLList(new GraphQLInputObjectType({
-                                        name: "WeaviateNetworkGetMetaThingsClassPropertyKindsObj",
-                                        description: function() {
-                                          return getDesc("WeaviateNetworkGetMetaThingsClassPropertyKindsObj")},
-                                        fields: {
-                                          value: {
-                                            name: "WeaviateNetworkGetMetaThingsClassPropertyKindsValue",
-                                            description: function() {
-                                              return getDesc("WeaviateNetworkGetMetaThingsClassPropertyKindsValue")},
-                                            type: GraphQLString //Needs to be in contextionary
-                                          },
-                                          weight: {
-                                            name: "WeaviateNetworkGetMetaThingsClassPropertyKindsWeight",
-                                            description: function() {
-                                              return getDesc("WeaviateNetworkGetMetaThingsClassPropertyKindsWeight")},
-                                            type: GraphQLFloat // What weight should be used to calculate centroid 0-1
-                                          }
-                                        }
-                                      }))
-                                    },
-                                  },
-                                  type: new GraphQLList(new GraphQLObjectType({
-                                    name: "WeaviateNetworkGetMetaThingsClassPropertyObj",
-                                    description: function() {
-                                      return getDesc("WeaviateNetworkGetMetaThingsClassPropertyObj")},
-                                    fields: {
-                                      orbit: { // What's in orbit of this property?
-                                        name: "WeaviateNetworkGetMetaThingsClassPropertyOrbit",
-                                        description: function() {
-                                          return getDesc("WeaviateNetworkGetMetaThingsClassPropertyOrbit")},
-                                        type: new GraphQLObjectType({
-                                          name: "WeaviateNetworkGetMetaThingsClassPropertyOrbitObj",
-                                          description: function() {
-                                            return getDesc("WeaviateNetworkGetMetaThingsClassPropertyOrbitObj")},
-                                          fields: {
-                                            value: { // What's the contextionary value that is closest
-                                              name: "WeaviateNetworkGetMetaThingsClassPropertyOrbitValue",
-                                              description: function() {
-                                                return getDesc("WeaviateNetworkGetMetaThingsClassPropertyOrbitValue")},
-                                              type: GraphQLString,
-                                              resolve(parentValue, args) {
-                                                console.log("resolve WeaviateNetworkGetMetaThingsClassPropertyOrbitValue")
-                                                return [{}] // resolve with empty array
-                                              }
-                                            },
-                                            distance: { // What is the distance to the original request?
-                                              name: "WeaviateNetworkGetMetaThingsClassPropertyOrbitDistance",
-                                              description: function() {
-                                                return getDesc("WeaviateNetworkGetMetaThingsClassPropertyOrbitDistance")},
-                                              type: GraphQLFloat, // 0-1
-                                              resolve(parentValue, args) {
-                                                console.log("resolve WeaviateNetworkGetMetaThingsClassPropertyOrbitDistance")
-                                                return [{}] // resolve with empty array
-                                              }
-                                            },
-                                          }
-                                        }),
-                                        resolve(parentValue, args) {
-                                          console.log("resolve WeaviateNetworkGetMetaThingsClassPropertyOrbit")
-                                          return [{}] // resolve with empty array
-                                        }
-                                      },
-                                    }
-                                  })),
-                                  resolve(parentValue, args) {
-                                    console.log("resolve WeaviateNetworkGetMetaThingsClassProperty")
-                                    return [{}] // resolve with empty array
-                                  }
-                                }
-                              }
-                            })),
+                              return getDesc("WeaviateNetworkFetchThingsBeacon")},
+                            type: GraphQLString,
                             resolve(parentValue, args) {
-                              console.log("resolve WeaviateNetworkGetMetaThingsClass")
+                              console.log("resolve WeaviateNetworkFetchThingsBeacon")
+                              return [{}] // resolve with empty array
+                            }
+                          }, 
+                          certainty: { //  What is the certainty to the original request?
+                            name: "WeaviateNetworkFetchThingsCertainty",
+                            description: function() {
+                              return getDesc("WeaviateNetworkFetchThingsCertainty")},
+                            type: GraphQLFloat, // should be enum of type (id est, string, int, cref etc)
+                            resolve(parentValue, args) {
+                              console.log("resolve WeaviateNetworkFetchThingsCertainty")
                               return [{}] // resolve with empty array
                             }
                           }
                         }
-                      }),
+                      })),
                       resolve(parentValue, args) {
-                        console.log("resolve WeaviateNetworkGetMetaClass")
+                        console.log("resolve WeaviateNetworkFetchThings")
                         return [{}] // resolve with empty array
                       }
                     },
                     Actions: {
-                      name: "WeaviateNetworkGetMetaActions",
+                      name: "WeaviateNetworkFetchActions",
                       description: function() {
-                        return getDesc("WeaviateNetworkGetMetaActions")},
-                      type: new GraphQLObjectType({
-                        name: "WeaviateNetworkGetMetaActionsObj",
+                        return getDesc("WeaviateNetworkFetchActions")},
+                      args: NetworkFetchFilterFields,
+                      type: new GraphQLList(new GraphQLObjectType({
+                        name: "WeaviateNetworkFetchActionsObj",
                         description: function() {
-                          return getDesc("WeaviateNetworkGetMetaActionsObj")},
+                          return getDesc("WeaviateNetworkFetchActionsObj")},
                         fields: {
-                          Class: {
-                            name: "WeaviateNetworkGetMetaActionsClass",
+                          beacon: {
+                            name: "WeaviateNetworkFetchActionsBeacon",
                             description: function() {
-                              return getDesc("WeaviateNetworkGetMetaActionsClass")},
-                            args: {
-                              value: { 
-                                name: "WeaviateNetworkGetMetaActionsClassValue",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkGetMetaActionsClassValue")},
-                                type: GraphQLString
-                              },
-                              distance: { 
-                                name: "WeaviateNetworkGetMetaActionsClassDistance",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkGetMetaActionsClassDistance")},
-                                type: GraphQLFloat
-                              },
-                              limit: { 
-                                name: "WeaviateNetworkGetMetaActionsClassLimit",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkGetMetaActionsClassLimit")},
-                                type: GraphQLFloat
-                              },
-                              kinds: { 
-                                name: "WeaviateNetworkGetMetaActionsClassKinds",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkGetMetaActionsClassKinds")},
-                                type: new GraphQLList(new GraphQLInputObjectType({
-                                  name: "WeaviateNetworkGetMetaActionsClassKindsObj",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkGetMetaActionsClassKindsObj")},
-                                  fields: {
-                                    value: {
-                                      name: "WeaviateNetworkGetMetaActionsClassKindsValue",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkGetMetaActionsClassKindsValue")},
-                                      type: GraphQLString
-                                    },
-                                    weight: {
-                                      name: "WeaviateNetworkGetMetaActionsClassKindsWeight",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkGetMetaActionsClassKindsWeight")},
-                                      type: GraphQLFloat
-                                    }
-                                  }
-                                }))
-                              },
-                            },
-                            type: new GraphQLList(new GraphQLObjectType({
-                              name: "WeaviateNetworkGetMetaActionsClassObj",
-                              description: function() {
-                                return getDesc("WeaviateNetworkGetMetaActionsClassObj")},
-                              fields: {
-                                orbit: {
-                                  name: "WeaviateNetworkGetMetaActionsClassOrbit",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkGetMetaActionsClassOrbit")},
-                                  type: new GraphQLObjectType({
-                                    name: "WeaviateNetworkGetMetaActionsClassOrbitObj",
-                                    description: function() {
-                                      return getDesc("WeaviateNetworkGetMetaActionsClassOrbitObj")},
-                                    fields: {
-                                      value: {
-                                        name: "WeaviateNetworkGetMetaActionsClassOrbitValue",
-                                        description: function() {
-                                          return getDesc("WeaviateNetworkGetMetaActionsClassOrbitValue")},
-                                        type: GraphQLString,
-                                        resolve(parentValue, args) {
-                                          console.log("resolve WeaviateNetworkGetMetaActionsClassOrbitValue")
-                                          return [{}] // resolve with empty array
-                                        }
-                                      },
-                                      distance: {
-                                        name: "WeaviateNetworkGetMetaActionsClassOrbitDistance",
-                                        description: function() {
-                                          return getDesc("WeaviateNetworkGetMetaActionsClassOrbitDistance")},
-                                        type: GraphQLFloat,
-                                        resolve(parentValue, args) {
-                                          console.log("resolve WeaviateNetworkGetMetaActionsClassOrbitDistance")
-                                          return [{}] // resolve with empty array
-                                        }
-                                      },
-                                    }
-                                  }),
-                                  resolve(parentValue, args) {
-                                    console.log("resolve WeaviateNetworkGetMetaActionsClassOrbit")
-                                    return [{}] // resolve with empty array
-                                  }
-                                },
-                                property: {
-                                  name: "WeaviateNetworkGetMetaActionsClassProperty",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkGetMetaActionsClassProperty")},
-                                  args: {
-                                    value: { 
-                                      name: "WeaviateNetworkGetMetaActionsClassPropertyValue",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkGetMetaActionsClassPropertyValue")},
-                                      type: GraphQLString
-                                    },
-                                    distance: { 
-                                      name: "WeaviateNetworkGetMetaActionsClassPropertyDistance",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkGetMetaActionsClassPropertyDistance")},
-                                      type: GraphQLFloat
-                                    },
-                                    limit: { 
-                                      name: "WeaviateNetworkGetMetaActionsClassPropertyLimit",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkGetMetaActionsClassPropertyLimit")},
-                                      type: GraphQLFloat
-                                    },
-                                    kinds: { 
-                                      name: "WeaviateNetworkGetMetaActionsClassPropertyKinds",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkGetMetaActionsClassPropertyKinds")},
-                                      type: new GraphQLList(new GraphQLInputObjectType({
-                                        name: "WeaviateNetworkGetMetaActionsClassPropertyKindsObj",
-                                        description: function() {
-                                          return getDesc("WeaviateNetworkGetMetaActionsClassPropertyKindsObj")},
-                                        fields: {
-                                          value: {
-                                            name: "WeaviateNetworkGetMetaActionsClassPropertyKindsValue",
-                                            description: function() {
-                                              return getDesc("WeaviateNetworkGetMetaActionsClassPropertyKindsValue")},
-                                            type: GraphQLString
-                                          },
-                                          weight: {
-                                            name: "WeaviateNetworkGetMetaActionsClassPropertyKindsWeight",
-                                            description: function() {
-                                              return getDesc("WeaviateNetworkGetMetaActionsClassPropertyKindsWeight")},
-                                            type: GraphQLFloat
-                                          }
-                                        }
-                                      }))
-                                    },
-                                  },
-                                  type: new GraphQLList(new GraphQLObjectType({
-                                    name: "WeaviateNetworkGetMetaActionsClassPropertyObj",
-                                    description: function() {
-                                      return getDesc("WeaviateNetworkGetMetaActionsClassPropertyObj")},
-                                    fields: {
-                                      orbit: {
-                                        name: "WeaviateNetworkGetMetaActionsClassPropertyOrbit",
-                                        description: function() {
-                                          return getDesc("WeaviateNetworkGetMetaActionsClassPropertyOrbit")},
-                                        type: new GraphQLObjectType({
-                                          name: "WeaviateNetworkGetMetaActionsClassPropertyOrbitObj",
-                                          description: function() {
-                                            return getDesc("WeaviateNetworkGetMetaActionsClassPropertyOrbitObj")},
-                                          fields: {
-                                            value: {
-                                              name: "WeaviateNetworkGetMetaActionsClassPropertyOrbitValue",
-                                              description: function() {
-                                                return getDesc("WeaviateNetworkGetMetaActionsClassPropertyOrbitValue")},
-                                              type: GraphQLString,
-                                              resolve(parentValue, args) {
-                                                console.log("resolve WeaviateNetworkGetMetaActionsClassPropertyOrbitValue")
-                                                return [{}] // resolve with empty array
-                                              }
-                                            },
-                                            distance: {
-                                              name: "WeaviateNetworkGetMetaActionsClassPropertyOrbitDistance",
-                                              description: function() {
-                                                return getDesc("WeaviateNetworkGetMetaActionsClassPropertyOrbitDistance")},
-                                              type: GraphQLFloat,
-                                              resolve(parentValue, args) {
-                                                console.log("resolve WeaviateNetworkGetMetaActionsClassPropertyOrbitDistance")
-                                                return [{}] // resolve with empty array
-                                              }
-                                            },
-                                          }
-                                        }),
-                                        resolve(parentValue, args) {
-                                          console.log("resolve WeaviateNetworkGetMetaActionsClassPropertyOrbit")
-                                          return [{}] // resolve with empty array
-                                        }
-                                      },
-                                    }
-                                  })),
-                                  resolve(parentValue, args) {
-                                    console.log("resolve WeaviateNetworkGetMetaActionsClassProperty")
-                                    return [{}] // resolve with empty array
-                                  }
-                                }
-                              }
-                            })),
+                              return getDesc("WeaviateNetworkFetchActionsBeacon")},
+                            type: GraphQLString,
                             resolve(parentValue, args) {
-                              console.log("resolve WeaviateNetworkGetMetaActionsClass")
+                              console.log("resolve WeaviateNetworkFetchActionsBeacon")
+                              return [{}] // resolve with empty array
+                            }
+                          }, 
+                          certainty: {
+                            name: "WeaviateNetworkFetchActionsCertainty",
+                            description: function() {
+                              return getDesc("WeaviateNetworkFetchActionsCertainty")},
+                            type: GraphQLFloat, // should be enum of type (id est, string, int, cref etc)
+                            resolve(parentValue, args) {
+                              console.log("resolve WeaviateNetworkFetchActionsCertainty")
                               return [{}] // resolve with empty array
                             }
                           }
                         }
+                      })),
+                      resolve(parentValue, args) {
+                        console.log("resolve WeaviateNetworkFetchActions")
+                        return [{}] // resolve with empty array
+                      }
+                    },
+                  }
+                }),
+                resolve() {
+                  console.log("resolve WeaviateNetworkFetch")
+                  return [{}] // resolve with empty array
+                },
+              },
+              Introspect: {
+                name: "WeaviateNetworkFetchMeta",
+                description: function() {
+                  return getDesc("WeaviateNetworkFetchMeta")},
+                type: new GraphQLObjectType({
+                  name: "WeaviateNetworkFetchMetaObj",
+                  description: function() {
+                    return getDesc("WeaviateNetworkFetchMetaObj")},
+                  fields: {
+                    Things: {
+                      name: "WeaviateNetworkFetchMetaThings",
+                      description: function() {
+                        return getDesc("WeaviateNetworkFetchMetaThings")},
+                      args: NetworkIntrospectWhereFilterFields,
+                      type: new GraphQLList(new GraphQLObjectType({
+                        name: "WeaviateNetworkFetchMetaThingsObj",
+                        description: function() {
+                          return getDesc("WeaviateNetworkFetchMetaThingsObj")},
+                        fields: NetworkIntrospectThingsActionsFields
+                      })),
+                      resolve(parentValue, args) {
+                        console.log("resolve WeaviateNetworkFetchMetaThings")
+                        return [{}] // resolve with empty array
+                      }
+                    },
+                    Actions: {
+                      name: "WeaviateNetworkFetchMetaActions",
+                      description: function() {
+                        return getDesc("WeaviateNetworkFetchMetaActions")},
+                      args: NetworkIntrospectWhereFilterFields,
+                      type: new GraphQLObjectType({
+                        name: "WeaviateNetworkFetchMetaActionsObj",
+                        description: function() {
+                          return getDesc("WeaviateNetworkFetchMetaActionsObj")},
+                        fields: NetworkIntrospectThingsActionsFields
                       }),
                       resolve(parentValue, args) {
-                        console.log("resolve WeaviateNetworkGetMetaClass")
+                        console.log("resolve WeaviateNetworkFetchMetaClass")
                         return [{}] // resolve with empty array
                       }
                     },
                     Beacon: {
-                      name: "WeaviateNetworkGetMetaBeacon",
+                      name: "WeaviateNetworkFetchMetaBeacon",
                       description: function() {
-                        return getDesc("WeaviateNetworkGetMetaBeacon")},
+                        return getDesc("WeaviateNetworkFetchMetaBeacon")},
                       args: {
                         id: { // The id of the beacon like: weaviate://foo-bar-baz/UUI
-                          name: "WeaviateNetworkGetMetaBeaconId",
+                          name: "WeaviateNetworkFetchMetaBeaconId",
                           description: function() {
-                            return getDesc("WeaviateNetworkGetMetaBeaconId")},
+                            return getDesc("WeaviateNetworkFetchMetaBeaconId")},
                           type: GraphQLString
                         }
                       },
                       type: new GraphQLObjectType({
-                        name: "WeaviateNetworkGetMetaBeaconObj",
+                        name: "WeaviateNetworkFetchMetaBeaconObj",
                         description: function() {
-                          return getDesc("WeaviateNetworkGetMetaBeaconObj")},
-                        fields: {
-                          classes: { // Returns an array of potential classes based on the contextionary
-                            name: "WeaviateNetworkGetMetaBeaconClasses",
-                            description: function() {
-                              return getDesc("WeaviateNetworkGetMetaBeaconClasses")},
-                            type: new GraphQLList(GraphQLString),
-                            resolve(parentValue, args) {
-                              console.log("resolve WeaviateNetworkGetMetaBeaconClasses")
-                              return [{}] // resolve with empty array
-                            }
-                          }, 
-                          distances: { // Returns an array of the distances to the request based on the contextionary
-                            name: "WeaviateNetworkGetMetaBeaconDistances",
-                            description: function() {
-                              return getDesc("WeaviateNetworkGetMetaBeaconDistances")},
-                            type: new GraphQLList(GraphQLString),
-                            resolve(parentValue, args) {
-                              console.log("resolve WeaviateNetworkGetMetaBeaconDistances")
-                              return [{}] // resolve with empty array
-                            }
-                          }, 
-                          properties: { 
-                            name: "WeaviateNetworkGetMetaBeaconProperties",
-                            description: function() {
-                              return getDesc("WeaviateNetworkGetMetaBeaconProperties")},
-                            type: new GraphQLList(new GraphQLObjectType({
-                              name: "WeaviateNetworkGetMetaBeaconPropertiesObj",
-                              description: function() {
-                                return getDesc("WeaviateNetworkGetMetaBeaconPropertiesObj")},
-                              fields: {
-                                property: { // returns an array of potential properties based on the contextionary
-                                  name: "WeaviateNetworkGetMetaBeaconPropertiesProperty",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkGetMetaBeaconPropertiesProperty")},
-                                  type: GraphQLString,
-                                  resolve(parentValue, args) {
-                                    console.log("resolve WeaviateNetworkGetMetaBeaconPropertiesProperty")
-                                    return [{}] // resolve with empty array
-                                  }
-                                }, 
-                                type: { // Returns the type (id est, string, int, cref etc)
-                                  name: "WeaviateNetworkGetMetaBeaconPropertiesType",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkGetMetaBeaconPropertiesType")},
-                                  type: GraphQLString, // should be enum of type (id est, string, int, cref etc)
-                                  resolve(parentValue, args) {
-                                    console.log("resolve WeaviateNetworkGetMetaBeaconPropertiesType")
-                                    return [{}] // resolve with empty array
-                                  }
-                                }, 
-                                distance: { // Returns an array of the distances to the request based on the contextionary
-                                  name: "WeaviateNetworkGetMetaBeaconPropertiesDistance",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkGetMetaBeaconPropertiesDistance")},
-                                  type: GraphQLFloat,
-                                  resolve(parentValue, args) {
-                                    console.log("resolve WeaviateNetworkGetMetaBeaconPropertiesDistance")
-                                    return [{}] // resolve with empty array
-                                  }
-                                }
-                              }
-                            })),
-                            resolve(parentValue, args) {
-                              console.log("resolve WeaviateNetworkGetMetaBeaconProperties")
-                              return [{}] // resolve with empty array
-                            }
-                          }
-                        }
+                          return getDesc("WeaviateNetworkFetchMetaBeaconObj")},
+                        fields: NetworkIntrospectThingsActionsFields
                       }),
                       resolve(parentValue, args) {
-                        console.log("resolve WeaviateNetworkGetMetaBeacon")
+                        console.log("resolve WeaviateNetworkFetchMetaBeacon")
                         return [{}] // resolve with empty array
                       }
                     }
                   }
                 }),
                 resolve() {
-                  console.log("resolve WeaviateNetworkGetMeta")
+                  console.log("resolve WeaviateNetworkFetchMeta")
                   return [{}] // resolve with empty array
                 }
-              },
-              FuzzyFetch: {
-                name: "WeaviateNetworkFuzzyFetch",
-                description: function() {
-                  return getDesc("WeaviateNetworkFuzzyFetch")},
-                type: new GraphQLObjectType({
-                  name: "WeaviateNetworkFuzzyFetchObj",
-                  description: function() {
-                    return getDesc("WeaviateNetworkFuzzyFetchObj")},
-                  fields: {
-                    Things: {
-                      name: "WeaviateNetworkFuzzyFetchThings",
-                      description: function() {
-                        return getDesc("WeaviateNetworkFuzzyFetchThings")},
-                      args: {
-                        class: { 
-                          name: "WeaviateNetworkFuzzyFetchThingsClass",
-                          description: function() {
-                            return getDesc("WeaviateNetworkFuzzyFetchThingsClass")},
-                          type: GraphQLString //Needs to be in contextionary, weight = always 1.0
-                        },
-                        kinds: { 
-                          name: "WeaviateNetworkFuzzyFetchThingsKinds",
-                          description: function() {
-                            return getDesc("WeaviateNetworkFuzzyFetchThingsKinds")},
-                          type: new GraphQLList(new GraphQLInputObjectType({
-                            name: "WeaviateNetworkFuzzyFetchThingsKindsObj",
-                            description: function() {
-                              return getDesc("WeaviateNetworkFuzzyFetchThingsKindsObj")},
-                            fields: {
-                              value: {
-                                name: "WeaviateNetworkFuzzyFetchThingsKindsValue",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkFuzzyFetchThingsKindsValue")},
-                                type: GraphQLString,
-                              },
-                              weight: {
-                                name: "WeaviateNetworkFuzzyFetchThingsKindsWeight",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkFuzzyFetchThingsKindsWeight")},
-                                type: GraphQLFloat,
-                              }
-                            }
-                          }))    
-                        },
-                        properties: { 
-                          name: "WeaviateNetworkFuzzyFetchThingsProperties",
-                          description: function() {
-                            return getDesc("WeaviateNetworkFuzzyFetchThingsProperties")},
-                          type: new GraphQLList(new GraphQLInputObjectType({
-                            name: "WeaviateNetworkFuzzyFetchThingsPropertiesObj",
-                            description: function() {
-                              return getDesc("WeaviateNetworkFuzzyFetchThingsPropertiesObj")},
-                            fields: {
-                              needle: {
-                                name: "WeaviateNetworkFuzzyFetchThingsPropertiesNeedle",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkFuzzyFetchThingsPropertiesNeedle")},
-                                type: new GraphQLList(new GraphQLInputObjectType({
-                                  name: "WeaviateNetworkFuzzyFetchThingsPropertiesNeedleObj",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkFuzzyFetchThingsPropertiesNeedleObj")},
-                                  fields: {
-                                    kinds: {
-                                      name: "WeaviateNetworkFuzzyFetchThingsPropertiesNeedleKinds",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkFuzzyFetchThingsPropertiesNeedleKinds")},
-                                      type: new GraphQLList(new GraphQLInputObjectType({
-                                        name: "WeaviateNetworkFuzzyFetchThingsPropertiesNeedleKindsObj",
-                                        description: function() {
-                                          return getDesc("WeaviateNetworkFuzzyFetchThingsPropertiesNeedleKindsObj")},
-                                        fields: {
-                                          value: {
-                                            name: "WeaviateNetworkFuzzyFetchThingsPropertiesNeedleKindsValue",
-                                            description: function() {
-                                              return getDesc("WeaviateNetworkFuzzyFetchThingsPropertiesNeedleKindsValue")},
-                                            type: GraphQLString,
-                                          }, 
-                                          weight: {
-                                            name: "WeaviateNetworkFuzzyFetchThingsPropertiesNeedleKindsWeight",
-                                            description: function() {
-                                              return getDesc("WeaviateNetworkFuzzyFetchThingsPropertiesNeedleKindsWeight")},
-                                            type: GraphQLFloat,
-                                          }
-                                        }
-                                      }))
-                                    }
-                                  }
-                                }))
-                              },
-                              value: {
-                                name: "WeaviateNetworkFuzzyFetchThingsPropertiesValue",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkFuzzyFetchThingsPropertiesValue")},
-                                type: new GraphQLInputObjectType({
-                                  name: "WeaviateNetworkFuzzyFetchThingsPropertiesValueObj",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkFuzzyFetchThingsPropertiesValueObj")},
-                                  fields: {
-                                    needle: {
-                                      name: "WeaviateNetworkFuzzyFetchThingsPropertiesValueNeedle",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkFuzzyFetchThingsPropertiesValueNeedle")},
-                                      type: GraphQLString
-                                    }, 
-                                    type: {
-                                      name: "WeaviateNetworkFuzzyFetchThingsPropertiesValueType",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkFuzzyFetchThingsPropertiesValueType")},
-                                      type: fuzzyFetchEnum // should be an ENUM of: [EQ, NEQ, PREFIX, REGEX, FUZZY] https://docs.janusgraph.org/latest/index-parameters.html#_full_text_search
-                                    }
-                                  }
-                                }),
-                              }
-                            }
-                          }))
-                        }
-                      },
-                      type: new GraphQLList(new GraphQLObjectType({
-                        name: "WeaviateNetworkFuzzyFetchThingsObj",
-                        description: function() {
-                          return getDesc("WeaviateNetworkFuzzyFetchThingsObj")},
-                        fields: {
-                          beacons: {
-                            name: "WeaviateNetworkFuzzyFetchThingsBeacons",
-                            description: function() {
-                              return getDesc("WeaviateNetworkFuzzyFetchThingsBeacons")},
-                            type: new GraphQLList(new GraphQLObjectType({
-                              name: "WeaviateNetworkFuzzyFetchThingsBeaconsObj",
-                              description: function() {
-                                return getDesc("WeaviateNetworkFuzzyFetchThingsBeaconsObj")},
-                              fields: {
-                                beacon: { // The beacon to do a convertedfetch
-                                  name: "WeaviateNetworkFuzzyFetchThingsBeaconsBeacon",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkFuzzyFetchThingsBeaconsBeacon")},
-                                  type: GraphQLString,
-                                  resolve(parentValue, args) {
-                                    console.log("resolve WeaviateNetworkFuzzyFetchThingsBeaconsBeacon")
-                                    return [{}] // resolve with empty array
-                                  }
-                                }, 
-                                distance: { //  What is the distance to the original request?
-                                  name: "WeaviateNetworkFuzzyFetchThingsBeaconsBeaconDistance",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkFuzzyFetchThingsBeaconsBeaconDistance")},
-                                  type: GraphQLFloat, // should be enum of type (id est, string, int, cref etc)
-                                  resolve(parentValue, args) {
-                                    console.log("resolve WeaviateNetworkFuzzyFetchThingsBeaconsBeaconDistance")
-                                    return [{}] // resolve with empty array
-                                  }
-                                }
-                              }
-                            })),
-                            resolve(parentValue, args) {
-                              console.log("resolve WeaviateNetworkFuzzyFetchThingsBeacons")
-                              return [{}] // resolve with empty array
-                            }
-                          },
-                        }
-                      })),
-                      resolve(parentValue, args) {
-                        console.log("resolve WeaviateNetworkFuzzyFetchThings")
-                        return [{}] // resolve with empty array
-                      }
-                    },
-                    Actions: {
-                      name: "WeaviateNetworkFuzzyFetchActions",
-                      description: function() {
-                        return getDesc("WeaviateNetworkFuzzyFetchActions")},
-                      args: {
-                        class: { 
-                          name: "WeaviateNetworkFuzzyFetchActionsClass",
-                          description: function() {
-                            return getDesc("WeaviateNetworkFuzzyFetchActionsClass")},
-                          type: GraphQLString
-                        },
-                        kinds: { 
-                          name: "WeaviateNetworkFuzzyFetchActionsKinds",
-                          description: function() {
-                            return getDesc("WeaviateNetworkFuzzyFetchActionsKinds")},
-                          type: new GraphQLList(new GraphQLInputObjectType({
-                            name: "WeaviateNetworkFuzzyFetchActionsKindsObj",
-                            description: function() {
-                              return getDesc("WeaviateNetworkFuzzyFetchActionsKindsObj")},
-                            fields: {
-                              value: {
-                                name: "WeaviateNetworkFuzzyFetchActionsKindsValue",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkFuzzyFetchActionsKindsValue")},
-                                type: GraphQLString,
-                              },
-                              weight: {
-                                name: "WeaviateNetworkFuzzyFetchActionsKindsWeight",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkFuzzyFetchActionsKindsWeight")},
-                                type: GraphQLFloat,
-                              }
-                            }
-                          }))    
-                        },
-                        properties: { 
-                          name: "WeaviateNetworkFuzzyFetchActionsProperties",
-                          description: function() {
-                            return getDesc("WeaviateNetworkFuzzyFetchActionsProperties")},
-                          type: new GraphQLList(new GraphQLInputObjectType({
-                            name: "WeaviateNetworkFuzzyFetchActionsPropertiesObj",
-                            description: function() {
-                              return getDesc("WeaviateNetworkFuzzyFetchActionsPropertiesObj")},
-                            fields: {
-                              needle: {
-                                name: "WeaviateNetworkFuzzyFetchActionsPropertiesNeedle",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkFuzzyFetchActionsPropertiesNeedle")},
-                                type: new GraphQLList(new GraphQLInputObjectType({
-                                  name: "WeaviateNetworkFuzzyFetchActionsPropertiesNeedleObj",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkFuzzyFetchActionsPropertiesNeedleObj")},
-                                  fields: {
-                                    kinds: {
-                                      name: "WeaviateNetworkFuzzyFetchActionsPropertiesNeedleKinds",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkFuzzyFetchActionsPropertiesNeedleKinds")},
-                                      type: new GraphQLList(new GraphQLInputObjectType({
-                                        name: "WeaviateNetworkFuzzyFetchActionsPropertiesNeedleKindsObj",
-                                        description: function() {
-                                          return getDesc("WeaviateNetworkFuzzyFetchActionsPropertiesNeedleKindsObj")},
-                                        fields: {
-                                          value: {
-                                            name: "WeaviateNetworkFuzzyFetchActionsPropertiesNeedleKindsValue",
-                                            description: function() {
-                                              return getDesc("WeaviateNetworkFuzzyFetchActionsPropertiesNeedleKindsValue")},
-                                            type: GraphQLString,
-                                          }, 
-                                          weight: {
-                                            name: "WeaviateNetworkFuzzyFetchActionsPropertiesNeedleKindsWeight",
-                                            description: function() {
-                                              return getDesc("WeaviateNetworkFuzzyFetchActionsPropertiesNeedleKindsWeight")},
-                                            type: GraphQLFloat,
-                                          }
-                                        }
-                                      }))
-                                    }
-                                  }
-                                }))
-                              },
-                              value: {
-                                name: "WeaviateNetworkFuzzyFetchActionsPropertiesValue",
-                                description: function() {
-                                  return getDesc("WeaviateNetworkFuzzyFetchActionsPropertiesValue")},
-                                type: new GraphQLInputObjectType({
-                                  name: "WeaviateNetworkFuzzyFetchActionsPropertiesValueObj",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkFuzzyFetchActionsPropertiesValueObj")},
-                                  fields: {
-                                    needle: {
-                                      name: "WeaviateNetworkFuzzyFetchActionsPropertiesValueNeedle",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkFuzzyFetchActionsPropertiesValueNeedle")},
-                                      type: GraphQLString
-                                    }, 
-                                    type: {
-                                      name: "WeaviateNetworkFuzzyFetchActionsPropertiesValueType",
-                                      description: function() {
-                                        return getDesc("WeaviateNetworkFuzzyFetchActionsPropertiesValueType")},
-                                      type: fuzzyFetchEnum // should be an ENUM of: [EQ, NEQ, PREFIX, REGEX, FUZZY] https://docs.janusgraph.org/latest/index-parameters.html#_full_text_search
-                                    }
-                                  }
-                                }),
-                              }
-                            }
-                          }))
-                        }
-                      },
-                      type: new GraphQLList(new GraphQLObjectType({
-                        name: "WeaviateNetworkFuzzyFetchActionsObj",
-                        description: function() {
-                          return getDesc("WeaviateNetworkFuzzyFetchActionsObj")},
-                        fields: {
-                          beacons: {
-                            name: "WeaviateNetworkFuzzyFetchActionsBeacons",
-                            description: function() {
-                              return getDesc("WeaviateNetworkFuzzyFetchActionsBeacons")},
-                            type: new GraphQLList(new GraphQLObjectType({
-                              name: "WeaviateNetworkFuzzyFetchActionsBeaconsObj",
-                              description: function() {
-                                return getDesc("WeaviateNetworkFuzzyFetchActionsBeaconsObj")},
-                              fields: {
-                                beacon: {
-                                  name: "WeaviateNetworkFuzzyFetchActionsBeaconsBeacon",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkFuzzyFetchActionsBeaconsBeacon")},
-                                  type: GraphQLString,
-                                  resolve(parentValue, args) {
-                                    console.log("resolve WeaviateNetworkFuzzyFetchActionsBeaconsBeacon")
-                                    return [{}] // resolve with empty array
-                                  }
-                                }, 
-                                distance: {
-                                  name: "WeaviateNetworkFuzzyFetchActionsBeaconsBeaconDistance",
-                                  description: function() {
-                                    return getDesc("WeaviateNetworkFuzzyFetchActionsBeaconsBeaconDistance")},
-                                  type: GraphQLFloat, // should be enum of type (id est, string, int, cref etc)
-                                  resolve(parentValue, args) {
-                                    console.log("resolve WeaviateNetworkFuzzyFetchActionsBeaconsBeaconDistance")
-                                    return [{}] // resolve with empty array
-                                  }
-                                }
-                              }
-                            })),
-                            resolve(parentValue, args) {
-                              console.log("resolve WeaviateNetworkFuzzyFetchActionsBeacons")
-                              return [{}] // resolve with empty array
-                            }
-                          },
-                        }
-                      })),
-                      resolve(parentValue, args) {
-                        console.log("resolve WeaviateNetworkFuzzyFetchActions")
-                        return [{}] // resolve with empty array
-                      }
-                    },
-                  }
-                }),
-                resolve() {
-                  console.log("resolve WeaviateNetworkFuzzyFetch")
-                  return [{}] // resolve with empty array
-                },
-              },
-              Get: {
-                name: "WeaviateNetworkGet",
-                description: function() {
-                  return getDesc("WeaviateNetworkGet")},
-                type: new GraphQLList(GraphQLString), // no input required yet
-                resolve() {
-                  console.log("resolve WeaviateNetworkGet")
-                  return [{}] // resolve with empty array
-                },
-              },
+              }
             }
           })
         }
