@@ -36,7 +36,7 @@
 	"MetaClassPropertyPointingFrom": "how many other classes the class is pointing from",
 	"MetaClassPropertyTopOccurrences": "most frequent property values",
 	"MetaClassPropertyTopOccurrencesValue": "property value of the most frequent properties",
-	"MetaClassPropertyTopOccurrencesOccurs": "number of occurrance",
+	"MetaClassPropertyTopOccurrencesOccurs": "number of occurrence",
 	"MetaClassPropertyLowest": "Lowest value occurrence",
 	"MetaClassPropertyHighest": "Highest value occurrence",
 	"MetaClassPropertyAverage": "average number",
@@ -95,6 +95,6 @@
 	"WeaviateNetworkMetaFetch": "To fetch meta information Things or Actions on the network weaviate",
 	"WeaviateNetworkNetworkTimeout": "the max time to request an answer from the network. It is the time in seconds",
 	"SubClassUuid": "uuid of the thing given by the local Weaviate instance",
-	"MetaClassMetaKind": "The kind or suggested format based on the contextionairy attached to the class.",
-	"MetaClassPropertyKind": "The kind or suggested format based on the contextionairy attached to the property."
+	"MetaClassMetaKind": "The kind or suggested format based on the contextionary attached to the class.",
+	"MetaClassPropertyKind": "The kind or suggested format based on the contextionary attached to the property."
 }
