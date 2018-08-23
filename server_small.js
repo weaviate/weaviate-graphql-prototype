@@ -316,10 +316,10 @@ var NetworkIntrospectWhereClassAndPropertyFilterFields = {
       return getDesc("WeaviateNetworkWhereCertainty")},
     type: GraphQLFloat,
   }, 
-  limit: {
-    name: "WeaviateNetworkWhereLimit",
+  first: {
+    name: "WeaviateNetworkWhereFirst",
     description: function() {
-      return getDesc("WeaviateNetworkWhereLimit")},
+      return getDesc("WeaviateNetworkWhereFirst")},
     type: GraphQLFloat,
   }
 }
@@ -398,10 +398,10 @@ var NetworkFetchFilterFields = {
             fields: NetworkFetchWherePropertyFilterFields
           }))
         },
-        limit: {
-          name: "NetworkFetchWhereInpObjLimit",
+        first: {
+          name: "NetworkFetchWhereInpObjFirst",
           description: function() {
-            return getDesc("NetworkFetchWhereInpObjLimit")},
+            return getDesc("NetworkFetchWhereInpObjFirst")},
           type: GraphQLInt,
         }
       }
@@ -498,26 +498,19 @@ function createArgs(item){
     // empty argument
     propsForArgs[item.class] = {}
 
-    // always certainty
-    propsForArgs[item.class]["certainty"] = {
-      name: "certaintyFilter",
-      type: GraphQLFloat,
-      description: function() {
-        return getDesc("certaintyFilter")},
-    }
-    // always return limit
-    propsForArgs[item.class]["limit"] = {
-      name: "limitFilter",
+    // always return first
+    propsForArgs[item.class]["first"] = {
+      name: "firstFilter",
       type: GraphQLInt,
       description: function() {
-        return getDesc("limitFilter")},
+        return getDesc("firstFilter")},
     }
-    // always return skip
-    propsForArgs[item.class]["skip"] = {
-      name: "skipFilter",
+    // always return after
+    propsForArgs[item.class]["after"] = {
+      name: "afterFilter",
       type: GraphQLInt,
       description: function() {
-        return getDesc("skipFilter")},
+        return getDesc("afterFilter")},
     }
   }
   
@@ -692,16 +685,16 @@ function createMetaSubClasses(ontologyThings){
                         return getDesc("MetaClassPropertyTopOccurrences")},
                       type: new GraphQLList( topOccurrencesType ),
                       args: {
-                        limit: { 
-                          name: "limitFilter",
+                        first: { 
+                          name: "firstFilter",
                           description: function() {
-                            return getDesc("limitFilter")},
+                            return getDesc("firstFilter")},
                           type: GraphQLInt 
                         },
-                        skip: { 
-                          name: "skipFilter",
+                        after: { 
+                          name: "afterFilter",
                           description: function() {
-                            return getDesc("skipFilter")},
+                            return getDesc("afterFilter")},
                           type: GraphQLInt 
                         }
                       }
