@@ -190,25 +190,25 @@ var NetworkFetchWherePropertyFilterFields = {
       return getDesc("NetworkFetchWherePropertyWhereName")},
     type: GraphQLString,
   }, 
-  kinds: {
-    name: "NetworkFetchWherePropertyWhereKinds",
+  keywords: {
+    name: "NetworkFetchWherePropertyWhereKeywords",
     description: function() {
-      return getDesc("NetworkFetchWherePropertyWhereKinds")},
+      return getDesc("NetworkFetchWherePropertyWhereKeywords")},
     type: new GraphQLList(new GraphQLInputObjectType({
-      name: "NetworkFetchWherePropertyWhereKindsInpObj",
+      name: "NetworkFetchWherePropertyWhereKeywordsInpObj",
       description: function() {
-        return getDesc("NetworkFetchWherePropertyWhereKindsInpObj")},
+        return getDesc("NetworkFetchWherePropertyWhereKeywordsInpObj")},
       fields: {
         value: {
-          name: "NetworkFetchWherePropertyWhereKindsValue",
+          name: "NetworkFetchWherePropertyWhereKeywordsValue",
           description: function() {
-            return getDesc("NetworkFetchWherePropertyWhereKindsValue")},
+            return getDesc("NetworkFetchWherePropertyWhereKeywordsValue")},
           type: GraphQLString,
         },
         weight: {
-          name: "NetworkFetchWherePropertyWhereKindsWeight",
+          name: "NetworkFetchWherePropertyWhereKeywordsWeight",
           description: function() {
-            return getDesc("NetworkFetchWherePropertyWhereKindsWeight")},
+            return getDesc("NetworkFetchWherePropertyWhereKeywordsWeight")},
           type: GraphQLFloat,
         }
       }
@@ -262,25 +262,25 @@ var NetworkIntrospectWhereClassAndPropertyFilterFields = {
       return getDesc("WeaviateNetworkWhereName")},
     type: GraphQLString,
   }, 
-  kinds: {
-    name: "WeaviateNetworkWhereNameKinds",
+  keywords: {
+    name: "WeaviateNetworkWhereNameKeywords",
     description: function() {
-      return getDesc("WeaviateNetworkWhereNameKinds")},
+      return getDesc("WeaviateNetworkWhereNameKeywords")},
     type: new GraphQLList(new GraphQLInputObjectType({
-      name: "WeaviateNetworkWhereNameKindsInpObj",
+      name: "WeaviateNetworkWhereNameKeywordsInpObj",
       description: function() {
-        return getDesc("WeaviateNetworkWhereNameKindsInpObj")},
+        return getDesc("WeaviateNetworkWhereNameKeywordsInpObj")},
       fields: {
         value: {
-          name: "WeaviateNetworkWhereNameKindsValue",
+          name: "WeaviateNetworkWhereNameKeywordsValue",
           description: function() {
-            return getDesc("WeaviateNetworkWhereNameKindsValue")},
+            return getDesc("WeaviateNetworkWhereNameKeywordsValue")},
           type: GraphQLString,
         },
         weight: {
-          name: "WeaviateNetworkWhereNameKindsWeight",
+          name: "WeaviateNetworkWhereNameKeywordsWeight",
           description: function() {
-            return getDesc("WeaviateNetworkWhereNameKindsWeight")},
+            return getDesc("WeaviateNetworkWhereNameKeywordsWeight")},
           type: GraphQLFloat,
         }
       }
@@ -296,7 +296,7 @@ var NetworkIntrospectWhereClassAndPropertyFilterFields = {
     name: "WeaviateNetworkWhereFirst",
     description: function() {
       return getDesc("WeaviateNetworkWhereFirst")},
-    type: GraphQLFloat,
+    type: GraphQLInt,
   }
 }
 
@@ -1351,12 +1351,12 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                       description: function() {
                         return getDesc("WeaviateNetworkIntrospectActions")},
                       args: NetworkIntrospectWhereFilterFields,
-                      type: new GraphQLObjectType({
+                      type: new GraphQLList(new GraphQLObjectType({
                         name: "WeaviateNetworkIntrospectActionsObj",
                         description: function() {
                           return getDesc("WeaviateNetworkIntrospectActionsObj")},
                         fields: NetworkIntrospectThingsActionsFields
-                      }),
+                      })),
                       resolve(parentValue, args) {
                         console.log("resolve WeaviateNetworkIntrospectClass")
                         return [{}] // resolve with empty array
@@ -1374,12 +1374,12 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                           type: GraphQLString
                         }
                       },
-                      type: new GraphQLObjectType({
+                      type: new GraphQLList( new GraphQLObjectType({
                         name: "WeaviateNetworkIntrospectBeaconObj",
                         description: function() {
                           return getDesc("WeaviateNetworkIntrospectBeaconObj")},
                         fields: NetworkIntrospectThingsActionsFields
-                      }),
+                      })),
                       resolve(parentValue, args) {
                         console.log("resolve WeaviateNetworkIntrospectBeacon")
                         return [{}] // resolve with empty array
