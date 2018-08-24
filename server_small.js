@@ -51,62 +51,38 @@ function getDesc(name) {
  * START - ALL RELATED TO INTERNAL FUNCTION
  */
 
-
-/**
- *  Create union input value type for converted fetch filter fields
- */
-
-// const GetWhereValueType = UnionInputType({
-//   name: "ValueType",
-//   inputTypes: [GraphQLString, GraphQLBoolean, GraphQLFloat],
-//   resolveType: function resolveType(name) {
-//     //console.log(name)
-//     if (typeof name === "string") {
-//         return GraphQLString;
-//     } 
-//     else if (typeof name === "boolean") {
-//         return GraphQLBoolean;
-//     } 
-//     else if (typeof name === "number") {
-//         return GraphQLFloat;
-//     }
-//   },
-//   typeKey: "name"
-// }) 
-
-
 var NetworkIntrospectThingsActionsFields = {
   className: {
-    name: "WeaviateNetworkFetchMetaClassName",
+    name: "WeaviateNetworkIntrospectClassName",
     description: function() {
-      return getDesc("WeaviateNetworkFetchMetaClassName")},
+      return getDesc("WeaviateNetworkIntrospectClassName")},
     type: GraphQLString
   },
   certainty: {
-    name: "WeaviateNetworkFetchMetaCertainty",
+    name: "WeaviateNetworkIntrospectCertainty",
     description: function() {
-      return getDesc("WeaviateNetworkFetchMetaCertainty")},
+      return getDesc("WeaviateNetworkIntrospectCertainty")},
     type: GraphQLFloat
   },
   properties: {
-    name: "WeaviateNetworkFetchMetaProperties",
+    name: "WeaviateNetworkIntrospectProperties",
     description: function() {
-      return getDesc("WeaviateNetworkFetchMetaProperties")},
+      return getDesc("WeaviateNetworkIntrospectProperties")},
     type: new GraphQLList(new GraphQLObjectType({
-      name: "WeaviateNetworkFetchMetaPropertiesObj",
+      name: "WeaviateNetworkIntrospectPropertiesObj",
       description: function() {
-        return getDesc("WeaviateNetworkFetchMetaProperties")},
+        return getDesc("WeaviateNetworkIntrospectPropertiesObj")},
       fields: {
         propertyName: {
-          name: "WeaviateNetworkFetchMetaPropertiesPropertyName",
+          name: "WeaviateNetworkIntrospectPropertiesPropertyName",
           description: function() {
-            return getDesc("WeaviateNetworkFetchMetaPropertiesPropertyName")},
+            return getDesc("WeaviateNetworkIntrospectPropertiesPropertyName")},
           type: GraphQLString
         },
         certainty: {
-          name: "WeaviateNetworkFetchMetaPropertiesCertainty",
+          name: "WeaviateNetworkIntrospectPropertiesCertainty",
           description: function() {
-            return getDesc("WeaviateNetworkFetchMetaPropertiesCertainty")},
+            return getDesc("WeaviateNetworkIntrospectPropertiesCertainty")},
           type: GraphQLFloat
         }
       }
@@ -589,9 +565,9 @@ function createMetaSubClasses(ontologyThings){
                     return getDesc("MetaClassPropertyObj")},
                   fields: Object.assign(standard_fields, {
                     pointingTo: {
-                      name: "Meta" + singleClass.class + singleClassProperty.name + "Pointing",
+                      name: "Meta" + singleClass.class + singleClassProperty.name + "PointingTo",
                       description: function() {
-                        return getDesc("MetaClassPropertyPointing")},
+                        return getDesc("MetaClassPropertyPointingTo")},
                       type: new GraphQLList(GraphQLString)
                     }
                   })
@@ -670,19 +646,19 @@ function createMetaSubClasses(ontologyThings){
                     lowest: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Lowest",
                       description: function() {
-                        return getDesc("FetchFilterPathField")},
+                        return getDesc("MetaClassPropertyLowest")},
                       type: GraphQLFloat,
                     },
                     highest: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Highest",
                       description: function() {
-                        return getDesc("MetaClassPropertyLowest")},
+                        return getDesc("MetaClassPropertyHighest")},
                       type: GraphQLFloat,
                     },
                     average: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Average",
                       description: function() {
-                        return getDesc("MetaClassPropertyHighest")},
+                        return getDesc("MetaClassPropertyAverage")},
                       type: GraphQLFloat,
                     },
                     sum: {
@@ -1202,14 +1178,6 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                       name: "WeaviateLocalGetMetaThings",
                       description: function() {
                         return getDesc("WeaviateLocalGetMetaThings")},
-                      args: {
-                        maxArraySize: { 
-                          name: "WeaviateLocalGetMetaMaxArraySize",
-                          description: function() {
-                            return getDesc("WeaviateLocalGetMetaMaxArraySize")},
-                          type: GraphQLInt 
-                        } 
-                      },
                       type: new GraphQLObjectType({
                         name: "WeaviateLocalGetMetaThingsObj",
                         description: function() {
@@ -1225,14 +1193,6 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                       name: "WeaviateLocalGetMetaActions",
                       description: function() {
                         return getDesc("WeaviateLocalGetMetaActions")},
-                      args: {
-                        maxArraySize: { 
-                          name: "WeaviateLocalGetMetaMaxArraySize",
-                          description: function() {
-                            return getDesc("WeaviateLocalGetMetaMaxArraySize")},
-                          type: GraphQLInt 
-                        } 
-                      },
                       type: new GraphQLObjectType({
                         name: "WeaviateLocalGetMetaActionsObj",
                         description: function() {
@@ -1362,73 +1322,73 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                 },
               },
               Introspect: {
-                name: "WeaviateNetworkFetchMeta",
+                name: "WeaviateNetworkIntrospect",
                 description: function() {
-                  return getDesc("WeaviateNetworkFetchMeta")},
+                  return getDesc("WeaviateNetworkIntrospect")},
                 type: new GraphQLObjectType({
-                  name: "WeaviateNetworkFetchMetaObj",
+                  name: "WeaviateNetworkIntrospectObj",
                   description: function() {
-                    return getDesc("WeaviateNetworkFetchMetaObj")},
+                    return getDesc("WeaviateNetworkIntrospectObj")},
                   fields: {
                     Things: {
-                      name: "WeaviateNetworkFetchMetaThings",
+                      name: "WeaviateNetworkIntrospectThings",
                       description: function() {
-                        return getDesc("WeaviateNetworkFetchMetaThings")},
+                        return getDesc("WeaviateNetworkIntrospectThings")},
                       args: NetworkIntrospectWhereFilterFields,
                       type: new GraphQLList(new GraphQLObjectType({
-                        name: "WeaviateNetworkFetchMetaThingsObj",
+                        name: "WeaviateNetworkIntrospectThingsObj",
                         description: function() {
-                          return getDesc("WeaviateNetworkFetchMetaThingsObj")},
+                          return getDesc("WeaviateNetworkIntrospectThingsObj")},
                         fields: NetworkIntrospectThingsActionsFields
                       })),
                       resolve(parentValue, args) {
-                        console.log("resolve WeaviateNetworkFetchMetaThings")
+                        console.log("resolve WeaviateNetworkIntrospectThings")
                         return [{}] // resolve with empty array
                       }
                     },
                     Actions: {
-                      name: "WeaviateNetworkFetchMetaActions",
+                      name: "WeaviateNetworkIntrospectActions",
                       description: function() {
-                        return getDesc("WeaviateNetworkFetchMetaActions")},
+                        return getDesc("WeaviateNetworkIntrospectActions")},
                       args: NetworkIntrospectWhereFilterFields,
                       type: new GraphQLObjectType({
-                        name: "WeaviateNetworkFetchMetaActionsObj",
+                        name: "WeaviateNetworkIntrospectActionsObj",
                         description: function() {
-                          return getDesc("WeaviateNetworkFetchMetaActionsObj")},
+                          return getDesc("WeaviateNetworkIntrospectActionsObj")},
                         fields: NetworkIntrospectThingsActionsFields
                       }),
                       resolve(parentValue, args) {
-                        console.log("resolve WeaviateNetworkFetchMetaClass")
+                        console.log("resolve WeaviateNetworkIntrospectClass")
                         return [{}] // resolve with empty array
                       }
                     },
                     Beacon: {
-                      name: "WeaviateNetworkFetchMetaBeacon",
+                      name: "WeaviateNetworkIntrospectBeacon",
                       description: function() {
-                        return getDesc("WeaviateNetworkFetchMetaBeacon")},
+                        return getDesc("WeaviateNetworkIntrospectBeacon")},
                       args: {
                         id: { // The id of the beacon like: weaviate://foo-bar-baz/UUI
-                          name: "WeaviateNetworkFetchMetaBeaconId",
+                          name: "WeaviateNetworkIntrospectBeaconId",
                           description: function() {
-                            return getDesc("WeaviateNetworkFetchMetaBeaconId")},
+                            return getDesc("WeaviateNetworkIntrospectBeaconId")},
                           type: GraphQLString
                         }
                       },
                       type: new GraphQLObjectType({
-                        name: "WeaviateNetworkFetchMetaBeaconObj",
+                        name: "WeaviateNetworkIntrospectBeaconObj",
                         description: function() {
-                          return getDesc("WeaviateNetworkFetchMetaBeaconObj")},
+                          return getDesc("WeaviateNetworkIntrospectBeaconObj")},
                         fields: NetworkIntrospectThingsActionsFields
                       }),
                       resolve(parentValue, args) {
-                        console.log("resolve WeaviateNetworkFetchMetaBeacon")
+                        console.log("resolve WeaviateNetworkIntrospectBeacon")
                         return [{}] // resolve with empty array
                       }
                     }
                   }
                 }),
                 resolve() {
-                  console.log("resolve WeaviateNetworkFetchMeta")
+                  console.log("resolve WeaviateNetworkIntrospect")
                   return [{}] // resolve with empty array
                 }
               }
