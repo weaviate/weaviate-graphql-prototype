@@ -255,11 +255,11 @@ module.exports = {
 			   list.push(return_data[i])
 		   }
 	   }
-	   if (args._skip) {
-		   list = list.splice(args._skip)
+	   if (args.after) {
+		   list = list.splice(args.after)
 	   }
-	   if (args._limit) {
-		   list = list.splice(0, args._limit)
+	   if (args.first) {
+		   list = list.splice(0, args.first)
 	   }
 	   return list
    },
