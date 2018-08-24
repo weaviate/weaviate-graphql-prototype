@@ -246,33 +246,117 @@ module.exports = {
 		else {
 			return data
 		}
-   },
-   rootClassResolver: function(return_data, className, args) {
-	   // return data
-	   var list = []
-	   for(var i=0; i < return_data.length; i++){
-		   if(return_data[i].class == className){
-			   list.push(return_data[i])
-		   }
-	   }
-	   if (args.after) {
-		   list = list.splice(args.after)
-	   }
-	   if (args.first) {
-		   list = list.splice(0, args.first)
-	   }
-	   return list
-   },
-   metaDataResolver: function(return_data, className, args, _maxArraySize) {
-	   // return data
-	   return meta_data[0]
-	   var list = []
-	   for(var i=0; i < return_data.length; i++){
-		   if(return_data[i].class == className){
-			   list.push(meta_data.Meta[0].Things)
-			   return meta_data.Meta[0].Things
-		   }
-	   }
-	   return list
-   }
+    },
+    rootClassResolver: function(return_data, className, args) {
+	    var list = []
+	    for(var i=0; i < return_data.length; i++){
+	        if(return_data[i].class == className){
+			    list.push(return_data[i])
+		    }
+	    }
+	  	if (args.after) {
+		    list = list.splice(args.after)
+	    }
+	    if (args.first) {
+		    list = list.splice(0, args.first)
+	    }
+	    return list
+    },
+    metaRootClassResolver: function(all_data, className, args) {
+		var list = []
+	    for(var i=0; i < all_data.length; i++){
+	        if(all_data[i].class == className){
+			    list.push(all_data[i])
+		    }
+	    }
+
+	  	if (args.after) {
+		    list = list.splice(args.after)
+	    }
+	    if (args.first) {
+		    list = list.splice(0, args.first)
+	    }
+		all_data = list
+		console.log(all_data)
+		
+	    nodes_in_class = []
+	    for (var i in all_data) { // loop through single things or actions
+			if (all_data[i].class == className) {
+				nodes_in_class.push(all_data[i])
+		    }
+	    }
+
+	    metadata = []
+	    metadata["class"] = className
+		metadata["meta"] = {"count": nodes_in_class.length}
+		
+		
+		for (var key in nodes_in_class[0]) {
+			if (key == "class" || key == "uuid") {
+				continue
+			}
+			metadata[key] = {}
+			metadata[key]["count"] = 0
+			var type = typeof(nodes_in_class[0][key])
+			if (type == "object") {
+				metadata[key]["type"] = "cref"
+				metadata[key]["pointingTo"] = [nodes_in_class[0][key]["class"]]
+			}
+			else if (type == "boolean") {
+				metadata[key]["type"] = "boolean"
+				metadata[key]["totalTrue"] = 0
+				metadata[key]["percentageTrue"] = 0
+			}
+			else if (type == "string") {
+				if (!isNaN(nodes_in_class[0][key])) {
+					metadata[key]["type"] = "number"
+					metadata[key]["lowest"] = 999999999999
+					metadata[key]["highest"] = -999999999999
+					metadata[key]["average"] = 0
+					metadata[key]["sum"] = 0
+				}
+				else {
+					metadata[key]["type"] = "string"
+					metadata[key]["topOccurrences"] = []
+				}
+			}
+		}
+
+		for (var node in nodes_in_class) {
+			for (var key in nodes_in_class[node]) {
+				if (key == "class" || key == "uuid") {
+					continue
+				}
+				metadata[key]["count"] += 1;
+				var type = typeof(nodes_in_class[node][key])
+				if (type == "boolean") {
+					metadata[key]["type"] = "boolean"
+					if (nodes_in_class[node][key] == true) {
+						metadata[key]["totalTrue"] += 1;
+					}
+					metadata[key]["percentageTrue"] = (metadata[key]["totalTrue"] / metadata[key]["count"] * 100);
+				}
+				else if (type == "string") {
+					if (!isNaN(nodes_in_class[node][key])) {
+						metadata[key]["type"] = "number"
+						value = parseFloat(nodes_in_class[node][key])
+						if (value < metadata[key]["lowest"]) {
+							metadata[key]["lowest"] = value
+						}
+						if (value > metadata[key]["highest"]) {
+							metadata[key]["highest"] = value
+						}
+						metadata[key]["sum"] += value
+						metadata[key]["average"] = (metadata[key]["sum"] / metadata[key]["count"])
+					}
+					else {
+						metadata[key]["type"] = "string"
+						metadata[key]["topOccurrences"].push({"value": nodes_in_class[node][key], "occurs": 1}) // currently doesn't count occurrences
+					}
+				}
+			}
+		}
+
+		return metadata
+   	}
 }

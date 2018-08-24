@@ -549,42 +549,12 @@ function createMetaSubClasses(ontologyThings){
             description: function() {
               return getDesc("MetaClassMetaObj")},
             fields: {
-              kind: {
-                name: "Meta" + singleClass.class + "MetaKind",
-                description: function() {
-                  return getDesc("MetaClassMetaKind")},
-                type: GraphQLString
-              },
               count: {
                 name: "Meta" + singleClass.class + "MetaCount",
                 description: function() {
                   return getDesc("MetaClassMetaCount")},
                 type: GraphQLInt
-              },
-              // pointing: {
-              //   name: "Meta" + singleClass.class + "MetaPointing",
-              //   description: function() {
-              //     return getDesc("MetaClassMetaPointing")},
-              //   type: new GraphQLObjectType({
-              //     name: "Meta" + singleClass.class + "MetaPointingObj",
-              //     description: function() {
-              //       return getDesc("MetaClassMetaPointingObj")},
-              //     fields: {
-              //       to: {
-              //         name: "Meta" + singleClass.class + "MetaPointingTo",
-              //         description: function() {
-              //           return getDesc("MetaClassMetaPointingTo")},
-              //         type: GraphQLInt,
-              //       },
-              //       from: {
-              //         name: "Meta" + singleClass.class + "MetaPointingFrom",
-              //         description: function() {
-              //           return getDesc("MetaClassMetaPointingFrom")},
-              //         type: GraphQLInt
-              //       }
-              //     }
-              //   })
-              // }
+              }
             }
           })
         }
@@ -604,12 +574,6 @@ function createMetaSubClasses(ontologyThings){
               description: function() {
                 return getDesc("MetaClassPropertyCount")},
               type: GraphQLInt,
-            },
-            kind: {
-              name: "Meta" + singleClass.class + singleClassProperty.name + "Kind",
-              description: function() {
-                return getDesc("MetaClassPropertyKind")},
-              type: GraphQLString,
             }
           }
           singleClassProperty["@dataType"].forEach(singleClassPropertyDatatype => {
@@ -624,29 +588,11 @@ function createMetaSubClasses(ontologyThings){
                   description: function() {
                     return getDesc("MetaClassPropertyObj")},
                   fields: Object.assign(standard_fields, {
-                    pointing: {
+                    pointingTo: {
                       name: "Meta" + singleClass.class + singleClassProperty.name + "Pointing",
                       description: function() {
                         return getDesc("MetaClassPropertyPointing")},
-                      type: new GraphQLObjectType({
-                        name: "Meta" + singleClass.class + singleClassProperty.name + "PointingObj",
-                        description: function() {
-                          return getDesc("MetaClassPropertyPointingObj")},
-                        fields: {
-                          to: {
-                            name: "Meta" + singleClass.class + singleClassProperty.name + "PointingTo",
-                            description: function() {
-                              return getDesc("MetaClassPropertyPointingTo")},
-                            type: GraphQLInt,
-                          },
-                          from: {
-                            name: "Meta" + singleClass.class + singleClassProperty.name + "PointingFrom",
-                            description: function() {
-                              return getDesc("MetaClassPropertyPointingFrom")},
-                            type: GraphQLInt
-                          }
-                        }
-                      })
+                      type: new GraphQLList(GraphQLString)
                     }
                   })
                 })
@@ -697,6 +643,16 @@ function createMetaSubClasses(ontologyThings){
                             return getDesc("afterFilter")},
                           type: GraphQLInt 
                         }
+                      },
+                      resolve(parentValue, args) {
+                        data = parentValue.topOccurrences
+                        if (args.after) {
+                          data = data.splice(args.after)
+                        }
+                        if (args.first) {
+                          data = data.splice(0, args.first)
+                        }
+                        return data
                       }
                     }
                   })
@@ -809,7 +765,7 @@ function createMetaRootClasses(ontologyThings, metaSubClasses){
       description: singleClass.description,
       args: createArgs(singleClass),
       resolve(parentValue, args) {
-        return demoResolver.metaDataResolver(parentValue.data, singleClass.class, args, parentValue.maxArraySize)
+        return demoResolver.metaRootClassResolver(parentValue, singleClass.class, args)
       }
     }
 
@@ -1251,7 +1207,7 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                           name: "WeaviateLocalGetMetaMaxArraySize",
                           description: function() {
                             return getDesc("WeaviateLocalGetMetaMaxArraySize")},
-                          type: GraphQLString 
+                          type: GraphQLInt 
                         } 
                       },
                       type: new GraphQLObjectType({
@@ -1262,7 +1218,7 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                       }),
                       resolve(parentValue, args) {
                         console.log("resolve WeaviateLocalGetMetaThings")
-                        return {"data": parentValue.Things, "maxArraySize": args.maxArraySize} // resolve with empty array
+                        return parentValue.Things // resolve with empty array
                       }
                     }, 
                     Actions: {
@@ -1274,7 +1230,7 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                           name: "WeaviateLocalGetMetaMaxArraySize",
                           description: function() {
                             return getDesc("WeaviateLocalGetMetaMaxArraySize")},
-                          type: GraphQLString 
+                          type: GraphQLInt 
                         } 
                       },
                       type: new GraphQLObjectType({
@@ -1285,14 +1241,14 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                       }),
                       resolve(parentValue, args) {
                         console.log("resolve WeaviateLocalGetMetaActions")
-                        return {"data": parentValue.Things, "maxArraySize": args.maxArraySize} // resolve with empty array
+                        return parentValue.Actions // resolve with empty array
                       }
                     }
                   },
                 }),
-                resolve() {
+                resolve(parentValue, args) {
                   console.log("resolve WeaviateLocalGetMeta")
-                  return [{}] // resolve with empty array
+                  return demoResolver.resolveGet(args.where) // resolve with empty array
                 },
               },
             }
