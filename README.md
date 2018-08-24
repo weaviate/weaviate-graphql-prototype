@@ -17,11 +17,9 @@ To get the full graphql schema by the CLI tool:
 - Run: `graphql get-schema`
 The result will be in `./schema.graphql`
 
-To get the full schema definitions by a graphql introspection query:
-- Install: `npm install -g graphdoq`
-- DESCRIBE HOW TO DO INTROSPECTION AND GET THE SCHEMA GENERATED DOCUMENTATION
-- Run: `graphdoc -s ./introspection_result.json -o documentation`
-The result will be in the folder `documentation`
+To get the full schema definitions in markdown by a graphql introspection query:
+- Install `npm install -g graphql-markdown`
+- Run `graphql-markdown ./path/to/schema.graphql > schema.md`
 
 
 ## Documentation
