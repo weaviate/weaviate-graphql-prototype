@@ -1,161 +1,46 @@
 const _ = require('lodash');
 // file system for reading files
 const fs = require('fs');
-
 const data = JSON.parse(fs.readFileSync('./demo_resolver/demo_data.json', 'utf8'));
 
-const solve_nested_filter = function (filtername, filters, operator) {
-	var return_data = {}
-	var and_result = _.clone(data);
-	for (var filter in filters) {
-		for (var key in filters[filter]) {
-			if (key == "AND") {
-				var result = solve_nested_filter(filtername, filters[filter][key], "AND")
-			}
-			else if (key == "OR") {
-				var result = solve_nested_filter(filtername, filters[filter][key], "OR")
-				return_data[key] = _.union(result[key], return_data[key])
-			}
-			else { // no AND or OR filter given, go directly to path/value
-				if (filtername == "EQ") {
-					var result = resolve_EQ(filters[filter])
-				} 
-				else if (filtername == "NEQ") {
-					var result = resolve_NEQ(filters[filter])
-				} 
-				else if (filtername == "IE") {
-					var result = resolve_IE(filters[filter])
-				}
-				break;
-			}
-		}
-		if (operator == "OR") {
-			for (var key in result) {
-				return_data[key] = _.union(result[key], return_data[key])
-			}
-		} else {  // AND
-			for (var key in result) {
-				if (and_result[key] !== undefined) {
-					and_result[key] = result[key].filter(value => -1 !== and_result[key].indexOf(value));
-				}
-			}
-			return_data = and_result
-		}
-	}
-	return return_data
-}
 
-
-const solve_filter = function (filters, operator) {
-	var return_data = {}
-	var and_result = _.clone(data);
-	for (var filter in filters) {
-		switch (filter) {
-			case "AND":
-				var result = solve_filter(filters.AND, "AND")
-				return result
-			case "OR":
-				var result = solve_filter(filters.OR, "OR")
-				break;
-			case "EQ":
-				var result = solve_nested_filter("EQ", filters.EQ, "AND")
-				break;
-			case "NEQ":
-				var result = solve_nested_filter("NEQ", filters.NEQ, "AND")
-				break;
-			case "IE":
-				var result = solve_nested_filter("IE", filters.IE, "AND")
-				break;
-		}
-		if (operator == "OR") {
-			return_data[key] = _.union(result[key], return_data[key])
-		} else {  // AND
-			for (var key in result) {
-				if (and_result[key] !== undefined) {
-					and_result[key] = result[key].filter(value => -1 !== and_result[key].indexOf(value));
-				}
-			}
-			return_data = and_result
-		}
-	}
-	return return_data
-}
-
-
-module.exports = {
-	resolveGet: function(filters) {
-		if (filters) {
-			return solve_filter(filters, "AND")
-		}
-		else {
-			return data
-		}
-   },
-   rootClassResolver: function(return_data, className, args) {
-	   // return data
-	   var list = []
-	   for(var i=0; i < return_data.length; i++){
-		   if(return_data[i].class == className){
-			   list.push(return_data[i])
-		   }
-	   }
-	   if (args._skip) {
-		   list = list.splice(args._skip)
-	   }
-	   if (args._limit) {
-		   list = list.splice(0, args._limit)
-	   }
-	   return list
-   },
-   metaDataResolver: function(return_data, className, args, _maxArraySize) {
-	   // return data
-	   return meta_data[0]
-	   var list = []
-	   for(var i=0; i < return_data.length; i++){
-		   if(return_data[i].class == className){
-			   list.push(meta_data.Meta[0].Things)
-			   return meta_data.Meta[0].Things
-		   }
-	   }
-	   return list
-   }
-}
-
-
-var resolve_EQ = function (filter) {
+var resolve_IE = function (operator, path, value) {
 	// loop over filter EQ list
-	var return_list = []
-	var return_array = {}
-
-	var path = filter.path
-	var value = filter.value
-	
-	var new_list = []
-
-	if (!isNaN(value)) { // value is a number
-		value = parseFloat(value)
-	} else if (value.toLowerCase() == "true") {
-		value = true
-	} else if (value.toLowerCase() == "false") {
-		value = false
-	} // else if value == null
-	
+	var return_list = []	
 	var object_list = data[path[0]]
 
 	// loop over things/actions in list
 	for(var j=0; j < object_list.length; j++) {
 		var object = object_list[j]
 
-		for (var p=1; p < path.length; p++) { // loop over rest of items in path
+		for (var p=1; p < path.length; p++) { // loop over rest of items in path			
 			if (object.class === path[p]) {
 				continue
 			}
-			else { // path item is property (or: string starts with small letter)
+			else {
 				for (var key in object) {
 					if (key == path[p] || (key.toLowerCase() == path[p].toLowerCase())) {
 						if (p == (path.length - 1)) { // if last item in path list 
-							if (value == object[path[p]] || value == String(object[path[p]]).toLowerCase()) { // if property value is same as path prop object value
-								new_list = _.union(new_list, [object_list[j]])
+							if (operator == "GreaterThan") {
+								if (parseFloat(object[path[p]]) > value) {
+									//return_list.push(object_list[j])
+									return_list = _.union(return_list, [object_list[j]])
+								}
+							} else if (operator == "LessThan") {
+								if (parseFloat(object[path[p]]) < value) {
+									//return_list.push(object_list[j])
+									return_list = _.union(return_list, [object_list[j]])
+								}
+							} else if (operator == "GreaterThanEqual") {
+								if (parseFloat(object[path[p]]) >= value) {
+									//return_list.push(object_list[j])
+									return_list = _.union(return_list, [object_list[j]])
+								}
+							} else if (operator == "LessThanEqual") {
+								if (parseFloat(object[path[p]]) <= value) {
+									//return_list.push(object_list[j])
+									return_list = _.union(return_list, [object_list[j]])
+								}
 							}
 						} else {
 							if (path[p][0] !== path[p][0].toUpperCase()) {
@@ -172,27 +57,15 @@ var resolve_EQ = function (filter) {
 			}
 		}
 	}
-	return_array[path[0]] = _.union(new_list, return_array[path[0]])
+	var return_array = {}
+	return_array[path[0]] = return_list
 	return return_array
 }
 
-var resolve_NEQ = function (filter) {
+
+var resolve_NEQ = function (path, value) {
 	// loop over filter NEQ list
 	var return_list = []
-
-	var path = filter.path
-	var value = filter.value
-
-	if (!isNaN(value) && !isNaN(parseFloat(value))) { // value is a number
-		value = parseFloat(value)
-	} else if (value == null || value == "null" || value == undefined || value == "undefined") {
-		value = null
-	} else if (value.toLowerCase() == "true") {
-		value = true
-	} else if (value.toLowerCase() == "false") {
-		value = false
-	}
-
 	var object_list = data[path[0]]
 	var short_list = Object.assign([], object_list)
 
@@ -233,66 +106,28 @@ var resolve_NEQ = function (filter) {
 	return return_array
 }
 
-var resolve_IE = function (filters) {
+
+var resolve_EQ = function (path, value) {
 	// loop over filter EQ list
-	var return_list = []
-	var path = filters.path
-	var value = filters.value
-	const operatorlist = [">", "<", "=>", "<=", ">=", "=<"]
+	var return_array = {}
+	var new_list = []
 
-	if (operatorlist.includes(value.substring(0,2))) {
-		var operator = value.substring(0,2)
-		var number = parseFloat(value.substring(1))
-	} else if (operatorlist.includes(value.substring(0,1))){
-		var operator = value.substring(0,1)
-		var number = parseFloat(value.substring(1))
-	}
-
-	if (!isNaN(value)) { // value is a number
-		value = parseFloat(value)
-	} else if (value.toLowerCase() == "true") {
-		value = true
-	} else if (value.toLowerCase() == "false") {
-		value = false
-	}
-	// else if (value == null) {
-	// 	console.log(value)
-	// }
-	
 	var object_list = data[path[0]]
 
 	// loop over things/actions in list
 	for(var j=0; j < object_list.length; j++) {
 		var object = object_list[j]
 
-		for (var p=1; p < path.length; p++) { // loop over rest of items in path			
+		for (var p=1; p < path.length; p++) { // loop over rest of items in path
 			if (object.class === path[p]) {
 				continue
 			}
-			else {
+			else { // path item is property (or: string starts with small letter)
 				for (var key in object) {
 					if (key == path[p] || (key.toLowerCase() == path[p].toLowerCase())) {
 						if (p == (path.length - 1)) { // if last item in path list 
-							if (operator == ">") {
-								if (parseFloat(object[path[p]]) > number) {
-									//return_list.push(object_list[j])
-									return_list = _.union(return_list, [object_list[j]])
-								}
-							} else if (operator == "<" || operator == "<") {
-								if (parseFloat(object[path[p]]) < number) {
-									//return_list.push(object_list[j])
-									return_list = _.union(return_list, [object_list[j]])
-								}
-							} else if (operator == "=>" || operator == ">=") {
-								if (parseFloat(object[path[p]]) >= number) {
-									//return_list.push(object_list[j])
-									return_list = _.union(return_list, [object_list[j]])
-								}
-							} else if (operator == "=<" || operator == "<=") {
-								if (parseFloat(object[path[p]]) <= number) {
-									//return_list.push(object_list[j])
-									return_list = _.union(return_list, [object_list[j]])
-								}
+							if (value == object[path[p]] || value == String(object[path[p]]).toLowerCase()) { // if property value is same as path prop object value
+								new_list = _.union(new_list, [object_list[j]])
 							}
 						} else {
 							if (path[p][0] !== path[p][0].toUpperCase()) {
@@ -309,171 +144,135 @@ var resolve_IE = function (filters) {
 			}
 		}
 	}
-	var return_array = {}
-	return_array[path[0]] = return_list
+	return_array[path[0]] = _.union(new_list, return_array[path[0]])
 	return return_array
 }
 
 
-const meta_data = [{
-	"class": "City",
-	"meta": {
-		"counter": 4,
-		"pointing": {
-			"to": 10,
-			"from": 2
-		},
-		"kind": "city"
-	},
-	"name": {
-		"type": "string", 
-		"counter": 2,
-		"kind": "name",
-		"topOccurrences": [{
-			"value": "Amsterdam", 
-			"occurs": 1
-		}, {
-			"value": "Rotterdam", 
-			"occurs": 1
-		}]
-	},
-	"population": {
-		"kind": "integer",
-		"type": "int", 
-		"lowest": 1300000, 
-		"total": 2, 
-		"highest": 1800000,
-		"average": 1550000
-	},
-	"isCapital": {
-		"kind": "boolean",
-		"type": "boolean", 
-		"total": 1 // total true
+const solve_path = function (operator, path, value) {
+
+	if (["GreaterThan", "GreaterThanEqual", "LessThan", "LessThanEqual"].includes(operator)) {
+		// IE
+		return resolve_IE(operator, path, value)
 	}
-}]
+	else if (operator == "Equal") {
+		// EQ
+		return resolve_EQ(path, value)
+	}
+	else if (operator == "Not" || operator == "NotEqual") {
+		// NEQ
+		return resolve_NEQ(path, value)
+	}
+}
 
 
-// // object - list - objects (things) - strings or objects
-// const data = {
-// 	"Things": [{
-// 		"class": "City",
-// 		"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 		"name": "Amsterdam",
-// 		"latitude": 25.4,
-// 		"population": "1800000",
-// 		"isCapital": true,
-// 		}, 	{
-// 		"class": "City",
-// 		"uuid": "6f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 		"name": "Rotterdam",
-// 		"latitude": 95.4,
-// 		"population": "1300000",
-// 		"isCapital": false,
-// 	}, 	{
-// 		"class": "Person",
-// 		"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 		"livesIn": {
-// 			"class": "City",
-// 			"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 			"name": "Amsterdam",
-// 			"latitude": 25.4,
-// 			"population": "1800000",
-// 			"isCapital": true,
-// 		},
-// 		"birthday": "01-02-1996",
-// 	}, 	{
-// 		"class": "Person",
-// 		"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b5f",
-// 		"livesIn": {
-// 			"class": "City",
-// 			"uuid": "6f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 			"name": "Rotterdam",
-// 			"latitude": 95.4,
-// 			"population": "1300000",
-// 			"isCapital": false,
-// 		},
-// 		"birthday": "11-12-1986",
-// 	}, 	{
-// 		"class": "Person",
-// 		"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045asdfjk",
-// 		"livesIn": {
-// 			"class": "Person",
-// 			"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 			"livesIn": {
-// 				"class": "City",
-// 				"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 				"name": "Amsterdam",
-// 				"latitude": 25.4,
-// 				"population": "1800000",
-// 				"isCapital": true,
-// 			},
-// 			"birthday": "01-02-1996",
-// 		},
-// 		"birthday": "01-02-1996",
-// 	}],
-// 	"Actions": [{
-// 		"class": "MoveAction",
-// 		"uuid": "7f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 		"person": {
-// 			"class": "Person",
-// 			"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 			"livesIn": {
-// 				"class": "City",
-// 				"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 				"name": "Amsterdam",
-// 				"latitude": 25.4,
-// 				"population": "1800000",
-// 				"isCapital": true,
-// 			},
-// 			"birthday": "01-02-1996",
-// 		},
-// 		"toCity": {
-// 			"class": "City",
-// 			"uuid": "6f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 			"name": "Rotterdam",
-// 			"latitude": 95.4,
-// 			"population": "1300000",
-// 			"isCapital": false,
-// 		},
-// 		"fromCity": {
-// 			"class": "City",
-// 			"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 			"name": "Amsterdam",
-// 			"latitude": 25.4,
-// 			"population": "1800000",
-// 			"isCapital": true,
-// 		}
-// 	}, {
-// 		"class": "MoveAction",
-// 		"uuid": "7f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 		"person": {
-// 			"class": "Person",
-// 			"uuid": "8f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 			"livesIn": {
-// 				"class": "City",
-// 				"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 				"name": "Amsterdam",
-// 				"latitude": 25.4,
-// 				"population": "1800000",
-// 				"isCapital": true,
-// 			},
-// 			"birthday": "01-02-1996",
-// 		},
-// 		"toCity": {
-// 			"class": "City",
-// 			"uuid": "9f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 			"name": "Amsterdam",
-// 			"latitude": 25.4,
-// 			"population": "1800000",
-// 			"isCapital": true,
-// 		},
-// 		"fromCity": {
-// 			"class": "City",
-// 			"uuid": "6f4b3ed1-78d1-b6df-d584-3c8045c85b1f",
-// 			"name": "Rotterdam",
-// 			"latitude": 95.4,
-// 			"population": "1300000",
-// 			"isCapital": false,
-// 		}
-// 	}]
-// }
+const solve_operands = function (operator, operands) {
+	return_data = {}
+
+	for (var i in operands) {
+		operand = operands[i]
+
+		if (operand.operator == 'And' || operand.operator == 'Or') {
+			result = solve_operands(operand.operator, operand.operands)
+		}
+		else if ((operand.operator == 'Not' || operand.operator == 'NotEqual') && operand.operands) {
+			result = solve_operands(operand.operator, operand.operands)
+		}
+		else {
+			if (operand.valueString) {
+				result = solve_path(operand.operator, operand.path, operand.valueString)
+			}
+			else if (operand.valueInt) {
+				result = solve_path(operand.operator, operand.path, operand.valueInt)
+			}
+			else if (operand.valueBoolean) {
+				result = solve_path(operand.operator, operand.path, operand.valueBoolean)
+			}
+			else if (operand.valueFloat) {
+				result = solve_path(operand.operator, operand.path, operand.valueFloat)
+			}
+		}
+
+		if (operator == 'And') {
+			for (var key in result) {
+				if (all_data[key] !== undefined) {
+					all_data[key] = result[key].filter(value => -1 !== all_data[key].indexOf(value));
+				}
+			}
+			return_data = all_data
+		}
+		else if (operator == 'Or') {
+			for (var key in result) {
+				all_data[key] = _.union(result[key], all_data[key])
+			}
+			return_data = all_data
+		}
+		else if (operator == 'Not' || operator == 'NotEqual') {
+			for (var key in result) { // list of things and actions
+				all_data[key] = _.differenceWith(data[key], result[key], _.isEqual)
+			}
+			return_data = all_data
+		}
+	}
+	return return_data
+}
+
+
+module.exports = {
+	resolveGet: function(filter) {
+		all_data = _.clone(data);
+		if (filter) {
+			if (filter.operator == 'And' || filter.operator == 'Or') {
+				return solve_operands(filter.operator, filter.operands)
+			}
+			else if ((filter.operator == 'Not' || filter.operator == 'NotEqual') && filter.operands) {
+				return solve_operands(filter.operator, filter.operands)
+			}
+			else {
+				if (filter.valueString) {
+					return solve_path(filter.operator, filter.path, filter.valueString)
+				}
+				else if (filter.valueInt) {
+					return solve_path(filter.operator, filter.path, filter.valueInt)
+				}
+				else if (filter.valueBoolean) {
+					return solve_path(filter.operator, filter.path, filter.valueBoolean)
+				}
+				else if (filter.valueFloat) {
+					return solve_path(filter.operator, filter.path, filter.valueFloat)
+				}
+			}
+		}
+		else {
+			return data
+		}
+   },
+   rootClassResolver: function(return_data, className, args) {
+	   // return data
+	   var list = []
+	   for(var i=0; i < return_data.length; i++){
+		   if(return_data[i].class == className){
+			   list.push(return_data[i])
+		   }
+	   }
+	   if (args._skip) {
+		   list = list.splice(args._skip)
+	   }
+	   if (args._limit) {
+		   list = list.splice(0, args._limit)
+	   }
+	   return list
+   },
+   metaDataResolver: function(return_data, className, args, _maxArraySize) {
+	   // return data
+	   return meta_data[0]
+	   var list = []
+	   for(var i=0; i < return_data.length; i++){
+		   if(return_data[i].class == className){
+			   list.push(meta_data.Meta[0].Things)
+			   return meta_data.Meta[0].Things
+		   }
+	   }
+	   return list
+   }
+}

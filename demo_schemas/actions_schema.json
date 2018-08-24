@@ -244,7 +244,6 @@
                 {
                     "name": "seller",
                     "@dataType": [
-                        "string",
                         "Airline",
                         "Person"
                     ],
@@ -300,7 +299,6 @@
                 {
                     "name": "buyer",
                     "@dataType": [
-                        "string",
                         "Person"
                     ],
                     "description": "The buyer of the good",
