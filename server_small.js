@@ -347,7 +347,7 @@ var NetworkFetchFilterFields = {
     name: "NetworkFetchWhere",
     description: function() {
       return getDesc("NetworkFetchWhere")},
-    type: new GraphQLList(new GraphQLInputObjectType({
+    type: new GraphQLInputObjectType({
       name: "NetworkFetchWhereInpObj",
       description: function() {
         return getDesc("NetworkFetchWhereInpObj")},
@@ -381,7 +381,7 @@ var NetworkFetchFilterFields = {
           type: GraphQLInt,
         }
       }
-    })) //Needs to be in contextionary, weight = always 1.0
+    }) //Needs to be in contextionary, weight = always 1.0
   }
 }
 
