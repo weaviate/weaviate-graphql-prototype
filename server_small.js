@@ -35,7 +35,8 @@ const {
   GraphQLString,
   GraphQLID,
   GraphQLList,
-  GraphQLScalarType
+  GraphQLScalarType,
+  GraphQLNonNull
 } = require('graphql');
 
 /**
@@ -1226,6 +1227,10 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
               type: GraphQLInt
             } 
           },
+          resolve() {
+            console.log("resolve WeaviateNetwork")
+            return [{}] // resolve with empty array
+          },
           type: new GraphQLObjectType({
             name: "WeaviateNetworkObj",
             description: function() {
@@ -1254,27 +1259,19 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                             name: "WeaviateNetworkFetchThingsBeacon",
                             description: function() {
                               return getDesc("WeaviateNetworkFetchThingsBeacon")},
-                            type: GraphQLString,
-                            resolve(parentValue, args) {
-                              console.log("resolve WeaviateNetworkFetchThingsBeacon")
-                              return [{}] // resolve with empty array
-                            }
+                            type: GraphQLString
                           }, 
                           certainty: { //  What is the certainty to the original request?
                             name: "WeaviateNetworkFetchThingsCertainty",
                             description: function() {
                               return getDesc("WeaviateNetworkFetchThingsCertainty")},
-                            type: GraphQLFloat, // should be enum of type (id est, string, int, cref etc)
-                            resolve(parentValue, args) {
-                              console.log("resolve WeaviateNetworkFetchThingsCertainty")
-                              return [{}] // resolve with empty array
-                            }
+                            type: GraphQLFloat
                           }
                         }
                       })),
                       resolve(parentValue, args) {
                         console.log("resolve WeaviateNetworkFetchThings")
-                        return [{}] // resolve with empty array
+                        return demoResolver.resolveNetworkFetch(args)
                       }
                     },
                     Actions: {
@@ -1311,7 +1308,7 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                       })),
                       resolve(parentValue, args) {
                         console.log("resolve WeaviateNetworkFetchActions")
-                        return [{}] // resolve with empty array
+                        return demoResolver.resolveNetworkFetch(args)
                       }
                     },
                   }
@@ -1343,7 +1340,7 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                       })),
                       resolve(parentValue, args) {
                         console.log("resolve WeaviateNetworkIntrospectThings")
-                        return [{}] // resolve with empty array
+                        return demoResolver.resolveNetworkIntrospect(args) // resolve with empty array
                       }
                     },
                     Actions: {
@@ -1359,7 +1356,7 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                       })),
                       resolve(parentValue, args) {
                         console.log("resolve WeaviateNetworkIntrospectClass")
-                        return [{}] // resolve with empty array
+                        return demoResolver.resolveNetworkIntrospect(args) // resolve with empty array
                       }
                     },
                     Beacon: {
@@ -1367,11 +1364,11 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                       description: function() {
                         return getDesc("WeaviateNetworkIntrospectBeacon")},
                       args: {
-                        id: { // The id of the beacon like: weaviate://foo-bar-baz/UUI
+                        id: { // The id of the beacon like: weaviate://foo-bar-baz/UUID
                           name: "WeaviateNetworkIntrospectBeaconId",
                           description: function() {
                             return getDesc("WeaviateNetworkIntrospectBeaconId")},
-                          type: GraphQLString
+                          type: new GraphQLNonNull(GraphQLString)
                         }
                       },
                       type: new GraphQLList( new GraphQLObjectType({
@@ -1382,7 +1379,7 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                       })),
                       resolve(parentValue, args) {
                         console.log("resolve WeaviateNetworkIntrospectBeacon")
-                        return [{}] // resolve with empty array
+                        return demoResolver.resolveNetworkIntrospectBeacon(args) // resolve with empty array
                       }
                     }
                   }
