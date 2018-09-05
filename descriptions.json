@@ -27,7 +27,7 @@
 	"MetaClassPropertySum": "Sum of values found in the dataset for this property",
 	"MetaClassPropertyTotalTrue": "The amount of times this property's value is true in the dataset",
 	"MetaClassPropertyPercentageTrue": "Percentage of boolean values that is true",
-	"SubClassUuid": "UUID of the action given by the local Weaviate instance",
+	"SubClassUuid": "UUID of the thing or action given by the local Weaviate instance",
 	"WeaviateObj": "Location of the root query",
 	"WeaviateLocal": "Query a local Weaviate instance",
 	"WeaviateLocalObj": "Type of query on the local Weaviate",
