@@ -382,8 +382,8 @@ module.exports = {
 		return returnlist
 	},
 	resolveNetworkIntrospect: function(args){
-		var argsClassName = args.where.class[0].name
-		var argsKeywordsValue = args.where.class[0].keywords[0].value
+		var argsClassName = args.where[0].class[0].name
+		var argsKeywordsValue = args.where[0].class[0].keywords[0].value
 		var returnlist = []
 
 		for (var i in networkNodes) {
@@ -394,15 +394,38 @@ module.exports = {
 					node.properties[j]["propertyName"] = node.properties[j].name
 					node.properties[j]["certainty"] = 0.96
 				}
-				returnlist.push(node)
+				var found = false;
+				for (var k in returnlist) {
+					if (returnlist[k].className == node.className) {
+						found = true;
+					}
+				} 
+				if (!found) {
+					returnlist.push(node)
+				}
+				if (returnlist.length == 0) {
+					returnlist.push(node)
+				}
 			} else if (node.className == argsKeywordsValue) {
 				node["certainty"] = 0.73
 				for (var j in node.properties) {
 					node.properties[j]["propertyName"] = node.properties[j].name
 					node.properties[j]["certainty"] = 0.96
 				}
-				returnlist.push(node)
+				var found = false;
+				for (var k in returnlist) {
+					if (returnlist[k].className == node.className) {
+						found = true;
+					}
+				} 
+				if (!found) {
+					returnlist.push(node)
+				}
+				if (returnlist.length == 0) {
+					returnlist.push(node)
+				}
 			}
+			console.log(returnlist)
 		}
 		return returnlist
 	},

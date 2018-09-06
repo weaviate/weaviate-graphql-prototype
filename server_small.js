@@ -1355,7 +1355,7 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                         fields: NetworkIntrospectThingsActionsFields
                       })),
                       resolve(parentValue, args) {
-                        console.log("resolve WeaviateNetworkIntrospectClass")
+                        console.log("resolve WeaviateNetworkIntrospectActions")
                         return demoResolver.resolveNetworkIntrospect(args) // resolve with empty array
                       }
                     },
