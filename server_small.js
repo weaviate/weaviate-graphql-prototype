@@ -163,10 +163,10 @@ var whereFields = {
       return getDesc("WhereValueInt")},
     type: GraphQLInt 
   },
-  valueFloat: { 
-    name: "WhereValueFloat",
+  valueNumber: { 
+    name: "WhereValueNumber",
     description: function() {
-      return getDesc("WhereValueFloat")},
+      return getDesc("WhereValueNumber")},
     type: GraphQLFloat
   },
   valueBoolean: { 
@@ -230,25 +230,25 @@ var NetworkFetchWherePropertyFilterFields = {
   valueInt: { 
     name: "NetworkFetchWherePropertyWhereValueInt",
     description: function() {
-      return getDesc("NetworkFetchWherePropertyWhereValueInt")},
+      return getDesc("WhereValueInt")},
     type: GraphQLInt 
   },
-  valueFloat: { 
-    name: "NetworkFetchWherePropertyWhereValueFloat",
+  valueNumber: { 
+    name: "NetworkFetchWherePropertyWhereValueNumber",
     description: function() {
-      return getDesc("NetworkFetchWherePropertyWhereValueFloat")},
+      return getDesc("WhereValueNumber")},
     type: GraphQLFloat
   },
   valueBoolean: { 
     name: "NetworkFetchWherePropertyWhereValueBoolean",
     description: function() {
-      return getDesc("NetworkFetchWherePropertyWhereValueBoolean")},
+      return getDesc("WhereValueBoolean")},
     type: GraphQLBoolean
   },
   valueString: { 
     name: "NetworkFetchWherePropertyWhereValueString",
     description: function() {
-      return getDesc("NetworkFetchWherePropertyWhereValueString")},
+      return getDesc("WhereValueString")},
     type: GraphQLString 
   }
 }
@@ -1225,7 +1225,13 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
               description: function() {
                 return getDesc("WeaviateNetworkNetworkTimeout")},
               type: GraphQLInt
-            } 
+            },
+            network: {
+              name: "WeaviateNetworkNetworkNetwork",
+              description: function() {
+                return getDesc("WeaviateNetworkNetworkNetwork")},
+              type: GraphQLString
+            }
           },
           resolve() {
             console.log("resolve WeaviateNetwork")

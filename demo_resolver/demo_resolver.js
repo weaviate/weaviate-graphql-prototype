@@ -425,7 +425,6 @@ module.exports = {
 					returnlist.push(node)
 				}
 			}
-			console.log(returnlist)
 		}
 		return returnlist
 	},
