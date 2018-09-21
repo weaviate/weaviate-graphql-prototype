@@ -23,4 +23,4 @@ To get the full schema definitions in markdown by a graphql introspection query:
 
 
 ## Documentation
-The full documentation can be found in the [Wiki](https://github.com/bobvanluijt/weaviate-graphql-prototype/wiki "Weaviate GraphQL Wiki").
+The full documentation can be found [here](https://github.com/creativesoftwarefdn/weaviate/tree/technical_design_document/docs)
