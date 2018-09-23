@@ -1202,12 +1202,12 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                 return getDesc("WeaviateNetworkNetworkTimeout")},
               type: GraphQLInt
             },
-            network: {
-              name: "WeaviateNetworkNetworkNetwork",
-              description: function() {
-                return getDesc("WeaviateNetworkNetworkNetwork")},
-              type: GraphQLString
-            }
+            // network: {
+            //   name: "WeaviateNetworkNetworkNetwork",
+            //   description: function() {
+            //     return getDesc("WeaviateNetworkNetworkNetwork")},
+            //   type: GraphQLString
+            // }
           },
           resolve() {
             console.log("resolve WeaviateNetwork")
@@ -1255,6 +1255,48 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                   description: function() {
                     return getDesc("WeaviateNetworkFetchObj")},
                   fields: {
+                    Fuzzy: {
+                      name: "WeaviateNetworkFetchFuzzy",
+                      description: function() {
+                        return getDesc("WeaviateNetworkFetchFuzzy")},
+                      args: {
+                        value: { 
+                          name: "WeaviateNetworkFetchFuzzyArgValue",
+                          description: function() {
+                            return getDesc("WeaviateNetworkFetchFuzzyArgValue")},
+                          type: new GraphQLNonNull(GraphQLString)
+                        },
+                        certainty: { 
+                          name: "WeaviateNetworkFetchFuzzyArgCertainty",
+                          description: function() {
+                            return getDesc("WeaviateNetworkFetchFuzzyArgCertainty")},
+                          type: new GraphQLNonNull(GraphQLFloat)
+                          }
+                        },
+                      type: new GraphQLList(new GraphQLObjectType({
+                        name: "WeaviateNetworkFetchFuzzyObj",
+                        description: function() {
+                          return getDesc("WeaviateNetworkFetchFuzzyObj")},
+                        fields: {
+                          beacon: { // The beacon to do a convertedfetch
+                            name: "WeaviateNetworkFetchFuzzyBeacon",
+                            description: function() {
+                              return getDesc("WeaviateNetworkFetchFuzzyBeacon")},
+                            type: GraphQLString
+                          }, 
+                          certainty: { //  What is the certainty to the original request?
+                            name: "WeaviateNetworkFetchFuzzyCertainty",
+                            description: function() {
+                              return getDesc("WeaviateNetworkFetchFuzzyCertainty")},
+                            type: GraphQLFloat
+                          }
+                        }
+                      })),
+                      resolve(parentValue, args) {
+                        console.log("resolve WeaviateNetworkFetchFuzzy")
+                        return [{}]
+                      }
+                    },
                     Things: {
                       name: "WeaviateNetworkFetchThings",
                       description: function() {

@@ -82,5 +82,12 @@
 	"WeaviateNetworkGetThingsObj": "Type of Things i.e. Things classes to Get from the Network",
 	"WeaviateNetworkGetActions": "Get Actions from the Network",
 	"WeaviateNetworkGetActionsObj": "Type of Actions i.e. Actions classes to Get from the Network",
-	"WeaviateNetworkIntrospectWeaviate": "Weaviate node the found class in the Network Introspection search is in."
+	"WeaviateNetworkIntrospectWeaviate": "Weaviate node the found class in the Network Introspection search is in.",
+	"WeaviateNetworkFetchFuzzy": "To do a fuzzy fetch, with only a ontology value, on the Network",
+	"WeaviateNetworkFetchFuzzyArgValue": "The ontology value to fetch Things or Actions on the Network on",
+	"WeaviateNetworkFetchFuzzyArgCertainty": "The minimum certainty the nodes should match the given ontology value",
+	"WeaviateNetworkFetchFuzzyObj": "The objects what to request from this network fuzzy fetch query",
+	"WeaviateNetworkFetchFuzzyBeacon": "The beacon of the node that is a result from the fuzzy network fetch",
+	"WeaviateNetworkFetchFuzzyCertainty": "The certainty the node has a value matching the value searched on in the fuzzy network fetch"
+
 }
