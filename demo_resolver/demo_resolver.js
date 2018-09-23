@@ -450,6 +450,7 @@ module.exports = {
 
 const networkNodes = [{
 	"beacon": "weaviate://weaviate_1/8569c0aa-3e8a-4de4-86a7-89d010152ad6",
+	"weaviate": "weaviate_1",
 	"className": "City",
 	"properties": [{
 		"name": "name",
@@ -460,6 +461,7 @@ const networkNodes = [{
 	}]
 }, {
 	"beacon": "weaviate://weaviate_1/8569c0aa-3e8a-4de4-86a7-89d010152ad7",
+	"weaviate": "weaviate_1",
 	"className": "City",
 	"properties": [{
 		"name": "name",
@@ -470,6 +472,7 @@ const networkNodes = [{
 	}]
 }, {
 	"beacon": "weaviate://weaviate_1/8569c0aa-3e8a-4de4-86a7-89d010152ad8",
+	"weaviate": "weaviate_1",
 	"className": "City",
 	"properties": [{
 		"name": "name",
@@ -480,6 +483,7 @@ const networkNodes = [{
 	}]
 }, {
 	"beacon": "weaviate://weaviate_2/8569c0aa-3e8a-4de4-86a7-89d010152ad9",
+	"weaviate": "weaviate_2",
 	"className": "Place",
 	"properties": [{
 		"name": "label",
@@ -490,6 +494,7 @@ const networkNodes = [{
 	}]
 }, {
 	"beacon": "weaviate://weaviate_2/8569c0aa-3e8a-4de4-86a7-89d010152ad0",
+	"weaviate": "weaviate_2",
 	"className": "Place",
 	"properties": [{
 		"name": "label",
@@ -500,6 +505,7 @@ const networkNodes = [{
 	}]
 }, {
 	"beacon": "weaviate://weaviate_2/8569c0aa-3e8a-4de4-86a7-89d010152ad1",
+	"weaviate": "weaviate_2",
 	"className": "Place",
 	"properties": [{
 		"name": "label",

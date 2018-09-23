@@ -52,46 +52,6 @@ function getDesc(name) {
  * START - ALL RELATED TO INTERNAL FUNCTION
  */
 
-var NetworkIntrospectThingsActionsFields = {
-  className: {
-    name: "WeaviateNetworkIntrospectClassName",
-    description: function() {
-      return getDesc("WeaviateNetworkIntrospectClassName")},
-    type: GraphQLString
-  },
-  certainty: {
-    name: "WeaviateNetworkIntrospectCertainty",
-    description: function() {
-      return getDesc("WeaviateNetworkIntrospectCertainty")},
-    type: GraphQLFloat
-  },
-  properties: {
-    name: "WeaviateNetworkIntrospectProperties",
-    description: function() {
-      return getDesc("WeaviateNetworkIntrospectProperties")},
-    type: new GraphQLList(new GraphQLObjectType({
-      name: "WeaviateNetworkIntrospectPropertiesObj",
-      description: function() {
-        return getDesc("WeaviateNetworkIntrospectPropertiesObj")},
-      fields: {
-        propertyName: {
-          name: "WeaviateNetworkIntrospectPropertiesPropertyName",
-          description: function() {
-            return getDesc("WeaviateNetworkIntrospectPropertiesPropertyName")},
-          type: GraphQLString
-        },
-        certainty: {
-          name: "WeaviateNetworkIntrospectPropertiesCertainty",
-          description: function() {
-            return getDesc("WeaviateNetworkIntrospectPropertiesCertainty")},
-          type: GraphQLFloat
-        }
-      }
-    }))
-  }
-}
-
-
 /**
  * Create enum for filter operators
  */
@@ -184,207 +144,6 @@ var whereFields = {
 }
 
 
-var NetworkFetchWherePropertyFilterFields = {
-  name: {
-    name: "NetworkFetchWherePropertyWhereName",
-    description: function() {
-      return getDesc("NetworkFetchWherePropertyWhereName")},
-    type: GraphQLString,
-  }, 
-  keywords: {
-    name: "NetworkFetchWherePropertyWhereKeywords",
-    description: function() {
-      return getDesc("NetworkFetchWherePropertyWhereKeywords")},
-    type: new GraphQLList(new GraphQLInputObjectType({
-      name: "NetworkFetchWherePropertyWhereKeywordsInpObj",
-      description: function() {
-        return getDesc("NetworkFetchWherePropertyWhereKeywordsInpObj")},
-      fields: {
-        value: {
-          name: "NetworkFetchWherePropertyWhereKeywordsValue",
-          description: function() {
-            return getDesc("NetworkFetchWherePropertyWhereKeywordsValue")},
-          type: GraphQLString,
-        },
-        weight: {
-          name: "NetworkFetchWherePropertyWhereKeywordsWeight",
-          description: function() {
-            return getDesc("NetworkFetchWherePropertyWhereKeywordsWeight")},
-          type: GraphQLFloat,
-        }
-      }
-    }))
-  }, 
-  certainty: {
-    name: "NetworkFetchWherePropertyWhereCertainty",
-    description: function() {
-      return getDesc("NetworkFetchWherePropertyWhereCertainty")},
-    type: GraphQLFloat,
-  },
-  operator: {
-    name: "NetworkFetchWherePropertyWhereOperator",
-    description: function() {
-      return getDesc("NetworkFetchWherePropertyWhereOperator")},
-    type: WhereOperators
-  },
-  valueInt: { 
-    name: "NetworkFetchWherePropertyWhereValueInt",
-    description: function() {
-      return getDesc("WhereValueInt")},
-    type: GraphQLInt 
-  },
-  valueNumber: { 
-    name: "NetworkFetchWherePropertyWhereValueNumber",
-    description: function() {
-      return getDesc("WhereValueNumber")},
-    type: GraphQLFloat
-  },
-  valueBoolean: { 
-    name: "NetworkFetchWherePropertyWhereValueBoolean",
-    description: function() {
-      return getDesc("WhereValueBoolean")},
-    type: GraphQLBoolean
-  },
-  valueString: { 
-    name: "NetworkFetchWherePropertyWhereValueString",
-    description: function() {
-      return getDesc("WhereValueString")},
-    type: GraphQLString 
-  }
-}
-
-/**
- * Create class and property filter options for network fetch 
- */
-var NetworkIntrospectWhereClassAndPropertyFilterFields = {
-  name: {
-    name: "WeaviateNetworkWhereName",
-    description: function() {
-      return getDesc("WeaviateNetworkWhereName")},
-    type: GraphQLString,
-  }, 
-  keywords: {
-    name: "WeaviateNetworkWhereNameKeywords",
-    description: function() {
-      return getDesc("WeaviateNetworkWhereNameKeywords")},
-    type: new GraphQLList(new GraphQLInputObjectType({
-      name: "WeaviateNetworkWhereNameKeywordsInpObj",
-      description: function() {
-        return getDesc("WeaviateNetworkWhereNameKeywordsInpObj")},
-      fields: {
-        value: {
-          name: "WeaviateNetworkWhereNameKeywordsValue",
-          description: function() {
-            return getDesc("WeaviateNetworkWhereNameKeywordsValue")},
-          type: GraphQLString,
-        },
-        weight: {
-          name: "WeaviateNetworkWhereNameKeywordsWeight",
-          description: function() {
-            return getDesc("WeaviateNetworkWhereNameKeywordsWeight")},
-          type: GraphQLFloat,
-        }
-      }
-    }))
-  }, 
-  certainty: {
-    name: "WeaviateNetworkWhereCertainty",
-    description: function() {
-      return getDesc("WeaviateNetworkWhereCertainty")},
-    type: GraphQLFloat,
-  }, 
-  first: {
-    name: "WeaviateNetworkWhereFirst",
-    description: function() {
-      return getDesc("WeaviateNetworkWhereFirst")},
-    type: GraphQLInt,
-  }
-}
-
-
-/**
- * Create filter options for network fetch 
- */
-var NetworkIntrospectWhereFilterFields = {
-  where: { 
-    name: "WeaviateNetworkIntrospectWhere",
-    description: function() {
-      return getDesc("WeaviateNetworkIntrospectWhere")},
-    type: new GraphQLList(new GraphQLInputObjectType({
-      name: "WeaviateNetworkIntrospectWhereInpObj",
-      description: function() {
-        return getDesc("WeaviateNetworkIntrospectWhereInpObj")},
-      fields: {
-        class: {
-          name: "WeaviateNetworkIntrospectWhereClass",
-          description: function() {
-            return getDesc("WeaviateNetworkIntrospectWhereClass")},
-          type: new GraphQLList(new GraphQLInputObjectType({
-            name: "WeaviateNetworkIntrospectWhereClassObj",
-            description: function() {
-              return getDesc("WeaviateNetworkIntrospectWhereClassObj")},
-            fields: NetworkIntrospectWhereClassAndPropertyFilterFields
-          }))
-        },
-        properties: {
-          name: "WeaviateNetworkIntrospectWhereProperties",
-          description: function() {
-            return getDesc("WeaviateNetworkIntrospectWhereProperties")},
-          type: new GraphQLList(new GraphQLInputObjectType({
-            name: "WeaviateNetworkIntrospectWherePropertiesObj",
-            description: function() {
-              return getDesc("WeaviateNetworkIntrospectWherePropertiesObj")},
-            fields: NetworkIntrospectWhereClassAndPropertyFilterFields
-          }))
-        }
-      }
-    })) //Needs to be in contextionary, weight = always 1.0
-  }
-}
-
-
-var NetworkFetchFilterFields = {
-  where: { 
-    name: "NetworkFetchWhere",
-    description: function() {
-      return getDesc("NetworkFetchWhere")},
-    type: new GraphQLInputObjectType({
-      name: "NetworkFetchWhereInpObj",
-      description: function() {
-        return getDesc("NetworkFetchWhereInpObj")},
-      fields: {
-        class: {
-          name: "NetworkFetchWhereInpObjClass",
-          description: function() {
-            return getDesc("NetworkFetchWhereInpObjClass")},
-          type: new GraphQLList(new GraphQLInputObjectType({
-            name: "NetworkFetchWhereInpObjClassInpObj",
-            description: function() {
-              return getDesc("NetworkFetchWhereInpObjClassInpObj")},
-            fields: NetworkIntrospectWhereClassAndPropertyFilterFields
-          }))
-        },
-        properties: {
-          name: "NetworkFetchWhereInpObjProperties",
-          description: function() {
-            return getDesc("NetworkFetchWhereInpObjProperties")},
-          type: new GraphQLList(new GraphQLInputObjectType({
-            name: "NetworkFetchWhereInpObjProperties",
-            description: function() {
-              return getDesc("NetworkFetchWhereInpObjProperties")},
-            fields: NetworkFetchWherePropertyFilterFields
-          }))
-        },
-        first: {
-          name: "NetworkFetchWhereInpObjFirst",
-          description: function() {
-            return getDesc("NetworkFetchWhereInpObjFirst")},
-          type: GraphQLInt,
-        }
-      }
-    }) //Needs to be in contextionary, weight = always 1.0
-  }
-}
 
 /**
  * Create class enum for filter options
@@ -917,6 +676,209 @@ function mergeOntologies(a, b){
   return classes
 }
 
+var NetworkFetchWherePropertyFilterFields = {
+  name: {
+    name: "NetworkFetchWherePropertyWhereName",
+    description: function() {
+      return getDesc("NetworkFetchWherePropertyWhereName")},
+    type: GraphQLString,
+  }, 
+  keywords: {
+    name: "NetworkFetchWherePropertyWhereKeywords",
+    description: function() {
+      return getDesc("NetworkFetchWherePropertyWhereKeywords")},
+    type: new GraphQLList(new GraphQLInputObjectType({
+      name: "NetworkFetchWherePropertyWhereKeywordsInpObj",
+      description: function() {
+        return getDesc("NetworkFetchWherePropertyWhereKeywordsInpObj")},
+      fields: {
+        value: {
+          name: "NetworkFetchWherePropertyWhereKeywordsValue",
+          description: function() {
+            return getDesc("NetworkFetchWherePropertyWhereKeywordsValue")},
+          type: GraphQLString,
+        },
+        weight: {
+          name: "NetworkFetchWherePropertyWhereKeywordsWeight",
+          description: function() {
+            return getDesc("NetworkFetchWherePropertyWhereKeywordsWeight")},
+          type: GraphQLFloat,
+        }
+      }
+    }))
+  }, 
+  certainty: {
+    name: "NetworkFetchWherePropertyWhereCertainty",
+    description: function() {
+      return getDesc("NetworkFetchWherePropertyWhereCertainty")},
+    type: GraphQLFloat,
+  },
+  operator: {
+    name: "NetworkFetchWherePropertyWhereOperator",
+    description: function() {
+      return getDesc("NetworkFetchWherePropertyWhereOperator")},
+    type: WhereOperators
+  },
+  valueInt: { 
+    name: "NetworkFetchWherePropertyWhereValueInt",
+    description: function() {
+      return getDesc("WhereValueInt")},
+    type: GraphQLInt 
+  },
+  valueNumber: { 
+    name: "NetworkFetchWherePropertyWhereValueNumber",
+    description: function() {
+      return getDesc("WhereValueNumber")},
+    type: GraphQLFloat
+  },
+  valueBoolean: { 
+    name: "NetworkFetchWherePropertyWhereValueBoolean",
+    description: function() {
+      return getDesc("WhereValueBoolean")},
+    type: GraphQLBoolean
+  },
+  valueString: { 
+    name: "NetworkFetchWherePropertyWhereValueString",
+    description: function() {
+      return getDesc("WhereValueString")},
+    type: GraphQLString 
+  }
+}
+
+/**
+ * Create class and property filter options for network fetch 
+ */
+var NetworkIntrospectWhereClassAndPropertyFilterFields = {
+  name: {
+    name: "WeaviateNetworkWhereName",
+    description: function() {
+      return getDesc("WeaviateNetworkWhereName")},
+    type: GraphQLString,
+  }, 
+  keywords: {
+    name: "WeaviateNetworkWhereNameKeywords",
+    description: function() {
+      return getDesc("WeaviateNetworkWhereNameKeywords")},
+    type: new GraphQLList(new GraphQLInputObjectType({
+      name: "WeaviateNetworkWhereNameKeywordsInpObj",
+      description: function() {
+        return getDesc("WeaviateNetworkWhereNameKeywordsInpObj")},
+      fields: {
+        value: {
+          name: "WeaviateNetworkWhereNameKeywordsValue",
+          description: function() {
+            return getDesc("WeaviateNetworkWhereNameKeywordsValue")},
+          type: GraphQLString,
+        },
+        weight: {
+          name: "WeaviateNetworkWhereNameKeywordsWeight",
+          description: function() {
+            return getDesc("WeaviateNetworkWhereNameKeywordsWeight")},
+          type: GraphQLFloat,
+        }
+      }
+    }))
+  }, 
+  certainty: {
+    name: "WeaviateNetworkWhereCertainty",
+    description: function() {
+      return getDesc("WeaviateNetworkWhereCertainty")},
+    type: GraphQLFloat,
+  }, 
+  first: {
+    name: "WeaviateNetworkWhereFirst",
+    description: function() {
+      return getDesc("WeaviateNetworkWhereFirst")},
+    type: GraphQLInt,
+  }
+}
+
+
+/**
+ * Create filter options for network fetch 
+ */
+var NetworkIntrospectWhereFilterFields = {
+  where: { 
+    name: "WeaviateNetworkIntrospectWhere",
+    description: function() {
+      return getDesc("WeaviateNetworkIntrospectWhere")},
+    type: new GraphQLList(new GraphQLInputObjectType({
+      name: "WeaviateNetworkIntrospectWhereInpObj",
+      description: function() {
+        return getDesc("WeaviateNetworkIntrospectWhereInpObj")},
+      fields: {
+        class: {
+          name: "WeaviateNetworkIntrospectWhereClass",
+          description: function() {
+            return getDesc("WeaviateNetworkIntrospectWhereClass")},
+          type: new GraphQLList(new GraphQLInputObjectType({
+            name: "WeaviateNetworkIntrospectWhereClassObj",
+            description: function() {
+              return getDesc("WeaviateNetworkIntrospectWhereClassObj")},
+            fields: NetworkIntrospectWhereClassAndPropertyFilterFields
+          }))
+        },
+        properties: {
+          name: "WeaviateNetworkIntrospectWhereProperties",
+          description: function() {
+            return getDesc("WeaviateNetworkIntrospectWhereProperties")},
+          type: new GraphQLList(new GraphQLInputObjectType({
+            name: "WeaviateNetworkIntrospectWherePropertiesObj",
+            description: function() {
+              return getDesc("WeaviateNetworkIntrospectWherePropertiesObj")},
+            fields: NetworkIntrospectWhereClassAndPropertyFilterFields
+          }))
+        }
+      }
+    })) //Needs to be in contextionary, weight = always 1.0
+  }
+}
+
+
+var NetworkFetchFilterFields = {
+  where: { 
+    name: "NetworkFetchWhere",
+    description: function() {
+      return getDesc("NetworkFetchWhere")},
+    type: new GraphQLInputObjectType({
+      name: "NetworkFetchWhereInpObj",
+      description: function() {
+        return getDesc("NetworkFetchWhereInpObj")},
+      fields: {
+        class: {
+          name: "NetworkFetchWhereInpObjClass",
+          description: function() {
+            return getDesc("NetworkFetchWhereInpObjClass")},
+          type: new GraphQLList(new GraphQLInputObjectType({
+            name: "NetworkFetchWhereInpObjClassInpObj",
+            description: function() {
+              return getDesc("NetworkFetchWhereInpObjClassInpObj")},
+            fields: NetworkIntrospectWhereClassAndPropertyFilterFields
+          }))
+        },
+        properties: {
+          name: "NetworkFetchWhereInpObjProperties",
+          description: function() {
+            return getDesc("NetworkFetchWhereInpObjProperties")},
+          type: new GraphQLList(new GraphQLInputObjectType({
+            name: "NetworkFetchWhereInpObjProperties",
+            description: function() {
+              return getDesc("NetworkFetchWhereInpObjProperties")},
+            fields: NetworkFetchWherePropertyFilterFields
+          }))
+        },
+        first: {
+          name: "NetworkFetchWhereInpObjFirst",
+          description: function() {
+            return getDesc("NetworkFetchWhereInpObjFirst")},
+          type: GraphQLInt,
+        }
+      }
+    }) //Needs to be in contextionary, weight = always 1.0
+  }
+}
+
+
 /**
  * END - ALL RELATED TO INTERNAL
  */
@@ -1008,6 +970,51 @@ function createNetworkWeaviateFields() {
 
   console.log("------STOP NETWORKWEAVIATEFIELDS--------")
   return networkFields
+}
+
+var NetworkIntrospectThingsActionsFields = {
+  weaviate: {
+    name: "WeaviateNetworkIntrospectWeaviate",
+    description: function() {
+      return getDesc("WeaviateNetworkIntrospectWeaviate")},
+    type: GraphQLString
+  },
+  className: {
+    name: "WeaviateNetworkIntrospectClassName",
+    description: function() {
+      return getDesc("WeaviateNetworkIntrospectClassName")},
+    type: GraphQLString
+  },
+  certainty: {
+    name: "WeaviateNetworkIntrospectCertainty",
+    description: function() {
+      return getDesc("WeaviateNetworkIntrospectCertainty")},
+    type: GraphQLFloat
+  },
+  properties: {
+    name: "WeaviateNetworkIntrospectProperties",
+    description: function() {
+      return getDesc("WeaviateNetworkIntrospectProperties")},
+    type: new GraphQLList(new GraphQLObjectType({
+      name: "WeaviateNetworkIntrospectPropertiesObj",
+      description: function() {
+        return getDesc("WeaviateNetworkIntrospectPropertiesObj")},
+      fields: {
+        propertyName: {
+          name: "WeaviateNetworkIntrospectPropertiesPropertyName",
+          description: function() {
+            return getDesc("WeaviateNetworkIntrospectPropertiesPropertyName")},
+          type: GraphQLString
+        },
+        certainty: {
+          name: "WeaviateNetworkIntrospectPropertiesCertainty",
+          description: function() {
+            return getDesc("WeaviateNetworkIntrospectPropertiesCertainty")},
+          type: GraphQLFloat
+        }
+      }
+    }))
+  }
 }
 
 

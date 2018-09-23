@@ -81,5 +81,6 @@
 	"WeaviateNetworkGetThings": "Get Things from the Network",
 	"WeaviateNetworkGetThingsObj": "Type of Things i.e. Things classes to Get from the Network",
 	"WeaviateNetworkGetActions": "Get Actions from the Network",
-	"WeaviateNetworkGetActionsObj": "Type of Actions i.e. Actions classes to Get from the Network"
+	"WeaviateNetworkGetActionsObj": "Type of Actions i.e. Actions classes to Get from the Network",
+	"WeaviateNetworkIntrospectWeaviate": "Weaviate node the found class in the Network Introspection search is in."
 }
