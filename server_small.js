@@ -757,7 +757,7 @@ function createMetaRootClasses(ontologyThings, metaSubClasses){
 /**
  * Create the subclasses of a Thing or Action in the Local function
  */
-function createSubClasses(ontologyThings){
+function createSubClasses(ontologyThings, weaviate){
 
   console.log("------START SUBCLASSES--------")
 
@@ -769,7 +769,7 @@ function createSubClasses(ontologyThings){
 
     // create recursive sub classes
     subClasses[singleClass.class] = new GraphQLObjectType({
-      name: singleClass.class,
+      name: weaviate + singleClass.class,
       description: singleClass.description,
       fields: function(){
         // declare props that should be returned
@@ -792,37 +792,37 @@ function createSubClasses(ontologyThings){
               returntypes.push(subClasses[singleClassPropertyDatatype])
             } else if(singleClassPropertyDatatype === "string") {
               returnProps[singleClassProperty.name] = {
-                name: singleClass.class + singleClassProperty.name,
+                name: weaviate + singleClass.class + singleClassProperty.name,
                 description: singleClassProperty.description,
                 type: GraphQLString
               }
             } else if(singleClassPropertyDatatype === "int") {
               returnProps[singleClassProperty.name] = {
-                name: singleClass.class + singleClassProperty.name,
+                name: weaviate + singleClass.class + singleClassProperty.name,
                 description: singleClassProperty.description,
                 type: GraphQLInt
               }
             } else if(singleClassPropertyDatatype === "number") {
               returnProps[singleClassProperty.name] = {
-                name: singleClass.class + singleClassProperty.name,
+                name: weaviate + singleClass.class + singleClassProperty.name,
                 description: singleClassProperty.description,
                 type: GraphQLFloat
               }
             } else if(singleClassPropertyDatatype === "boolean") {
               returnProps[singleClassProperty.name] = {
-                name: singleClass.class + singleClassProperty.name,
+                name: weaviate + singleClass.class + singleClassProperty.name,
                 description: singleClassProperty.description,
                 type: GraphQLBoolean
               }
             } else if(singleClassPropertyDatatype === "date") {
               returnProps[singleClassProperty.name] = {
-                name: singleClass.class + singleClassProperty.name,
+                name: weaviate + singleClass.class + singleClassProperty.name,
                 description: singleClassProperty.description,
                 type: GraphQLString // string since no GraphQL date type exists
               }} else {
               console.error("I DONT KNOW THIS VALUE! " + singleClassProperty["@dataType"][0])
               returnProps[singleClassProperty.name] = {
-                name: singleClass.class + singleClassProperty.name,
+                name: weaviate + singleClass.class + singleClassProperty.name,
                 description: singleClassProperty.description,
                 type: GraphQLString
               }
@@ -830,10 +830,10 @@ function createSubClasses(ontologyThings){
           })
           if (returntypes.length > 0) {
             returnProps[singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1)] = {
-              name: singleClass.class + singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1),
+              name: weaviate + singleClass.class + singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1),
               description: singleClassProperty.description,
               type: new GraphQLUnionType({
-                name: singleClass.class + singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1) + 'Obj', 
+                name: weaviate + singleClass.class + singleClassProperty.name[0].toUpperCase() + singleClassProperty.name.substring(1) + 'Obj', 
                 description: singleClassProperty.description,
                 types: returntypes,
                 resolveType(obj, context, info) {
@@ -925,133 +925,100 @@ function mergeOntologies(a, b){
  * START - ALL RELATED TO NETWORK
  */
 
-/**
- * Create contextionary input fields
- */
-// function createContextionaryInputFields(nouns){
 
-//   var returner = {}
-//   var subReturner = {}
+function getWeaviateNetworkGetWeaviateFields(weaviate) {
+  var thingsFile = './network/' + weaviate + '/things_schema.json';
+  var actionsFile = './network/' + weaviate + '/things_schema.json';
 
-//   var splitNouns = nouns.split('\n');
+  //let ontologyThings = require(thingsFile);
+  //let ontologyActions = require(actionsFile);
 
-//   // first we create subfields
-//   for(var no = 0; no < splitNouns.length; no++){
-//     // set regex for nouns
-//     splitNouns[no] = splitNouns[no].replace(/\W/g, '');
-//     subReturner[splitNouns[no]] = {
-//       name: "WeaviateNetworkSubfield" + splitNouns[no],
-//       description: "No description available",
-//       args: createArgs("_", true),
-//       resolve() {
-//         console.log("resolve WeaviateNetworkSubfield" + splitNouns[no])
-//         return [{}] // resolve with empty array
-//       },
-//       type: GraphQLString
-//     }
-//   }
+  let ontologyThings = fs.readFileSync(thingsFile, {encoding:'utf8'});
+  let ontologyActions = fs.readFileSync(actionsFile, {encoding:'utf8'});
 
-//   var superSubreturner = new GraphQLObjectType({
-//     name: "superSubreturner",
-//     fields: subReturner
-//   })
+  // merge
+  classes = mergeOntologies(JSON.parse(ontologyThings), JSON.parse(ontologyActions))
+  var localSubClasses = createSubClasses(classes, weaviate);
+  var rootClassesNetworkThingsFields = createRootClasses(JSON.parse(ontologyThings), localSubClasses);
+  var rootClassesNetworkActionsFields = createRootClasses(JSON.parse(ontologyActions), localSubClasses);
 
-//   // second we create actual fields
-//   for(var no = 0; no < splitNouns.length; no++){
-//     // set regex for nouns
-//     splitNouns[no] = splitNouns[no].replace(/[\W-]/g, '');
-    
-//     // skip empty items and items containing numbers
-//     if ((splitNouns[no].length == 0) || /\d/.test(splitNouns[no])) {
-//       continue
-//     }
-//     // set to upper because of 
-//     let nounAsClass = splitNouns[no][0].toUpperCase() + splitNouns[no].substring(1);
-//     returner[nounAsClass] = {
-//       name: "WeaviateNetworkSubfield" + nounAsClass,
-//       description: "No description available",
-//       args: createArgs("_", true),
-//       resolve() {
-//         console.log("resolve WeaviateNetworkSubfield" + nounAsClass)
-//         return [{}] // resolve with empty array
-//       },
-//       type: superSubreturner
-//     }
+  fields = {
+    Things: {
+      name: "WeaviateNetworkGet" + weaviate[0].toUpperCase() + weaviate.substring(1) + "Things",
+      description: function() {
+        return getDesc("WeaviateNetworkGetThings")},
+      type: new GraphQLObjectType({
+        name: "WeaviateNetworkGet" + weaviate[0].toUpperCase() + weaviate.substring(1) + "ThingsObj",
+        description: function() {
+          return getDesc("WeaviateNetworkGetThingsObj")},
+        fields: rootClassesNetworkThingsFields
+      }),
+      resolve(parentValue) {
+        console.log("resolve WeaviateNetworkGet" + weaviate[0].toUpperCase() + weaviate.substring(1) + "Things")
+        return parentValue.Things // resolve with empty array
+      },
+    },
+    Actions: {
+      name: "WeaviateNetworkGet" + weaviate[0].toUpperCase() + weaviate.substring(1) + "Actions",
+      description: function() {
+        return getDesc("WeaviateNetworkGetActions")},
+      type: new GraphQLObjectType({
+        name: "WeaviateNetworkGet" + weaviate[0].toUpperCase() + weaviate.substring(1) + "ActionsObj",
+        description: function() {
+          return getDesc("WeaviateNetworkGetActionsObj")},
+        fields: rootClassesNetworkActionsFields
+      }),
+      resolve(parentValue) {
+        console.log("resolve WeaviateNetworkGet" + weaviate[0].toUpperCase() + weaviate.substring(1) + "Actions")
+        return parentValue.Actions // resolve with empty array
+      }
+    }
+  }
+return fields
 
-//   }
-
-//   return returner
-
-// }
+}
 
 
-/**
- * Nounfields are used in the Network service
- */
-// function createContextionaryFields(nouns, depth){
+function createNetworkWeaviateFields() {
+  console.log("------START NETWORKWEAVIATEFIELDS--------")
+  var networkFields = {}
 
-//   var returner = {}
-//   var subReturner = {}
+  function getDirectories(path) {
+    return fs.readdirSync(path).filter(function (file) {
+      return fs.statSync(path+'/'+file).isDirectory();
+    });
+  }
+  var weaviates = getDirectories("./network");
 
-//   var splitNouns = nouns.split('\n');
+  weaviates.forEach(weaviate => {
+    networkFields[weaviate] = {
+      name: "WeaviateNetworkGet" + weaviate[0].toUpperCase() + weaviate.substring(1),
+      description: "Object field for weaviate " + weaviate + " in the network.",
+      type: new GraphQLObjectType({
+        name: "WeaviateNetworkGet" + weaviate[0].toUpperCase() + weaviate.substring(1) + "Obj",
+        description: "Objects for the what to Get from the weaviate " + weaviate + " in the network.",
+        fields: getWeaviateNetworkGetWeaviateFields(weaviate)
+      }),
+      resolve(parentValue){
+        console.log("resolve WeaviateNetworkGet" + weaviate[0].toUpperCase() + weaviate.substring(1))
+        return parentValue[weaviate] // resolve with empty array
+      }
+    }
+  })
 
-//   // first we create subfields
-//   for(var no = 0; no < splitNouns.length; no++){
-//     // set regex for nouns
-//     splitNouns[no] = splitNouns[no].replace(/\W/g, '');
-//     subReturner[splitNouns[no]] = {
-//       name: "WeaviateNetworkSubfield" + splitNouns[no],
-//       description: "No description available",
-//       args: createArgs("_", true),
-//       resolve() {
-//         console.log("resolve WeaviateNetworkSubfield" + splitNouns[no])
-//         return [{}] // resolve with empty array
-//       },
-//       type: GraphQLString
-//     }
-//   }
-
-//   var superSubreturner = new GraphQLObjectType({
-//     name: "superSubreturner",
-//     fields: subReturner
-//   })
-
-//   // second we create actual fields
-//   for(var no = 0; no < splitNouns.length; no++){
-//     // set regex for nouns
-//     splitNouns[no] = splitNouns[no].replace(/[\W-]/g, '');
-    
-//     // skip empty items and items containing numbers
-//     if ((splitNouns[no].length == 0) || /\d/.test(splitNouns[no])) {
-//       continue
-//     }
-//     // set to upper because of 
-//     let nounAsClass = splitNouns[no][0].toUpperCase() + splitNouns[no].substring(1);
-//     returner[nounAsClass] = {
-//       name: "WeaviateNetworkSubfield" + nounAsClass,
-//       description: "No description available",
-//       args: createArgs("_", true),
-//       resolve() {
-//         console.log("resolve WeaviateNetworkSubfield" + nounAsClass)
-//         return [{}] // resolve with empty array
-//       },
-//       type: superSubreturner
-//     }
-
-//   }
-
-//   return returner
-
-// }
+  console.log("------STOP NETWORKWEAVIATEFIELDS--------")
+  return networkFields
+}
 
 
 /**
- * END - ALL RELATED TO INTERNAL
+ * END - ALL RELATED TO NETWORK
  */
 
 /**
  * START CONSTRUCTING THE SERVICE
  */
+
 fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThings) { // read things ontology
   fs.readFile('demo_schemas/actions_schema.json', 'utf8', function(err, ontologyActions) { // read actions ontology
 
@@ -1062,7 +1029,7 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
     // var contextionaryWords = createContextionaryFields(nouns);
   
     // create the root and sub classes based on the Weaviate schemas
-    var localSubClasses = createSubClasses(classes);
+    var localSubClasses = createSubClasses(classes, "");
     var rootClassesThingsFields = createRootClasses(JSON.parse(ontologyThings), localSubClasses);
     var rootClassesActionsFields = createRootClasses(JSON.parse(ontologyActions), localSubClasses);
     var classesEnum = createClassEnum(classes);
@@ -1070,6 +1037,8 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
     var metaSubClasses = createMetaSubClasses(classes)
     var metaRootClassesThingsFields = createMetaRootClasses(JSON.parse(ontologyThings), metaSubClasses);
     var metaRootClassesActionsFields = createMetaRootClasses(JSON.parse(ontologyActions), metaSubClasses);
+
+    var networkWeaviateFields = createNetworkWeaviateFields()
 
     // This is the root 
     var Weaviate = new GraphQLObjectType({
@@ -1242,6 +1211,34 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
             description: function() {
               return getDesc("WeaviateNetworkObj")},
             fields: {
+              Get: {
+                name: "WeaviateNetworkGet",
+                description: function() {
+                  return getDesc("WeaviateNetworkGet")},
+                args: {
+                  where: { 
+                    name: "WeaviateNetworkGetWhere",
+                    description: function() {
+                      return getDesc("WeaviateNetworkGetWhere")},
+                    type: new GraphQLInputObjectType({
+                      name: "WeaviateNetworkGetWhereInpObj",
+                      description: function() {
+                        return getDesc("WeaviateNetworkGetWhereInpObj")},
+                      fields: whereFields
+                    }) 
+                  }
+                },
+                type: new GraphQLObjectType({
+                  name: "WeaviateNetworkGetObj",
+                  description: function() {
+                    return getDesc("WeaviateNetworkGetObj")},
+                  fields: networkWeaviateFields
+                }),
+                resolve(parentValue, args) {
+                  console.log("resolve WeaviateNetworkGet")
+                  return demoResolver.resolveNetworkGet(args.where) // resolve with empty array
+                },
+              },
               Fetch: {
                 name: "WeaviateNetworkFetch",
                 description: function() {

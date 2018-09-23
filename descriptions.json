@@ -73,5 +73,13 @@
 	"WeaviateNetworkIntrospectProperties": "Which properties to filter on",
 	"WeaviateNetworkIntrospectPropertiesObj": "which properties to filter on",
 	"WeaviateNetworkIntrospectPropertiesPropertyName": "Which property name to filter properties on",
-	"WeaviateNetworkIntrospectPropertiesCertainty": "With which certainty 0-1 to filter properties on"	
+	"WeaviateNetworkIntrospectPropertiesCertainty": "With which certainty 0-1 to filter properties on",
+	"WeaviateNetworkGet": "Get Things or Actions on the network of weaviate",
+	"WeaviateLocalGetWhere": "Filter options for the Network Get search, to convert the data to the filter input",
+	"WeaviateLocalGetWhereInpObj": "Filter options for the Network Get search, to convert the data to the filter input",
+	"WeaviateNetworkGetObj": "Type of Get function to get Things or Actions from the Network",
+	"WeaviateNetworkGetThings": "Get Things from the Network",
+	"WeaviateNetworkGetThingsObj": "Type of Things i.e. Things classes to Get from the Network",
+	"WeaviateNetworkGetActions": "Get Actions from the Network",
+	"WeaviateNetworkGetActionsObj": "Type of Actions i.e. Actions classes to Get from the Network"
 }

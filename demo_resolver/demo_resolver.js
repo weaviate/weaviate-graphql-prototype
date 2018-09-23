@@ -2,6 +2,7 @@ const _ = require('lodash');
 // file system for reading files
 const fs = require('fs');
 const data = JSON.parse(fs.readFileSync('./demo_resolver/demo_data.json', 'utf8'));
+const network_data = JSON.parse(fs.readFileSync('./network/all_network_demo_data.json', 'utf8'));
 
 var solveMetaRootClass = function(all_data, className, args) {
 	var list = []
@@ -363,6 +364,9 @@ module.exports = {
     metaRootClassResolver: function(all_data, className, args) {
 		return solveMetaRootClass(all_data, className, args)
 	},
+	resolveNetworkGet: function(filter) {
+		return network_data
+    },
 	resolveNetworkFetch: function(args){
 		var argsClassName = args.where.class[0].name
 		var argsKeywordsValue = args.where.class[0].keywords[0].value
