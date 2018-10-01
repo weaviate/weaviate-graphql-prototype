@@ -6,6 +6,7 @@
   },
   "dependencies": {
     "apollo-fetch": "^0.7.0",
+    "cors": "^2.8.4",
     "expect": "^23.2.0",
     "express": "^4.13.3",
     "express-graphql": "^0.6.6",

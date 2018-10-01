@@ -14,6 +14,7 @@ Note: you can follow the construction of the Graphql schema by starting undernea
 
 // Express for the webserver & graphql
 const express = require('express');
+const cors = require('cors');
 const graphqlHTTP = require('express-graphql');
 const demoResolver = require('./demo_resolver/demo_resolver.js');
 const UnionInputType = require('graphql-union-input-type');
@@ -1488,6 +1489,7 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
 
     // run the webserver
     const app = express();
+    app.use(cors());
     app.use(express.static(__dirname));
     app.use('/graphql', graphqlHTTP(() => ({ schema, graphiql: true })));
     app.listen(8081, function() {
