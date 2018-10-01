@@ -1017,6 +1017,39 @@ var NetworkIntrospectThingsActionsFields = {
   }
 }
 
+var NetworkIntrospectBeaconFields = {
+  weaviate: {
+    name: "WeaviateNetworkIntrospectBeaconWeaviate",
+    description: function() {
+      return getDesc("WeaviateNetworkIntrospectWeaviate")},
+    type: GraphQLString
+  },
+  className: {
+    name: "WeaviateNetworkIntrospectBeaconClassName",
+    description: function() {
+      return getDesc("WeaviateNetworkIntrospectClassName")},
+    type: GraphQLString
+  },
+  properties: {
+    name: "WeaviateNetworkIntrospectBeaconProperties",
+    description: function() {
+      return getDesc("WeaviateNetworkIntrospectProperties")},
+    type: new GraphQLList(new GraphQLObjectType({
+      name: "WeaviateNetworkIntrospectBeaconPropertiesObj",
+      description: function() {
+        return getDesc("WeaviateNetworkIntrospectBeaconPropertiesObj")},
+      fields: {
+        propertyName: {
+          name: "WeaviateNetworkIntrospectPropertiesBeaconPropertyName",
+          description: function() {
+            return getDesc("WeaviateNetworkIntrospectPropertiesPropertyName")},
+          type: GraphQLString
+        }
+      }
+    }))
+  }
+}
+
 
 /**
  * END - ALL RELATED TO NETWORK
@@ -1423,12 +1456,12 @@ fs.readFile('demo_schemas/things_schema.json', 'utf8', function(err, ontologyThi
                           type: new GraphQLNonNull(GraphQLString)
                         }
                       },
-                      type: new GraphQLList( new GraphQLObjectType({
+                      type: new GraphQLObjectType({
                         name: "WeaviateNetworkIntrospectBeaconObj",
                         description: function() {
                           return getDesc("WeaviateNetworkIntrospectBeaconObj")},
-                        fields: NetworkIntrospectThingsActionsFields
-                      })),
+                        fields: NetworkIntrospectBeaconFields
+                      }),
                       resolve(parentValue, args) {
                         console.log("resolve WeaviateNetworkIntrospectBeacon")
                         return demoResolver.resolveNetworkIntrospectBeacon(args) // resolve with empty array
